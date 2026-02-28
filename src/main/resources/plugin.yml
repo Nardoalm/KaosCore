@@ -1,8 +1,8 @@
-name: NardoLobby
-version: 1.8.10
-main: me.nardodev.lobby.Main
+name: KnowPractice
+version: 2.0
+main: com.knowplugins.nardodev.knowpractice.KnowPractice
 api-version: 1.8
-author: NardoDev
-description: Plugin de lobby
-depend: [PlaceholderAPI]
+author: KnowPlugins
+description: Plugin de practice com sistema completo.
+depend: [PlaceholderAPI, ProtocolLib]
 softdepend: [LeafTags]
