@@ -5,15 +5,9 @@ import com.knowplugins.nardodev.knowpractice.listeners.Listeners;
 import com.knowplugins.nardodev.knowpractice.listeners.entity.NPCInteractListener;
 import com.knowplugins.nardodev.knowpractice.listeners.world.WorldProtectionListener;
 import com.knowplugins.nardodev.knowpractice.managers.Managers;
-import com.knowplugins.nardodev.knowpractice.managers.player.VanishManager;
-import com.knowplugins.nardodev.knowpractice.managers.player.ScoreboardManager;
-import com.knowplugins.nardodev.knowpractice.managers.world.NPCManager;
+import com.knowplugins.nardodev.knowpractice.managers.plugin.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Scanner;
 
 public class KnowPractice extends JavaPlugin {
    private static KnowPractice instance;
@@ -28,17 +22,35 @@ public class KnowPractice extends JavaPlugin {
       saveDefaultConfig();
       instance = this;
 
+      this.getDataFolder().mkdirs();
+
+      DatabaseManager db = new DatabaseManager(this);
+      db.connect();
+
       NPCInteractListener.register(this);
 
       WorldProtectionListener.setPvp(false);
       Listeners.setupListeners(this);
-      Commands.setupCommands();
+      Commands.setupCommands(this);
       managers = new Managers(this);
+
+      Managers.setDatabaseManager(db);
+
       managers.loadAll();
+
+      if (Managers.getDisguiseManager() != null) {
+         Managers.getDisguiseManager().loadNicksFile(this);
+      }
    }
 
    @Override
    public void onDisable() {
+      try {
+         DatabaseManager db = Managers.getDatabaseManager();
+         if (db != null) db.disconnect();
+      } catch (Exception ignored) {
+      }
+
       Bukkit.getConsoleSender().sendMessage("§c§lTCHAU :( -> §cO plugin foi desativado.");
    }
 }

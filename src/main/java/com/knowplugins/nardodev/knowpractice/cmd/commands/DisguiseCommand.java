@@ -1,7 +1,9 @@
 package com.knowplugins.nardodev.knowpractice.cmd.commands;
 
 import com.knowplugins.nardodev.knowpractice.cmd.Commands;
+import com.knowplugins.nardodev.knowpractice.managers.Managers;
 import com.knowplugins.nardodev.knowpractice.managers.player.DisguiseManager;
+import com.knowplugins.nardodev.knowpractice.managers.plugin.DisguiseRepository;
 import com.mojang.authlib.GameProfile;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -32,11 +34,13 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        DisguiseManager disguiseManager = new DisguiseManager();
+        DisguiseManager disguiseManager = Managers.getDisguiseManager();
 
         if (args.length == 0 && DisguiseManager.isDisguised(player)) {
             try {
-                String originalName = player.getName();
+                String originalName = disguiseManager.popOriginalName(player);
+                if (originalName == null) originalName = org.bukkit.Bukkit.getOfflinePlayer(player.getUniqueId()).getName();
+
                 GameProfile profile = ((CraftPlayer) player).getProfile();
 
                 Field nameField = profile.getClass().getDeclaredField("name");
@@ -54,7 +58,12 @@ public class DisguiseCommand extends Commands {
 
                 disguiseManager.removeDisguise(player);
 
+                SkinCommand.refreshPlayer(player);
+
                 player.sendMessage("§a§lSUCESSO ➔ §aSeu disfarce foi removido e seu nick voltou a ser §e" + originalName);
+
+                DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(com.knowplugins.nardodev.knowpractice.KnowPractice.class), Managers.getDatabaseManager());
+                repo.saveAsync(player.getUniqueId(), false, null, null);
 
             } catch (Exception exception) {
                 player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao remover o disfarce.");
@@ -78,7 +87,15 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
+        if (Managers.getDisguiseManager() != null && Managers.getDisguiseManager().isNickInUse(newNick)) {
+            player.sendMessage("§c§lERRO ➔ §cEsse nick já está em uso.");
+            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            return;
+        }
+
         try {
+            disguiseManager.recordOriginalName(player);
+
             GameProfile profile = ((CraftPlayer) player).getProfile();
 
             Field nameField = profile.getClass().getDeclaredField("name");
@@ -101,7 +118,10 @@ public class DisguiseCommand extends Commands {
                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
             }
 
-            disguiseManager.addInDisguise(player);
+            disguiseManager.addInDisguise(player, newNick);
+
+            DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(com.knowplugins.nardodev.knowpractice.KnowPractice.class), Managers.getDatabaseManager());
+            repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
 
         } catch (Exception exception) {
             player.sendMessage("§c§lERRO ➔ §cOcorreu um erro interno ao aplicar o disfarce.");

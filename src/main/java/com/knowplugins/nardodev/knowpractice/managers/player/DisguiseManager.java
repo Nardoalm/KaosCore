@@ -7,13 +7,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class DisguiseManager {
-    public static final List<Player> DISGUISED = new ArrayList<>();
+    private static final Set<UUID> DISGUISED = new HashSet<>();
+    private static final Map<UUID, String> DISGUISE_NICKS = new HashMap<>();
+    private static final Map<UUID, String> ORIGINAL_NAMES = new HashMap<>();
 
     private final List<String> defaultNicks = Arrays.asList(
             "SrGusta", "ziSnaake", "yNandoXP_", "SrLogann", "iPowerPvP",
@@ -23,18 +22,69 @@ public class DisguiseManager {
     private final List<String> allNicks = new ArrayList<>();
 
 
+    public void recordOriginalName(Player player) {
+        if (player == null) return;
+        ORIGINAL_NAMES.putIfAbsent(player.getUniqueId(), player.getName());
+    }
+
+    public void setOriginalName(Player player, String name) {
+        if (player == null || name == null) return;
+        ORIGINAL_NAMES.put(player.getUniqueId(), name);
+    }
+
+    public String popOriginalName(Player player) {
+        if (player == null) return null;
+        return ORIGINAL_NAMES.remove(player.getUniqueId());
+    }
+
     public void addInDisguise(Player player) {
-        if (!DISGUISED.contains(player)) {
-            DISGUISED.add(player);
+        if (player == null) return;
+        DISGUISED.add(player.getUniqueId());
+    }
+
+    public void addInDisguise(Player player, String nick) {
+        if (player == null) return;
+        DISGUISED.add(player.getUniqueId());
+        if (nick != null) {
+            DISGUISE_NICKS.put(player.getUniqueId(), nick);
+        }
+    }
+
+    public void addInDisguise(UUID uuid) {
+        if (uuid == null) return;
+        DISGUISED.add(uuid);
+    }
+
+    public void addInDisguise(UUID uuid, String nick) {
+        if (uuid == null) return;
+        DISGUISED.add(uuid);
+        if (nick != null) {
+            DISGUISE_NICKS.put(uuid, nick);
         }
     }
 
     public void removeDisguise(Player player) {
-        DISGUISED.remove(player);
+        if (player == null) return;
+        DISGUISED.remove(player.getUniqueId());
+        DISGUISE_NICKS.remove(player.getUniqueId());
+        ORIGINAL_NAMES.remove(player.getUniqueId());
     }
 
     public static boolean isDisguised(Player player) {
-        return DISGUISED.contains(player);
+        if (player == null) return false;
+        return DISGUISED.contains(player.getUniqueId());
+    }
+
+    public static boolean isNickInUse(String nick) {
+        if (nick == null) return false;
+        for (String s : DISGUISE_NICKS.values()) {
+            if (nick.equalsIgnoreCase(s)) return true;
+        }
+        for (org.bukkit.entity.Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+            if (nick.equalsIgnoreCase(p.getName())) return true;
+            if (p.getDisplayName() != null && nick.equalsIgnoreCase(p.getDisplayName())) return true;
+        }
+        return false;
     }
 
 
@@ -78,6 +128,35 @@ public class DisguiseManager {
             return "Steve";
         }
         Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            String candidate = this.allNicks.get(random.nextInt(this.allNicks.size()));
+            if (!isNickInUse(candidate)) return candidate;
+        }
+        // fallback: return any
         return this.allNicks.get(random.nextInt(this.allNicks.size()));
+    }
+
+    public static UUID getUuidByNick(String nick) {
+        if (nick == null) return null;
+        for (java.util.Map.Entry<UUID, String> e : DISGUISE_NICKS.entrySet()) {
+            if (e.getValue() != null && e.getValue().equalsIgnoreCase(nick)) return e.getKey();
+        }
+        return null;
+    }
+
+    public static org.bukkit.entity.Player getPlayerByNick(String nick) {
+        if (nick == null) return null;
+        // direct match by player name
+        for (org.bukkit.entity.Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(nick)) return p;
+            if (p.getDisplayName() != null && p.getDisplayName().equalsIgnoreCase(nick)) return p;
+        }
+        UUID u = getUuidByNick(nick);
+        if (u != null) return org.bukkit.Bukkit.getPlayer(u);
+        return null;
+    }
+
+    public static org.bukkit.entity.Player getOnlinePlayerByName(String name) {
+        return getPlayerByNick(name);
     }
 }

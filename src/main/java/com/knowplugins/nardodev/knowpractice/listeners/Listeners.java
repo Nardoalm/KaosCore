@@ -6,6 +6,7 @@ import com.knowplugins.nardodev.knowpractice.listeners.entity.MenuClickListener;
 import com.knowplugins.nardodev.knowpractice.listeners.entity.NPCInteractListener;
 import com.knowplugins.nardodev.knowpractice.listeners.player.*;
 import com.knowplugins.nardodev.knowpractice.listeners.world.WeatherListener;
+import com.knowplugins.nardodev.knowpractice.listeners.world.WorldProtectionListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
@@ -23,6 +24,7 @@ public class Listeners {
          pm.registerEvents(new NPCInteractListener(), plugin);
          pm.registerEvents(new InventoryProtectListener(), plugin);
          pm.registerEvents(new PlayerQuitListener(), plugin);
+         pm.registerEvents(new WorldProtectionListener(), plugin);
       } catch (Exception e) {
          e.printStackTrace();
       }

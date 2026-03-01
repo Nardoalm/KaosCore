@@ -11,16 +11,13 @@ import com.knowplugins.nardodev.knowpractice.cmd.Commands;
 
 public class ClearChatCommand extends Commands {
    public ClearChatCommand() {
-      super("cc", "clearchat");
+      super("clearchat");
    }
 
    @Override
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
          sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem executar este comando.");
-         Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
-
       } else {
          Player player = (Player)sender;
 

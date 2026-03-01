@@ -2,11 +2,13 @@ com\knowplugins\nardodev\knowpractice\cmd\commands\BuildCommand.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\DiscordCommand.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\ClanCommand.class
 com\knowplugins\nardodev\knowpractice\utils\menu\MenuUtils.class
+com\knowplugins\nardodev\knowpractice\listeners\world\SoundListener.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\GamemodeCommand.class
 com\knowplugins\nardodev\knowpractice\managers\player\VanishManager$1.class
 com\knowplugins\nardodev\knowpractice\listeners\entity\MenuClickListener.class
 com\knowplugins\nardodev\knowpractice\listeners\world\WorldProtectionListener.class
 com\knowplugins\nardodev\knowpractice\clan\Clan.class
+com\knowplugins\nardodev\knowpractice\managers\plugin\SkinRepository.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\TeleportCommand.class
 com\knowplugins\nardodev\knowpractice\listeners\player\InteractListener.class
 com\knowplugins\nardodev\knowpractice\managers\player\TabListManager.class
@@ -36,9 +38,11 @@ com\knowplugins\nardodev\knowpractice\cmd\commands\FlyCommand.class
 com\knowplugins\nardodev\knowpractice\managers\player\GameModeManager.class
 com\knowplugins\nardodev\knowpractice\managers\world\ClimateManager.class
 com\knowplugins\nardodev\knowpractice\utils\title\TitleUtils.class
+com\knowplugins\nardodev\knowpractice\cmd\commands\CcCommand.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\DisguiseCommand.class
 com\knowplugins\nardodev\knowpractice\listeners\entity\EntityListener.class
 com\knowplugins\nardodev\knowpractice\listeners\player\ProtectionListener.class
+com\knowplugins\nardodev\knowpractice\managers\ClanManager.class
 com\knowplugins\nardodev\knowpractice\utils\welcomeMessages\WelcomeMessage.class
 com\knowplugins\nardodev\knowpractice\listeners\Listeners.class
 com\knowplugins\nardodev\knowpractice\managers\plugin\DatabaseManager.class
@@ -46,6 +50,10 @@ com\knowplugins\nardodev\knowpractice\listeners\entity\NPCInteractListener$1.cla
 com\knowplugins\nardodev\knowpractice\managers\world\BuildManager.class
 com\knowplugins\nardodev\knowpractice\listeners\player\ChatListener.class
 com\knowplugins\nardodev\knowpractice\listeners\player\PlayerJoinListener.class
+com\knowplugins\nardodev\knowpractice\listeners\player\PlayerQuitListener.class
 com\knowplugins\nardodev\knowpractice\managers\player\ScoreboardManager$1.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\SkinCommand.class
+com\knowplugins\nardodev\knowpractice\managers\plugin\SkinData.class
+com\knowplugins\nardodev\knowpractice\managers\plugin\VanishRepository.class
 com\knowplugins\nardodev\knowpractice\cmd\commands\CbanCommand.class
+com\knowplugins\nardodev\knowpractice\managers\plugin\DisguiseRepository.class

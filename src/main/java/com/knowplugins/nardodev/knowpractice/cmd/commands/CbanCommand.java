@@ -1,6 +1,7 @@
 package com.knowplugins.nardodev.knowpractice.cmd.commands;
 
 import com.knowplugins.nardodev.knowpractice.cmd.Commands;
+import com.knowplugins.nardodev.knowpractice.managers.player.DisguiseManager;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,6 +35,9 @@ public class CbanCommand extends Commands {
         }
 
         Player target = Bukkit.getPlayer(args[0]);
+        if (target == null) {
+            target = DisguiseManager.getOnlinePlayerByName(args[0]);
+        }
 
         if (target == null || !target.isOnline()){
             sender.sendMessage("§c§lERRO ➔ §cJogador não existe ou não está online.");

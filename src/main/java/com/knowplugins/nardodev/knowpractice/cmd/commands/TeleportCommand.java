@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.knowplugins.nardodev.knowpractice.cmd.Commands;
+import com.knowplugins.nardodev.knowpractice.managers.player.DisguiseManager;
 
 public class TeleportCommand extends Commands {
    public TeleportCommand() {
@@ -54,6 +55,7 @@ public class TeleportCommand extends Commands {
          Player player;
          if (args.length != 1 && args.length != 3) {
             player = Bukkit.getPlayerExact(args[0]);
+            if (player == null) player = DisguiseManager.getOnlinePlayerByName(args[0]);
          } else {
             if (!(sender instanceof Player)) {
                sender.sendMessage("§c§lERRO ➔ §cDigite o nome de um jogador!");
@@ -73,6 +75,7 @@ public class TeleportCommand extends Commands {
          } else {
             if (args.length < 3) {
                Player target = Bukkit.getPlayerExact(args[args.length - 1]);
+               if (target == null) target = DisguiseManager.getOnlinePlayerByName(args[args.length - 1]);
                if (target == null) {
                   sender.sendMessage("§c§lERRO ➔ §cNão foi possível localizar o jogador " + args[args.length - 1] + ". Portanto, sem teleporte.");
                   Player senderPlayer = (Player) sender;

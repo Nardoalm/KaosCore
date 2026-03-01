@@ -3,9 +3,12 @@ package com.knowplugins.nardodev.knowpractice.listeners.player;
 import com.knowplugins.nardodev.knowpractice.KnowPractice;
 import com.knowplugins.nardodev.knowpractice.managers.Managers;
 import com.knowplugins.nardodev.knowpractice.managers.player.VanishManager;
+import com.knowplugins.nardodev.knowpractice.managers.player.DisguiseManager;
 import com.knowplugins.nardodev.knowpractice.managers.player.TabListManager;
 import com.knowplugins.nardodev.knowpractice.managers.world.NPCManager;
 import com.knowplugins.nardodev.knowpractice.utils.title.TitleUtils;
+import com.knowplugins.nardodev.knowpractice.managers.plugin.VanishRepository;
+import com.knowplugins.nardodev.knowpractice.managers.plugin.DisguiseRepository;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import com.knowplugins.nardodev.knowpractice.utils.welcomeMessages.WelcomeMessage;
 import org.bukkit.*;
@@ -21,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
 
@@ -88,6 +92,45 @@ public class PlayerJoinListener implements Listener {
       itemMenu.setItemMeta(metaMenu);
 
       player.getInventory().setItem(0, itemMenu);
+
+      if (Managers.getDatabaseManager() != null) {
+         VanishRepository vanishRepo = new VanishRepository(plugin, Managers.getDatabaseManager());
+         DisguiseRepository disguiseRepo = new DisguiseRepository(plugin, Managers.getDatabaseManager());
+
+         UUID uuid = player.getUniqueId();
+
+         vanishRepo.load(uuid).thenAccept(isVanished -> {
+            if (isVanished && player.hasPermission("nardocore.staff.vanish")) {
+               VanishManager.addVanish(player);
+            }
+         });
+
+         disguiseRepo.load(uuid).thenAccept(isDisguised -> {
+            if (isDisguised != null) {
+               String nick = isDisguised;
+               try {
+                  DisguiseManager dm = Managers.getDisguiseManager();
+                  if (dm != null) dm.setOriginalName(player, player.getName());
+
+                  com.mojang.authlib.GameProfile profile = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getProfile();
+                  java.lang.reflect.Field nameField = profile.getClass().getDeclaredField("name");
+                  nameField.setAccessible(true);
+                  java.lang.reflect.Field modifiersField = java.lang.reflect.Field.class.getDeclaredField("modifiers");
+                  modifiersField.setAccessible(true);
+                  modifiersField.setInt(nameField, nameField.getModifiers() & ~java.lang.reflect.Modifier.FINAL);
+                  nameField.set(profile, nick);
+                  player.setDisplayName(nick);
+                  player.setPlayerListName(nick);
+                  DisguiseManager disguiseManager = Managers.getDisguiseManager();
+                  if (disguiseManager != null) {
+                     disguiseManager.addInDisguise(player, nick);
+                  }
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         });
+      }
 
       if (player.hasPermission("nardocore.staff.vanish")) {
          VanishManager.addVanish(player);

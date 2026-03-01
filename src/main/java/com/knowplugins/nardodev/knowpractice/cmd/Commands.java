@@ -8,6 +8,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 
+import com.knowplugins.nardodev.knowpractice.KnowPractice;
+
 public abstract class Commands extends Command {
    public Commands(String name, String... aliases) {
       super(name);
@@ -22,7 +24,7 @@ public abstract class Commands extends Command {
 
    }
 
-   public static void setupCommands() {
+   public static void setupCommands(KnowPractice plugin) {
       new GamemodeCommand();
       new ClearChatCommand();
       new VanishCommand();
@@ -39,6 +41,9 @@ public abstract class Commands extends Command {
       new SetNpcCommand();
       new MenuCommand();
       new DisguiseCommand();
+      new SkinCommand();
+      new ClanCommand(plugin);
+      new CcCommand();
    }
 
    public abstract void perform(CommandSender sender, String label, String[] args);
