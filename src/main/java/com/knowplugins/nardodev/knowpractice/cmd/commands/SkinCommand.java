@@ -6,6 +6,7 @@ import com.knowplugins.nardodev.knowpractice.cmd.Commands;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -199,17 +200,19 @@ public class SkinCommand extends Commands {
     }
 
     public static void forceRefreshSelf(Player player) {
-        org.bukkit.plugin.java.JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SkinCommand.class);
-        org.bukkit.Location loc = player.getLocation();
-        org.bukkit.Location up = loc.clone().add(0, 0.5, 0);
+        JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SkinCommand.class);
+        Location loc = player.getLocation();
+        Location up = loc.clone().add(0, 0.5, 0);
         Bukkit.getScheduler().runTask(plugin, () -> player.teleport(up));
         Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(loc), 2L);
     }
 
     public static void refreshPlayer(Player player) {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.hidePlayer(player);
-            onlinePlayer.showPlayer(player);
+            if(onlinePlayer != player) {
+                onlinePlayer.hidePlayer(player);
+                onlinePlayer.showPlayer(player);
+            }
         }
     }
 }

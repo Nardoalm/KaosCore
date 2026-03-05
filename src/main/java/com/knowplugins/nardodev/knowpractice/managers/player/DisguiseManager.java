@@ -1,5 +1,6 @@
 package com.knowplugins.nardodev.knowpractice.managers.player;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -80,7 +81,7 @@ public class DisguiseManager {
         for (String s : DISGUISE_NICKS.values()) {
             if (nick.equalsIgnoreCase(s)) return true;
         }
-        for (org.bukkit.entity.Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
             if (nick.equalsIgnoreCase(p.getName())) return true;
             if (p.getDisplayName() != null && nick.equalsIgnoreCase(p.getDisplayName())) return true;
         }
@@ -144,10 +145,10 @@ public class DisguiseManager {
         return null;
     }
 
-    public static org.bukkit.entity.Player getPlayerByNick(String nick) {
+    public static Player getPlayerByNick(String nick) {
         if (nick == null) return null;
-        // direct match by player name
-        for (org.bukkit.entity.Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getName().equalsIgnoreCase(nick)) return p;
             if (p.getDisplayName() != null && p.getDisplayName().equalsIgnoreCase(nick)) return p;
         }
@@ -156,7 +157,7 @@ public class DisguiseManager {
         return null;
     }
 
-    public static org.bukkit.entity.Player getOnlinePlayerByName(String name) {
+    public static Player getOnlinePlayerByName(String name) {
         return getPlayerByNick(name);
     }
 }
