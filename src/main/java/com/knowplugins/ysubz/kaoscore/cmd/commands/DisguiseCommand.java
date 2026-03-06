@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
@@ -104,6 +105,11 @@ public class DisguiseCommand extends Commands {
                 SkinMatrix.SkinData data = SkinMatrix.getRandomSkin();
                 profile.getProperties().removeAll("textures");
                 profile.getProperties().put("textures", new Property("textures", data.value, data.signature));
+
+                if (Managers.getDatabaseManager() != null) {
+                    SkinRepository repo = new SkinRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                    repo.saveAsync(player.getUniqueId(), "random-disguise", data.value, data.signature);
+                }
 
                 new SkinApplier(player).applySkinForOthers();
 

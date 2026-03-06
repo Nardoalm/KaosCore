@@ -501,11 +501,6 @@ public class ClanCommand extends Commands implements TabCompleter {
                 if (i < colors.size() - 1) {
                     line.addExtra(new TextComponent(ChatColor.translateAlternateColorCodes('&', "&f, ")));
                 }
-
-                if ((i + 1) % 4 == 0) {
-                    p.spigot().sendMessage(line);
-                    line = new TextComponent("");
-                }
             }
 
             if (line.getExtra() != null && !line.getExtra().isEmpty()) {

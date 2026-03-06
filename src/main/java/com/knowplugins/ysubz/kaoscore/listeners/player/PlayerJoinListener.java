@@ -5,13 +5,19 @@ import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TabListManager;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.utils.title.TitleUtils;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.VanishRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import com.knowplugins.ysubz.kaoscore.utils.welcomeMessages.WelcomeMessage;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +28,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -40,6 +48,10 @@ public class PlayerJoinListener implements Listener {
       String header = "\n §a§lFUSION \n";
       String footer = "\n §eWebsite: §bfusionmc.com.br \n §eDiscord: §bdc.fusionmc.com.br \n";
       TabListManager.setTabList(player, header, footer);
+
+      if (plugin.getTagManager() != null) {
+         plugin.getTagManager().getTag(player);
+      }
 
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
@@ -96,38 +108,24 @@ public class PlayerJoinListener implements Listener {
       if (Managers.getDatabaseManager() != null) {
          VanishRepository vanishRepo = new VanishRepository(plugin, Managers.getDatabaseManager());
          DisguiseRepository disguiseRepo = new DisguiseRepository(plugin, Managers.getDatabaseManager());
+         SkinRepository skinRepo = new SkinRepository(plugin, Managers.getDatabaseManager());
 
          UUID uuid = player.getUniqueId();
 
          vanishRepo.load(uuid).thenAccept(isVanished -> {
-            if (isVanished && player.hasPermission("nardocore.staff.vanish")) {
-               VanishManager.addVanish(player);
-            }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+               if (player.isOnline() && isVanished && player.hasPermission("nardocore.staff.vanish")) {
+                  VanishManager.addVanish(player);
+               }
+            });
          });
 
          disguiseRepo.load(uuid).thenAccept(isDisguised -> {
             if (isDisguised != null) {
                String nick = isDisguised;
-               try {
-                  DisguiseManager dm = Managers.getDisguiseManager();
-                  if (dm != null) dm.setOriginalName(player, player.getName());
-
-                  com.mojang.authlib.GameProfile profile = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getProfile();
-                  java.lang.reflect.Field nameField = profile.getClass().getDeclaredField("name");
-                  nameField.setAccessible(true);
-                  java.lang.reflect.Field modifiersField = java.lang.reflect.Field.class.getDeclaredField("modifiers");
-                  modifiersField.setAccessible(true);
-                  modifiersField.setInt(nameField, nameField.getModifiers() & ~java.lang.reflect.Modifier.FINAL);
-                  nameField.set(profile, nick);
-                  player.setDisplayName(nick);
-                  player.setPlayerListName(nick);
-                  DisguiseManager disguiseManager = Managers.getDisguiseManager();
-                  if (disguiseManager != null) {
-                     disguiseManager.addInDisguise(player, nick);
-                  }
-               } catch (Exception e) {
-                  e.printStackTrace();
-               }
+               skinRepo.load(uuid).thenAccept(skinData ->
+                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredDisguise(player, nick, skinData))
+               );
             }
          });
       }
@@ -174,5 +172,50 @@ public class PlayerJoinListener implements Listener {
       }
 
 
+   }
+
+   private void applyStoredDisguise(Player player, String nick, SkinData skinData) {
+      if (player == null || !player.isOnline() || nick == null || nick.trim().isEmpty()) {
+         return;
+      }
+
+      try {
+         DisguiseManager disguiseManager = Managers.getDisguiseManager();
+         if (disguiseManager != null) {
+            disguiseManager.setOriginalName(player, player.getName());
+         }
+
+         GameProfile profile = ((CraftPlayer) player).getProfile();
+         changeName(profile, nick);
+
+         if (skinData != null && skinData.value != null) {
+            profile.getProperties().removeAll("textures");
+            profile.getProperties().put("textures", new Property("textures", skinData.value, skinData.signature));
+         }
+
+         player.setDisplayName(nick);
+         player.setPlayerListName(nick);
+
+         if (disguiseManager != null) {
+            disguiseManager.addInDisguise(player, nick);
+         }
+
+         Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> {
+            if (player.isOnline()) {
+               new SkinApplier(player).applySkinForOthers();
+            }
+         }, 2L);
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+
+   private void changeName(GameProfile profile, String name) throws Exception {
+      Field nameField = profile.getClass().getDeclaredField("name");
+      nameField.setAccessible(true);
+      Field modifiersField = Field.class.getDeclaredField("modifiers");
+      modifiersField.setAccessible(true);
+      modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL);
+      nameField.set(profile, name);
    }
 }

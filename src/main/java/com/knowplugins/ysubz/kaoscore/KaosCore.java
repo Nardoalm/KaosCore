@@ -37,7 +37,12 @@ public class KaosCore extends JavaPlugin {
       this.getDataFolder().mkdirs();
 
       DatabaseManager db = new DatabaseManager(this);
-      db.connect();
+      if (!db.connect() || !db.isConnected()) {
+         getLogger().severe("Nao foi possivel conectar ao banco de dados. Desativando o plugin.");
+         Bukkit.getPluginManager().disablePlugin(this);
+         return;
+      }
+
       Listeners.setupListeners(this);
       Commands.setupCommands(this);
       managers = new Managers(this);

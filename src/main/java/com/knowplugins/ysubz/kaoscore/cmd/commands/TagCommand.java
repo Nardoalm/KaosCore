@@ -44,13 +44,15 @@ public class TagCommand implements CommandExecutor {
             }
 
             plugin.getTagManager().setTag(player, selected.getId());
+            player.sendMessage("§aTag alterada para: " + format(selected.getColor()) + selected.getName());
             return true;
         }
 
-        player.sendMessage("Suas tags: ");
-
         List<Tag> availableTags = plugin.getTagManager().getAvailableTags(player);
-        for (Tag tag : availableTags) {
+        TextComponent line = new TextComponent("Suas tags: ");
+
+        for (int i = 0; i < availableTags.size(); i++) {
+            Tag tag = availableTags.get(i);
             if (tag == null) {
                 continue;
             }
@@ -59,7 +61,17 @@ public class TagCommand implements CommandExecutor {
             TextComponent component = new TextComponent(displayName);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tag " + tag.getName()));
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar a tag").create()));
-            player.spigot().sendMessage(component);
+            line.addExtra(component);
+
+            if (i < availableTags.size() - 1) {
+                line.addExtra(new TextComponent(ChatColor.WHITE + ", "));
+            }
+        }
+
+        if (line.getExtra() != null && !line.getExtra().isEmpty()) {
+            player.spigot().sendMessage(line);
+        } else {
+            player.sendMessage("Suas tags: ");
         }
 
         return true;

@@ -1,7 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.managers;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerTagRepository;
+import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,13 +28,16 @@ public class TagManager {
     private final Map<String, Tag> tagsByName;
     private final Map<UUID, String> selectedTags;
     private FileConfiguration tagsConfig;
+    private final PlayerTagRepository playerTagRepository;
 
     public TagManager(KaosCore plugin) {
         this.plugin = plugin;
         this.tagsById = new LinkedHashMap<>();
         this.tagsByName = new ConcurrentHashMap<>();
         this.selectedTags = new ConcurrentHashMap<>();
+        this.playerTagRepository = new PlayerTagRepository(plugin, Managers.getDatabaseManager());
         loadTags();
+        loadSelectedTags();
     }
 
     public final void loadTags() {
@@ -81,6 +87,21 @@ public class TagManager {
             Tag tag = new Tag(id, name, prefix, color, suffix, permission, position);
             tagsById.put(id, tag);
             tagsByName.put(normalize(name), tag);
+            tagsByName.put(normalize(stripColors(name)), tag);
+        }
+    }
+
+    private void loadSelectedTags() {
+        if (plugin == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+            return;
+        }
+
+        selectedTags.clear();
+        Map<UUID, String> loaded = playerTagRepository.loadAll();
+        for (Map.Entry<UUID, String> entry : loaded.entrySet()) {
+            if (entry.getKey() != null && entry.getValue() != null) {
+                selectedTags.put(entry.getKey(), normalize(entry.getValue()));
+            }
         }
     }
 
@@ -103,6 +124,7 @@ public class TagManager {
         Tag first = available.get(0);
         if (first != null) {
             selectedTags.put(player.getUniqueId(), first.getId());
+            saveSelectedTag(player.getUniqueId(), first.getId());
         }
         return first;
     }
@@ -118,6 +140,8 @@ public class TagManager {
         }
 
         selectedTags.put(player.getUniqueId(), tag.getId());
+        saveSelectedTag(player.getUniqueId(), tag.getId());
+        refreshTag(player);
         return true;
     }
 
@@ -174,11 +198,53 @@ public class TagManager {
         return tagsByName.get(normalized);
     }
 
+    public void refreshTag(Player player) {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        player.setDisplayName(player.getDisplayName());
+        player.setPlayerListName(player.getPlayerListName());
+
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (onlinePlayer == null || onlinePlayer.equals(player)) {
+                continue;
+            }
+
+            if (!onlinePlayer.canSee(player)) {
+                continue;
+            }
+
+            onlinePlayer.hidePlayer(player);
+            onlinePlayer.showPlayer(player);
+
+            if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("nardocore.staff.vanish")) {
+                onlinePlayer.hidePlayer(player);
+            }
+        }
+    }
+
+    private void saveSelectedTag(UUID playerId, String tagId) {
+        if (playerId == null || tagId == null) {
+            return;
+        }
+        if (playerTagRepository != null) {
+            playerTagRepository.saveAsync(playerId, normalize(tagId));
+        }
+    }
+
     private String normalize(String text) {
         if (text == null) {
             return "";
         }
         return text.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String stripColors(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replaceAll("(?i)&[0-9A-FK-OR]", "").replaceAll("(?i)§[0-9A-FK-OR]", "");
     }
 
     private String value(String text, String fallback) {

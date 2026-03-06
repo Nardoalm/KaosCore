@@ -1,27 +1,27 @@
 tags:
   membro:
-    name: "§7Membro"
+    name: "Membro"
     prefix: "§7[Membro] "
     color: "§7"
     suffix: ""
     permission: ""
     position: 100
   vip:
-    name: "§6VIP"
+    name: "VIP"
     prefix: "§6[VIP] "
     color: "§6"
     suffix: ""
     permission: "kaoscore.tag.vip"
     position: 60
   mvp:
-    name: "§bMVP"
+    name: "MVP"
     prefix: "§b[MVP] "
     color: "§b"
     suffix: ""
     permission: "kaoscore.tag.mvp"
     position: 40
   admin:
-    name: "§4Admin"
+    name: "Admin"
     prefix: "§4[Admin] "
     color: "§4"
     suffix: ""

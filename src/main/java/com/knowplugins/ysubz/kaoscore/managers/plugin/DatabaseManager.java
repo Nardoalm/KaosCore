@@ -26,8 +26,8 @@ public class DatabaseManager {
         this.jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true&characterEncoding=utf8";
     }
 
-    public synchronized void connect() {
-        if (connected) return;
+    public synchronized boolean connect() {
+        if (connected) return true;
 
         try {
             try {
@@ -49,13 +49,20 @@ public class DatabaseManager {
             }
 
             if (connected) {
-                createTables();
+                connected = createTables();
+            }
+
+            if (connected) {
                 System.out.println("\u001B[32m[KaosCore] Conectado ao MySQL!\u001B[0m");
+                return true;
             }
         } catch (Exception e) {
+            connected = false;
             System.out.println("\u001B[31m[KaosCore] Erro ao conectar ao MySQL: " + e + "\u001B[0m");
             e.printStackTrace();
         }
+
+        return false;
     }
 
     public synchronized Connection getConnection() throws SQLException {
@@ -79,7 +86,7 @@ public class DatabaseManager {
         System.out.println("\u001B[33m[KaosCore] Desconectado do MySQL\u001B[0m");
     }
 
-    private void createTables() {
+    private boolean createTables() {
         String clansTable = "CREATE TABLE IF NOT EXISTS clans (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "name VARCHAR(32) NOT NULL UNIQUE," +
@@ -129,6 +136,12 @@ public class DatabaseManager {
                 "fetched_at TIMESTAMP NULL" +
                 ");";
 
+        String playerTags = "CREATE TABLE IF NOT EXISTS player_tags (" +
+                "uuid CHAR(36) NOT NULL PRIMARY KEY," +
+                "tag_id VARCHAR(64) NOT NULL," +
+                "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ");";
+
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(clansTable);
             stmt.executeUpdate(clanMembersTable);
@@ -136,11 +149,14 @@ public class DatabaseManager {
             stmt.executeUpdate(vanishes);
             stmt.executeUpdate(disguises);
             stmt.executeUpdate(skins);
+            stmt.executeUpdate(playerTags);
 
             Bukkit.getConsoleSender().sendMessage("§a§lSUCESSO -> §aTabelas criadas com sucesso!");
+            return true;
         } catch (SQLException e) {
             Bukkit.getConsoleSender().sendMessage("§c§lERRO -> §cErro ao criar as tabelas: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 }
