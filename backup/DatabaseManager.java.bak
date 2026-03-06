@@ -1,7 +1,7 @@
-package com.knowplugins.nardodev.knowpractice.managers.plugin;
+package com.knowplugins.nardodev.kaoscore.managers.plugin;
 
 
-import com.knowplugins.nardodev.knowpractice.KnowPractice;
+import com.knowplugins.ysubz.kaoscore.KaosCore;
 import org.bukkit.Bukkit;
 
 import java.sql.*;

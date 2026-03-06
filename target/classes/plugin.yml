@@ -1,8 +1,8 @@
-name: KnowPractice
+name: KaosCore
 version: 2.0
-main: com.knowplugins.nardodev.knowpractice.KnowPractice
+main: com.knowplugins.ysubz.kaoscore.KaosCore
 api-version: 1.8
-author: KnowPlugins
-description: Plugin de practice com sistema completo.
+author: ysubz
+description: Plugin de core com sistema completo.
 depend: [PlaceholderAPI, ProtocolLib]
 softdepend: [LeafTags]

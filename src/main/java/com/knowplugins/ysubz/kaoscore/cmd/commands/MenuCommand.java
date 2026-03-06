@@ -1,0 +1,21 @@
+package com.knowplugins.ysubz.kaoscore.cmd.commands;
+
+import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class MenuCommand extends Commands {
+    public MenuCommand() {
+        super("menu");
+    }
+
+    public void perform(CommandSender sender, String label, String[] args) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            MenuUtils.openMenu(player);
+        } else {
+            sender.sendMessage("§c§lERRO -> §cApenas jogadores podem usar este comando.");
+        }
+    }
+}
