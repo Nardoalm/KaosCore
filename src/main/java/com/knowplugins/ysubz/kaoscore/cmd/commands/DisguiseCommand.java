@@ -105,7 +105,7 @@ public class DisguiseCommand extends Commands {
                 profile.getProperties().removeAll("textures");
                 profile.getProperties().put("textures", new Property("textures", data.value, data.signature));
 
-                new SkinApplier(player).applySkinForSelf();
+                new SkinApplier(player).applySkinForOthers();
 
                 String message = "§a§lSUCESSO ➔ §aDisfarce aleatório aplicado: §e" + newNick;
                 message = PlaceholderManager.replacePlaceholders(message, player);
@@ -115,9 +115,9 @@ public class DisguiseCommand extends Commands {
                     String message = "§eBuscando skin para o nick §f" + newNick + "§e...";
                     message = PlaceholderManager.replacePlaceholders(message, player);
                     player.sendMessage(message);
-                    SkinCommand.setSkin(player, newNick);
+                    SkinCommand.setSkinForOthers(player, newNick);
                 } else {
-                    new SkinApplier(player).applySkinForSelf();
+                    new SkinApplier(player).applySkinForOthers();
 
                     String message = "§a§lSUCESSO ➔ §aVocê agora é: §e" + newNick;
                     message = PlaceholderManager.replacePlaceholders(message, player);

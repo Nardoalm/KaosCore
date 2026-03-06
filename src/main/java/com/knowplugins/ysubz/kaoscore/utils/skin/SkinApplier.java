@@ -2,7 +2,13 @@ package com.knowplugins.ysubz.kaoscore.utils.skin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutRespawn;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,8 +37,23 @@ public class SkinApplier {
         }.runTask(plugin);
     }
 
+    public void applySkinForOthers() {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                applyPacketsToOthers();
+            }
+        }.runTask(plugin);
+    }
+
     private void applyPacketsToSelf() {
         try {
+            sendSelfRefreshPackets();
+
             player.updateInventory();
             player.setExp(player.getExp());
             player.setWalkSpeed(player.getWalkSpeed());
@@ -48,6 +69,32 @@ public class SkinApplier {
             plugin.getLogger().warning("Erro ao aplicar skin para self: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void sendSelfRefreshPackets() {
+        if (!(player instanceof CraftPlayer) || !player.isOnline()) {
+            return;
+        }
+
+        if (player.isInsideVehicle()) {
+            player.leaveVehicle();
+        }
+
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        EntityPlayer entityPlayer = craftPlayer.getHandle();
+        WorldServer worldServer = entityPlayer.world;
+
+        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
+        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
+        entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
+                worldServer.worldProvider.getDimension(),
+                worldServer.getDifficulty(),
+                worldServer.getWorldData().getType(),
+                entityPlayer.playerInteractManager.getGameMode()
+        ));
+
+        Location currentLocation = player.getLocation().clone();
+        player.teleport(currentLocation);
     }
 
     private void applyPacketsToOthers() {
@@ -83,4 +130,3 @@ public class SkinApplier {
         });
     }
 }
-

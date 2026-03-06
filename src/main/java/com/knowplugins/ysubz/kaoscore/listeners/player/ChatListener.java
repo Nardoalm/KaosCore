@@ -19,18 +19,18 @@ public class ChatListener implements Listener {
 
         String level = PlaceholderAPI.setPlaceholders(
                 p,
-                "%kaospractice_level%"
+                "%kaos_level%"
         );
 
         String tag = PlaceholderAPI.setPlaceholders(
                 p,
-                "%leaftags_tag_prefix%"
+                "%kaoscore_tag_prefix%"
         );
 
         String format = level + tag + p.getName() + " §8» §7" + msg;
 
         if(event.getPlayer().hasPermission("nardocore.member.vip")) {
-            format = tag + p.getName() + " §8» §f" + msg;
+            format = level + tag + p.getName() + " §8» §f" + msg;
         }
         for (Player online : Bukkit.getOnlinePlayers()) {
             online.sendMessage(format);

@@ -6,6 +6,10 @@ import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.clan.ClanInvite;
 import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -478,64 +482,99 @@ public class ClanCommand extends Commands implements TabCompleter {
         }
 
         if (args.length < 2) {
-            p.sendMessage("§6§m+-------------------§6[ §eCores Disponíveis §6]§m-------------------+");
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aSuas cortag:"));
 
-            List<String> colors = Managers.getClanManager().getTagColors();
-            StringBuilder line = new StringBuilder();
+            List<TagColorOption> colors = getSortedTagColors();
+            TextComponent line = new TextComponent("");
 
             for (int i = 0; i < colors.size(); i++) {
-                String color = colors.get(i);
-                String[] split = color.split("(?<=&[0-9a-f])");
-                if (split.length < 2) {
+                TagColorOption option = colors.get(i);
+                if (option == null) {
                     continue;
                 }
-                String colorCode = split[0];
-                String colorName = split[1];
 
-                line.append(colorCode).append(colorName);
+                TextComponent colorComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', option.colorCode + option.name));
+                colorComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan cortag " + option.name));
+                colorComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para usar a cor " + option.name).create()));
+                line.addExtra(colorComponent);
 
                 if (i < colors.size() - 1) {
-                    line.append("§7, ");
+                    line.addExtra(new TextComponent(ChatColor.translateAlternateColorCodes('&', "&f, ")));
                 }
 
                 if ((i + 1) % 4 == 0) {
-                    p.sendMessage(ChatColor.translateAlternateColorCodes('&', line.toString()));
-                    line = new StringBuilder();
+                    p.spigot().sendMessage(line);
+                    line = new TextComponent("");
                 }
             }
 
-            if (line.length() > 0) {
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', line.toString()));
+            if (line.getExtra() != null && !line.getExtra().isEmpty()) {
+                p.spigot().sendMessage(line);
             }
 
-            p.sendMessage("§6§m------------------------------------------------+");
-            p.sendMessage("§eUse: §f/clan cortag <cor>");
             return true;
         }
 
         String colorName = args[1];
-        String selectedColor = null;
+        TagColorOption selected = null;
 
-        for (String color : Managers.getClanManager().getTagColors()) {
-            if (color.toLowerCase().contains(colorName.toLowerCase())) {
-                String[] split = color.split("(?<=&[0-9a-f])");
-                if (split.length < 2) {
-                    continue;
-                }
-                selectedColor = split[0];
-                colorName = split[1];
+        for (TagColorOption option : getSortedTagColors()) {
+            if (option == null) {
+                continue;
+            }
+
+            if (ChatColor.stripColor(option.name).toLowerCase(Locale.ROOT).contains(colorName.toLowerCase(Locale.ROOT))) {
+                selected = option;
                 break;
             }
         }
 
-        if (selectedColor == null) {
+        if (selected == null) {
             p.sendMessage("§cCor não encontrada!");
             return true;
         }
 
-        Managers.getClanManager().setTagColor(clan, selectedColor);
-        p.sendMessage("§aCor da tag alterada para: " + selectedColor + colorName);
+        Managers.getClanManager().setTagColor(clan, selected.colorCode);
+        p.sendMessage("§aCor da tag alterada para: " + selected.colorCode + selected.name);
         return true;
+    }
+
+    private List<TagColorOption> getSortedTagColors() {
+        List<TagColorOption> colors = new ArrayList<>();
+
+        for (String raw : Managers.getClanManager().getTagColors()) {
+            TagColorOption option = parseTagColor(raw);
+            if (option != null) {
+                colors.add(option);
+            }
+        }
+
+        colors.sort(Comparator.comparing(option -> ChatColor.stripColor(option.name).toLowerCase(Locale.ROOT)));
+        return colors;
+    }
+
+    private TagColorOption parseTagColor(String raw) {
+        if (raw == null || raw.length() < 3 || raw.charAt(0) != '&') {
+            return null;
+        }
+
+        String colorCode = raw.substring(0, 2);
+        String name = raw.substring(2).trim();
+        if (name.isEmpty()) {
+            return null;
+        }
+
+        return new TagColorOption(colorCode, name);
+    }
+
+    private static class TagColorOption {
+        private final String colorCode;
+        private final String name;
+
+        private TagColorOption(String colorCode, String name) {
+            this.colorCode = colorCode == null ? "" : colorCode;
+            this.name = name == null ? "" : name;
+        }
     }
 
     private boolean cmdEditTag(Player p, String[] args) {

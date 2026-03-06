@@ -4,20 +4,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
 
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -66,6 +64,14 @@ public class SkinCommand extends Commands {
     }
 
     public static void setSkin(Player player, String targetSkin) {
+        setSkin(player, targetSkin, true);
+    }
+
+    public static void setSkinForOthers(Player player, String targetSkin) {
+        setSkin(player, targetSkin, false);
+    }
+
+    private static void setSkin(Player player, String targetSkin, boolean applyForSelf) {
         try {
             GameProfile profile = ((CraftPlayer) player).getProfile();
 
@@ -98,9 +104,16 @@ public class SkinCommand extends Commands {
                                 repo.saveAsync(player.getUniqueId(), targetSkin, value, signature);
                             }
 
-                            new SkinApplier(player).applySkinForSelf();
+                            SkinApplier applier = new SkinApplier(player);
+                            if (applyForSelf) {
+                                applier.applySkinForSelf();
+                            } else {
+                                applier.applySkinForOthers();
+                            }
 
-                            String message = "§a§lSUCESSO ➔ §aSua skin foi alterada para: " + targetSkin;
+                            String message = applyForSelf
+                                    ? "§a§lSUCESSO ➔ §aSua skin foi alterada para: " + targetSkin
+                                    : "§a§lSUCESSO ➔ §aSkin do disfarce aplicada para os outros jogadores: " + targetSkin;
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);

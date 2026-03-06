@@ -195,6 +195,13 @@ public class ClanManager {
         return clans.get(clanName.toLowerCase());
     }
 
+    public Clan getClan(Player player) {
+        if (player == null) {
+            return null;
+        }
+        return getPlayerClan(player.getUniqueId());
+    }
+
     public boolean isInClan(UUID playerId) {
         return playerClans.containsKey(playerId);
     }

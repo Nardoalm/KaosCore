@@ -7,7 +7,7 @@
 
     <groupId>me.ysubz</groupId>
     <artifactId>KaosCore</artifactId>
-    <version>3.4</version>
+    <version>4.5</version>
     <packaging>jar</packaging>
 
     <name>KaosCore</name>
