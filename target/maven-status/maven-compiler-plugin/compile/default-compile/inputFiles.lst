@@ -4,6 +4,7 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\SetSpawnCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\clan\Clan.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\GamemodeCommand.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\TagManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\GameModeManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\Listeners.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\DisguiseCommand.java
@@ -16,6 +17,9 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\Managers.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\SetNpcCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\InventoryProtectListener.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\tag\Tag.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\TagCommand.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\placeholder\KaosCoreExpansion.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\entity\EntityListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\ProtectionListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\Commands.java

@@ -24,10 +24,7 @@ public class SkinApplier {
     }
 
     public void applySkinForSelf() {
-        if (player == null || !player.isOnline()) {
-            return;
-        }
-
+        if (player == null || !player.isOnline()) return;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -38,10 +35,7 @@ public class SkinApplier {
     }
 
     public void applySkinForOthers() {
-        if (player == null || !player.isOnline()) {
-            return;
-        }
-
+        if (player == null || !player.isOnline()) return;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -53,41 +47,31 @@ public class SkinApplier {
     private void applyPacketsToSelf() {
         try {
             sendSelfRefreshPackets();
-
             player.updateInventory();
             player.setExp(player.getExp());
             player.setWalkSpeed(player.getWalkSpeed());
-
             player.getInventory().setHeldItemSlot(player.getInventory().getHeldItemSlot());
-
             try {
                 player.getClass().getDeclaredMethod("updateScaledHealth").invoke(player);
-            } catch (Exception ignored) {
-            }
-
+            } catch (Exception ignored) {}
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao aplicar skin para self: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void sendSelfRefreshPackets() {
-        if (!(player instanceof CraftPlayer) || !player.isOnline()) {
-            return;
-        }
-
-        if (player.isInsideVehicle()) {
-            player.leaveVehicle();
-        }
+        if (!(player instanceof CraftPlayer) || !player.isOnline()) return;
+        if (player.isInsideVehicle()) player.leaveVehicle();
 
         CraftPlayer craftPlayer = (CraftPlayer) player;
         EntityPlayer entityPlayer = craftPlayer.getHandle();
-        WorldServer worldServer = entityPlayer.world;
+        WorldServer worldServer = (WorldServer) entityPlayer.world;
 
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
+
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
-                worldServer.worldProvider.getDimension(),
+                worldServer.dimension,
                 worldServer.getDifficulty(),
                 worldServer.getWorldData().getType(),
                 entityPlayer.playerInteractManager.getGameMode()
@@ -98,35 +82,15 @@ public class SkinApplier {
     }
 
     private void applyPacketsToOthers() {
-        try {
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.equals(player)) {
-                    continue;
-                }
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            if (onlinePlayer.equals(player)) continue;
 
-                if (!onlinePlayer.canSee(player)) {
-                    continue;
-                }
+            onlinePlayer.hidePlayer(player);
+            onlinePlayer.showPlayer(player);
 
+            if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("nardocore.staff.vanish")) {
                 onlinePlayer.hidePlayer(player);
-                onlinePlayer.showPlayer(player);
-
-                if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("nardocore.staff.vanish")) {
-                    onlinePlayer.hidePlayer(player);
-                }
             }
-        } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao sincronizar skin com outros players: " + e.getMessage());
-            e.printStackTrace();
         }
-    }
-
-    public void applyAsync(Runnable callback) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            applySkinForSelf();
-            if (callback != null) {
-                Bukkit.getScheduler().runTask(plugin, callback);
-            }
-        });
     }
 }

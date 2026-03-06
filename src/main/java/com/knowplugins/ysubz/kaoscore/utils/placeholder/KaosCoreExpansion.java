@@ -31,8 +31,8 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        if (plugin == null || plugin.getDescription() == null || plugin.getDescription().getVersion() == null) {
-            return "";
+        if (plugin == null || plugin.getDescription() == null) {
+            return "1.0";
         }
         return plugin.getDescription().getVersion();
     }
@@ -73,10 +73,7 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         if (params.equalsIgnoreCase("tag_position")) {
-            if (tag == null) {
-                return "";
-            }
-            return String.valueOf(tag.getPosition());
+            return tag == null ? "" : String.valueOf(tag.getPosition());
         }
 
         if (params.equalsIgnoreCase("tag_id")) {
@@ -84,22 +81,16 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         if (params.equalsIgnoreCase("tag_display")) {
-            if (tag == null) {
-                return "";
-            }
+            if (tag == null) return "";
             return safe(tag.getPrefix()) + safe(tag.getName()) + safe(tag.getSuffix());
         }
 
         if (params.equalsIgnoreCase("clan_tag")) {
-            if (clan == null) {
-                return "";
-            }
+            if (clan == null) return "";
             String color = safe(clan.getTagColor());
-            String tag = safe(clan.getTag());
-            if (tag.isEmpty()) {
-                return "";
-            }
-            return color + "[" + tag + "]";
+            String cTag = safe(clan.getTag());
+            if (cTag.isEmpty()) return "";
+            return color + "[" + cTag + "]";
         }
 
         if (params.equalsIgnoreCase("clan_name")) {
@@ -107,71 +98,42 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         if (params.equalsIgnoreCase("clan_member_count")) {
-            if (clan == null || clan.getMembers() == null) {
-                return "";
-            }
+            if (clan == null || clan.getMembers() == null) return "0";
             return String.valueOf(clan.getMembers().size());
         }
 
         if (params.equalsIgnoreCase("clan_online_count")) {
-            if (clan == null || clan.getMembers() == null) {
-                return "";
-            }
+            if (clan == null || clan.getMembers() == null) return "0";
             int onlineCount = 0;
             for (UUID memberId : clan.getMembers().keySet()) {
-                if (memberId == null) {
-                    continue;
-                }
                 Player online = Bukkit.getPlayer(memberId);
-                if (online != null && online.isOnline()) {
-                    onlineCount++;
-                }
+                if (online != null && online.isOnline()) onlineCount++;
             }
             return String.valueOf(onlineCount);
         }
 
         if (params.equalsIgnoreCase("clan_role")) {
-            if (clan == null) {
-                return "";
-            }
+            if (clan == null) return "";
             ClanRole role = clan.getRole(player.getUniqueId());
             return role == null ? "" : role.name();
         }
 
         if (params.equalsIgnoreCase("clan_leader_name")) {
-            if (clan == null || clan.getLeader() == null) {
-                return "";
-            }
+            if (clan == null || clan.getLeader() == null) return "";
             OfflinePlayer leader = Bukkit.getOfflinePlayer(clan.getLeader());
             return leader == null ? "" : safe(leader.getName());
         }
 
         if (params.equalsIgnoreCase("clan_wins")) {
-            if (clan == null) {
-                return "";
-            }
-            return String.valueOf(clan.getWins());
+            return clan == null ? "0" : String.valueOf(clan.getWins());
         }
 
         if (params.equalsIgnoreCase("clan_losses")) {
-            if (clan == null) {
-                return "";
-            }
-            return String.valueOf(clan.getLosses());
+            return clan == null ? "0" : String.valueOf(clan.getLosses());
         }
 
         if (params.equalsIgnoreCase("clan_elo")) {
-            if (clan == null) {
-                return "";
-            }
-            return String.valueOf(clan.getElo());
-        }
-
-        if (params.equalsIgnoreCase("clan_creation")) {
-            if (clan == null) {
-                return "";
-            }
-            return String.valueOf(clan.getCreationDate());
+            return clan == null ? "0" : String.valueOf(clan.getElo());
         }
 
         return "";
@@ -182,9 +144,7 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
     }
 
     private String clean(String value) {
-        if (value == null) {
-            return "";
-        }
+        if (value == null) return "";
         return value.replaceAll("(?i)&[0-9A-FK-OR]", "").replaceAll("(?i)§[0-9A-FK-OR]", "");
     }
 }

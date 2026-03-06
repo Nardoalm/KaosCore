@@ -1,8 +1,11 @@
 name: KaosCore
-version: 2.0
+version: 4.5
 main: com.knowplugins.ysubz.kaoscore.KaosCore
 api-version: 1.8
 author: ysubz
 description: Plugin de core com sistema completo.
 depend: [PlaceholderAPI, ProtocolLib]
-softdepend: [LeafTags]
+commands:
+  tag:
+    description: Sistema de tags do KaosCore
+    usage: /tag [nomeDaTag]

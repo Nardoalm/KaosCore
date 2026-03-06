@@ -19,7 +19,7 @@ public class ChatListener implements Listener {
 
         String level = PlaceholderAPI.setPlaceholders(
                 p,
-                "%kaos_level%"
+                "%kaos_level% "
         );
 
         String tag = PlaceholderAPI.setPlaceholders(
