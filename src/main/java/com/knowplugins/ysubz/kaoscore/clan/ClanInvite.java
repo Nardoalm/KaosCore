@@ -22,6 +22,6 @@ public class ClanInvite {
     public long getTimestamp() { return timestamp; }
 
     public boolean isExpired() {
-        return System.currentTimeMillis() - timestamp > 60000; // 1 minute
+        return System.currentTimeMillis() - timestamp > 60000;
     }
 }
