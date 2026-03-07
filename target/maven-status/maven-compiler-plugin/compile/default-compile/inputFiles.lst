@@ -1,4 +1,5 @@
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\world\SoundListener.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\menu\MenuUtils.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\placeholder\PlaceholderManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\SetSpawnCommand.java
@@ -13,8 +14,10 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\FlyCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\PlayerJoinListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\KaosCore.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerTagRepository.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\PvpCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\Managers.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\api\KaosCoreAPIImpl.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\SetNpcCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\InventoryProtectListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\tag\Tag.java
@@ -36,6 +39,7 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\ClearChatCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\entity\MenuClickListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\plugin\DisguiseRepository.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\api\KaosCoreAPI.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\world\WorldProtectionListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\DisguiseManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\world\WeatherListener.java

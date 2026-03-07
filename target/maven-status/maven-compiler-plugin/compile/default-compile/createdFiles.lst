@@ -21,6 +21,8 @@ com\knowplugins\ysubz\kaoscore\listeners\player\InteractListener.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\DisguiseRepository.class
 com\knowplugins\ysubz\kaoscore\utils\menu\MenuUtils.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\ClanCommand$TagColorOption.class
+com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService$RemoteSkinData.class
+com\knowplugins\ysubz\kaoscore\api\KaosCoreAPI.class
 com\knowplugins\ysubz\kaoscore\clan\ClanInvite.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\DiscordCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\SetSpawnCommand.class
@@ -31,9 +33,11 @@ com\knowplugins\ysubz\kaoscore\listeners\player\ChatListener.class
 com\knowplugins\ysubz\kaoscore\utils\title\TitleUtils.class
 com\knowplugins\ysubz\kaoscore\utils\disguise\SkinMatrix.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier$1.class
+com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerTagRepository.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\VanishRepository.class
 com\knowplugins\ysubz\kaoscore\managers\player\VanishManager.class
 com\knowplugins\ysubz\kaoscore\managers\world\NPCManager.class
+com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService$1.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\MenuCommand.class
 com\knowplugins\ysubz\kaoscore\managers\player\CooldownManager.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\TeleportCommand.class
@@ -62,7 +66,9 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\FlyCommand.class
 com\knowplugins\ysubz\kaoscore\listeners\player\PlayerJoinListener.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\DatabaseManager.class
 com\knowplugins\ysubz\kaoscore\listeners\world\SoundListener.class
+com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService.class
 com\knowplugins\ysubz\kaoscore\cmd\Commands.class
+com\knowplugins\ysubz\kaoscore\api\KaosCoreAPIImpl.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier$2.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\KaosCore.class

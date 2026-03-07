@@ -15,7 +15,7 @@ public class WelcomeMessage {
 
                 String playerTag = PlaceholderAPI.setPlaceholders(
                         player,
-                        "%leaftags_tag_prefix%"
+                        "%kaoscore_tag_prefix%"
                 );
 
                 player.getServer().broadcastMessage(
