@@ -41,17 +41,24 @@ public class PlayerJoinListener implements Listener {
       Player player = event.getPlayer();
       KaosCore plugin = JavaPlugin.getPlugin(KaosCore.class);
 
-      player.setGameMode(GameMode.SURVIVAL);
-      player.setLevel(2026);
+      // player.setGameMode(GameMode.SURVIVAL);
+      // player.setLevel(2026);
       event.setJoinMessage(null);
 
-      String header = "\n §a§lFUSION \n";
-      String footer = "\n §eWebsite: §bfusionmc.com.br \n §eDiscord: §bdc.fusionmc.com.br \n";
-      TabListManager.setTabList(player, header, footer);
+      // String header = "\n §a§lFUSION \n";
+      // String footer = "\n §eWebsite: §bfusionmc.com.br \n §eDiscord: §bdc.fusionmc.com.br \n";
+      // TabListManager.setTabList(player, header, footer);
 
       if (plugin.getTagManager() != null) {
          plugin.getTagManager().getTag(player);
       }
+
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && plugin.getTagManager() != null) {
+            plugin.getTagManager().refreshViewer(player);
+            plugin.getTagManager().refreshTag(player);
+         }
+      }, 1L);
 
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
@@ -130,11 +137,7 @@ public class PlayerJoinListener implements Listener {
          });
       }
 
-      if (player.hasPermission("nardocore.staff.vanish")) {
-         VanishManager.addVanish(player);
-      } else {
-         WelcomeMessage.sendWelcomeMessage(player);
-      }
+      WelcomeMessage.sendWelcomeMessage(player);
    }
 
    @EventHandler
@@ -198,6 +201,11 @@ public class PlayerJoinListener implements Listener {
 
          if (disguiseManager != null) {
             disguiseManager.addInDisguise(player, nick);
+         }
+
+         KaosCore plugin = KaosCore.getInstance();
+         if (plugin != null && plugin.getTagManager() != null) {
+            plugin.getTagManager().refreshTag(player);
          }
 
          Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> {

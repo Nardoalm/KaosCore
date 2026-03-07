@@ -9,6 +9,7 @@ import com.knowplugins.ysubz.kaoscore.managers.ClanManager;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.TagTeamManager;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.KaosCoreExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
@@ -18,6 +19,7 @@ public class KaosCore extends JavaPlugin {
    private static KaosCore instance;
    private Managers managers;
    private TagManager tagManager;
+   private TagTeamManager tagTeamManager;
    private KaosCoreAPI api;
 
    public static KaosCore getInstance() {
@@ -30,6 +32,10 @@ public class KaosCore extends JavaPlugin {
 
    public ClanManager getClanManager() {
       return Managers.getClanManager();
+   }
+
+   public TagTeamManager getTagTeamManager() {
+      return tagTeamManager;
    }
 
    public KaosCoreAPI getAPI() {
@@ -59,6 +65,8 @@ public class KaosCore extends JavaPlugin {
 
       managers.loadAll();
       tagManager = new TagManager(this);
+      tagTeamManager = new TagTeamManager(this, tagManager);
+      tagTeamManager.start();
       api = new KaosCoreAPIImpl(this);
       Bukkit.getServicesManager().register(KaosCoreAPI.class, api, this, ServicePriority.Normal);
 
@@ -78,6 +86,9 @@ public class KaosCore extends JavaPlugin {
    @Override
    public void onDisable() {
       try {
+         if (tagTeamManager != null) {
+            tagTeamManager.stop();
+         }
          Bukkit.getServicesManager().unregisterAll(this);
          DatabaseManager db = Managers.getDatabaseManager();
          if (db != null) db.disconnect();

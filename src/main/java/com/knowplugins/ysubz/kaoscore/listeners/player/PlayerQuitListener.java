@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.listeners.player;
 
+import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import org.bukkit.entity.Player;
@@ -12,6 +13,11 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+
+        KaosCore plugin = KaosCore.getInstance();
+        if (plugin != null && plugin.getTagManager() != null) {
+            plugin.getTagManager().removeTagEntries(player);
+        }
 
         SkinCommand.ORIGINAL_SKINS.remove(player);
 

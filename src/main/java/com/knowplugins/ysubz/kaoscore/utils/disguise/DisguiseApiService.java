@@ -61,19 +61,24 @@ public final class DisguiseApiService {
     }
 
     public static boolean applyDisguise(Player player, String nick) {
+        String previousEntry = player == null ? null : player.getName();
         if (!applyNick(player, nick)) {
             return false;
         }
 
         deleteStoredSkin(player);
+        refreshTag(player, previousEntry);
         new SkinApplier(player).applySkinForOthers();
         return true;
     }
 
     public static CompletableFuture<Boolean> applyDisguise(Player player, String nick, String skinName) {
+        String previousEntry = player == null ? null : player.getName();
         if (!applyNick(player, nick)) {
             return CompletableFuture.completedFuture(false);
         }
+
+        refreshTag(player, previousEntry);
 
         if (skinName == null || skinName.trim().isEmpty()) {
             deleteStoredSkin(player);
@@ -112,10 +117,13 @@ public final class DisguiseApiService {
             return false;
         }
 
+        String previousEntry = player == null ? null : player.getName();
         String nick = disguiseManager.getRandomNick();
         if (!applyNick(player, nick)) {
             return false;
         }
+
+        refreshTag(player, previousEntry);
 
         try {
             SkinMatrix.SkinData skinData = SkinMatrix.getRandomSkin();
@@ -136,6 +144,8 @@ public final class DisguiseApiService {
             return CompletableFuture.completedFuture(false);
         }
 
+        String previousEntry = player.getName();
+
         try {
             DisguiseManager disguiseManager = Managers.getDisguiseManager();
             String originalName = disguiseManager == null ? null : disguiseManager.popOriginalName(player);
@@ -154,6 +164,7 @@ public final class DisguiseApiService {
 
             saveDisguise(player, false, null);
             deleteStoredSkin(player);
+            refreshTag(player, previousEntry);
 
             Property originalProperty = SkinCommand.ORIGINAL_SKINS.remove(player.getUniqueId());
             if (originalProperty != null) {
@@ -308,6 +319,20 @@ public final class DisguiseApiService {
         }
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
         return offlinePlayer == null ? null : offlinePlayer.getName();
+    }
+
+    private static void refreshTag(Player player, String... staleEntries) {
+        KaosCore plugin = getPlugin();
+        if (plugin == null || plugin.getTagManager() == null || player == null) {
+            return;
+        }
+
+        if (staleEntries == null || staleEntries.length == 0) {
+            plugin.getTagManager().refreshTag(player);
+            return;
+        }
+
+        plugin.getTagManager().refreshTag(player, staleEntries);
     }
 
     private static KaosCore getPlugin() {

@@ -44,6 +44,7 @@ public class DisguiseCommand extends Commands {
 
         if (args.length == 0 && DisguiseManager.isDisguised(player)) {
             try {
+                String previousEntry = player.getName();
                 String originalName = disguiseManager.popOriginalName(player);
                 if (originalName == null) originalName = player.getName();
 
@@ -55,6 +56,9 @@ public class DisguiseCommand extends Commands {
                 player.setPlayerListName(originalName);
 
                 disguiseManager.removeDisguise(player);
+                if (KaosCore.getInstance() != null && KaosCore.getInstance().getTagManager() != null) {
+                    KaosCore.getInstance().getTagManager().refreshTag(player, previousEntry);
+                }
                 new SkinApplier(player).applySkinForSelf();
 
                 String message = "§a§lSUCESSO ➔ §aSeu disfarce foi removido.";
@@ -93,6 +97,7 @@ public class DisguiseCommand extends Commands {
         }
 
         try {
+            String previousEntry = player.getName();
             disguiseManager.recordOriginalName(player);
             GameProfile profile = ((CraftPlayer) player).getProfile();
 
@@ -100,6 +105,9 @@ public class DisguiseCommand extends Commands {
 
             player.setDisplayName(newNick);
             player.setPlayerListName(newNick);
+            if (KaosCore.getInstance() != null && KaosCore.getInstance().getTagManager() != null) {
+                KaosCore.getInstance().getTagManager().refreshTag(player, previousEntry);
+            }
 
             if (isRandom) {
                 SkinMatrix.SkinData data = SkinMatrix.getRandomSkin();

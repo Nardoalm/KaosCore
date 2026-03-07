@@ -2,9 +2,7 @@ package com.knowplugins.ysubz.kaoscore.managers;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerTagRepository;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -199,29 +197,49 @@ public class TagManager {
     }
 
     public void refreshTag(Player player) {
-        if (player == null || !player.isOnline()) {
+        refreshTag(player, new String[0]);
+    }
+
+    public void refreshTag(Player player, String... staleEntries) {
+        if (player == null || !player.isOnline() || plugin == null || plugin.getTagTeamManager() == null) {
             return;
         }
 
-        player.setDisplayName(player.getDisplayName());
-        player.setPlayerListName(player.getPlayerListName());
-
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer == null || onlinePlayer.equals(player)) {
-                continue;
-            }
-
-            if (!onlinePlayer.canSee(player)) {
-                continue;
-            }
-
-            onlinePlayer.hidePlayer(player);
-            onlinePlayer.showPlayer(player);
-
-            if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("nardocore.staff.vanish")) {
-                onlinePlayer.hidePlayer(player);
-            }
+        if (staleEntries == null || staleEntries.length == 0) {
+            plugin.getTagTeamManager().refreshPlayer(player);
+            return;
         }
+
+        plugin.getTagTeamManager().refreshPlayer(player, staleEntries);
+    }
+
+    public void refreshViewer(Player player) {
+        if (player == null || !player.isOnline() || plugin == null || plugin.getTagTeamManager() == null) {
+            return;
+        }
+
+        plugin.getTagTeamManager().refreshViewer(player);
+    }
+
+    public void refreshAll() {
+        if (plugin == null || plugin.getTagTeamManager() == null) {
+            return;
+        }
+
+        plugin.getTagTeamManager().refreshAll();
+    }
+
+    public void removeTagEntries(Player player, String... staleEntries) {
+        if (player == null || plugin == null || plugin.getTagTeamManager() == null) {
+            return;
+        }
+
+        if (staleEntries == null || staleEntries.length == 0) {
+            plugin.getTagTeamManager().removePlayer(player);
+            return;
+        }
+
+        plugin.getTagTeamManager().removePlayer(player, staleEntries);
     }
 
     private void saveSelectedTag(UUID playerId, String tagId) {
