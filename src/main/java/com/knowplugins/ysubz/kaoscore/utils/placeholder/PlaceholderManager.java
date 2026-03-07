@@ -2,7 +2,6 @@ package com.knowplugins.ysubz.kaoscore.utils.placeholder;
 
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import org.bukkit.entity.Player;
 
 public class PlaceholderManager {
@@ -13,10 +12,7 @@ public class PlaceholderManager {
         }
 
         String playerNick = getPlayerNick(player);
-        boolean isVanished = VanishManager.isVanished(player);
-
         message = message.replace("%kaoscore_player-nick%", playerNick);
-        message = message.replace("%kaoscore_player-isvanish%", String.valueOf(isVanished));
 
         return message;
     }
@@ -55,4 +51,3 @@ public class PlaceholderManager {
         return player.getName();
     }
 }
-

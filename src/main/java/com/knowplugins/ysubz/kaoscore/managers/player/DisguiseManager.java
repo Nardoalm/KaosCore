@@ -38,6 +38,16 @@ public class DisguiseManager {
         return ORIGINAL_NAMES.remove(player.getUniqueId());
     }
 
+    public String getOriginalName(Player player) {
+        if (player == null) return null;
+        return ORIGINAL_NAMES.get(player.getUniqueId());
+    }
+
+    public String getOriginalName(UUID uuid) {
+        if (uuid == null) return null;
+        return ORIGINAL_NAMES.get(uuid);
+    }
+
     public void addInDisguise(Player player) {
         if (player == null) return;
         DISGUISED.add(player.getUniqueId());

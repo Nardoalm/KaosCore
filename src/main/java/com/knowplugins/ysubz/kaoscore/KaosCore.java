@@ -1,5 +1,7 @@
 package com.knowplugins.ysubz.kaoscore;
 
+import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPI;
+import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPIImpl;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.TagCommand;
 import com.knowplugins.ysubz.kaoscore.listeners.Listeners;
@@ -9,12 +11,14 @@ import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.KaosCoreExpansion;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class KaosCore extends JavaPlugin {
    private static KaosCore instance;
    private Managers managers;
    private TagManager tagManager;
+   private KaosCoreAPI api;
 
    public static KaosCore getInstance() {
       return instance;
@@ -26,6 +30,10 @@ public class KaosCore extends JavaPlugin {
 
    public ClanManager getClanManager() {
       return Managers.getClanManager();
+   }
+
+   public KaosCoreAPI getAPI() {
+      return api;
    }
 
    @Override
@@ -51,6 +59,8 @@ public class KaosCore extends JavaPlugin {
 
       managers.loadAll();
       tagManager = new TagManager(this);
+      api = new KaosCoreAPIImpl(this);
+      Bukkit.getServicesManager().register(KaosCoreAPI.class, api, this, ServicePriority.Normal);
 
       if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
          new KaosCoreExpansion(this).register();
@@ -68,6 +78,7 @@ public class KaosCore extends JavaPlugin {
    @Override
    public void onDisable() {
       try {
+         Bukkit.getServicesManager().unregisterAll(this);
          DatabaseManager db = Managers.getDatabaseManager();
          if (db != null) db.disconnect();
       } catch (Exception ignored) {
