@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
@@ -13,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,16 +23,21 @@ import java.util.concurrent.ConcurrentMap;
 public class TagTeamManager {
 
     private static final String TEAM_PREFIX = "kc";
+    private static final int SPECTATOR_PRIORITY = 9500;
 
     private final KaosCore plugin;
     private final TagManager tagManager;
+    private final KaosPracticeBridge practiceBridge;
     private final ConcurrentMap<UUID, Scoreboard> trackedBoards;
+    private final Set<String> practiceHiddenPairs;
     private BukkitTask syncTask;
 
     public TagTeamManager(KaosCore plugin, TagManager tagManager) {
         this.plugin = plugin;
         this.tagManager = tagManager;
+        this.practiceBridge = new KaosPracticeBridge();
         this.trackedBoards = new ConcurrentHashMap<>();
+        this.practiceHiddenPairs = ConcurrentHashMap.newKeySet();
     }
 
     public void start() {
@@ -39,7 +46,7 @@ public class TagTeamManager {
         }
 
         stop();
-        syncTask = Bukkit.getScheduler().runTaskTimer(plugin, this::syncChangedBoards, 1L, 20L);
+        syncTask = Bukkit.getScheduler().runTaskTimer(plugin, this::syncAll, 1L, 10L);
     }
 
     public void stop() {
@@ -48,6 +55,7 @@ public class TagTeamManager {
             syncTask = null;
         }
         trackedBoards.clear();
+        practiceHiddenPairs.clear();
     }
 
     public void refreshAll() {
@@ -60,9 +68,7 @@ public class TagTeamManager {
             return;
         }
 
-        for (Player viewer : Bukkit.getOnlinePlayers()) {
-            refreshViewer(viewer);
-        }
+        syncAll();
     }
 
     public void refreshViewer(Player viewer) {
@@ -80,11 +86,7 @@ public class TagTeamManager {
             return;
         }
 
-        trackedBoards.put(viewer.getUniqueId(), scoreboard);
-
-        for (Player target : Bukkit.getOnlinePlayers()) {
-            applyTag(scoreboard, target, collectEntries(target));
-        }
+        refreshViewer(viewer, scoreboard, collectPracticeStates());
     }
 
     public void refreshPlayer(Player player, String... staleEntries) {
@@ -98,11 +100,16 @@ public class TagTeamManager {
         }
 
         Set<String> entries = collectEntries(player, staleEntries);
+        KaosPracticeBridge.PracticeState playerState = practiceBridge.getState(player);
+
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             Scoreboard scoreboard = resolveScoreboard(viewer);
-            if (scoreboard != null) {
-                applyTag(scoreboard, player, entries);
+            if (scoreboard == null) {
+                continue;
             }
+
+            updateVisibility(viewer, player, practiceBridge.getState(viewer), playerState);
+            applyTag(scoreboard, player, entries, playerState);
         }
     }
 
@@ -122,35 +129,63 @@ public class TagTeamManager {
             if (scoreboard != null) {
                 removeEntries(scoreboard, entries);
             }
+            clearPracticeVisibility(viewer, player);
         }
+
+        String playerId = player.getUniqueId().toString();
+        practiceHiddenPairs.removeIf(pair -> pair.startsWith(playerId + ":") || pair.endsWith(":" + playerId));
     }
 
-    private void syncChangedBoards() {
+    private void syncAll() {
         Set<UUID> onlinePlayers = new HashSet<>();
+        Map<UUID, KaosPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
 
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             onlinePlayers.add(viewer.getUniqueId());
-
-            Scoreboard currentBoard = resolveScoreboard(viewer);
-            Scoreboard previousBoard = trackedBoards.put(viewer.getUniqueId(), currentBoard);
-
-            if (currentBoard != null && previousBoard != currentBoard) {
-                refreshViewer(viewer);
+            Scoreboard scoreboard = resolveScoreboard(viewer);
+            if (scoreboard != null) {
+                refreshViewer(viewer, scoreboard, practiceStates);
             }
         }
 
         trackedBoards.keySet().retainAll(onlinePlayers);
+        practiceHiddenPairs.removeIf(pair -> {
+            String[] split = pair.split(":");
+            if (split.length != 2) {
+                return true;
+            }
+            try {
+                return Bukkit.getPlayer(UUID.fromString(split[0])) == null || Bukkit.getPlayer(UUID.fromString(split[1])) == null;
+            } catch (IllegalArgumentException ignored) {
+                return true;
+            }
+        });
     }
 
-    private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries) {
+    private void refreshViewer(Player viewer, Scoreboard scoreboard, Map<UUID, KaosPracticeBridge.PracticeState> practiceStates) {
+        if (viewer == null || scoreboard == null) {
+            return;
+        }
+
+        trackedBoards.put(viewer.getUniqueId(), scoreboard);
+        KaosPracticeBridge.PracticeState viewerState = practiceStates.get(viewer.getUniqueId());
+
+        for (Player target : Bukkit.getOnlinePlayers()) {
+            KaosPracticeBridge.PracticeState targetState = practiceStates.get(target.getUniqueId());
+            updateVisibility(viewer, target, viewerState, targetState);
+            applyTag(scoreboard, target, collectEntries(target), targetState);
+        }
+    }
+
+    private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries, KaosPracticeBridge.PracticeState practiceState) {
         if (scoreboard == null || player == null) {
             return;
         }
 
         removeEntries(scoreboard, staleEntries);
 
-        Tag tag = tagManager == null ? null : tagManager.getTag(player);
-        if (tag == null) {
+        NametagStyle style = resolveStyle(player, practiceState);
+        if (style == null) {
             return;
         }
 
@@ -159,20 +194,17 @@ public class TagTeamManager {
             return;
         }
 
-        Team team = getOrCreateTeam(scoreboard, tag);
+        Team team = getOrCreateTeam(scoreboard, style);
         if (team == null) {
             return;
         }
 
-        String prefix = trim(format(tag.getPrefix()));
-        String suffix = trim(format(tag.getSuffix()));
-
-        if (!prefix.equals(team.getPrefix())) {
-            team.setPrefix(prefix);
+        if (!style.getPrefix().equals(team.getPrefix())) {
+            team.setPrefix(style.getPrefix());
         }
 
-        if (!suffix.equals(team.getSuffix())) {
-            team.setSuffix(suffix);
+        if (!style.getSuffix().equals(team.getSuffix())) {
+            team.setSuffix(style.getSuffix());
         }
 
         if (!team.getEntries().contains(currentEntry)) {
@@ -180,12 +212,12 @@ public class TagTeamManager {
         }
     }
 
-    private Team getOrCreateTeam(Scoreboard scoreboard, Tag tag) {
-        if (scoreboard == null || tag == null) {
+    private Team getOrCreateTeam(Scoreboard scoreboard, NametagStyle style) {
+        if (scoreboard == null || style == null) {
             return null;
         }
 
-        String teamName = buildTeamName(tag);
+        String teamName = buildTeamName(style);
         Team team = scoreboard.getTeam(teamName);
         if (team != null) {
             return team;
@@ -196,6 +228,31 @@ public class TagTeamManager {
         } catch (IllegalArgumentException ignored) {
             return scoreboard.getTeam(teamName);
         }
+    }
+
+    private NametagStyle resolveStyle(Player player, KaosPracticeBridge.PracticeState practiceState) {
+        if (player == null) {
+            return null;
+        }
+
+        if (practiceState != null && practiceState.isSpectating()) {
+            return new NametagStyle("practice_spectator", "§8", "", SPECTATOR_PRIORITY);
+        }
+
+        if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
+            String prefix = trim(safe(practiceState.getPrefix()) + safe(practiceState.getNameColor()));
+            String suffix = trim(safe(practiceState.getSuffix()));
+            int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
+            String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor());
+            return new NametagStyle(teamKey, prefix, suffix, priority);
+        }
+
+        Tag tag = tagManager == null ? null : tagManager.getTag(player);
+        if (tag == null) {
+            return null;
+        }
+
+        return new NametagStyle(tag.getId(), trim(format(tag.getPrefix())), trim(format(tag.getSuffix())), tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
@@ -238,6 +295,52 @@ public class TagTeamManager {
         return entries;
     }
 
+    private void updateVisibility(Player viewer, Player target, KaosPracticeBridge.PracticeState viewerState, KaosPracticeBridge.PracticeState targetState) {
+        if (viewer == null || target == null || viewer.equals(target)) {
+            return;
+        }
+
+        String key = pairKey(viewer, target);
+        boolean shouldHideForPractice = viewerState != null && viewerState.isInMatch() && targetState != null && targetState.isSpectating();
+
+        if (shouldHideForPractice) {
+            if (practiceHiddenPairs.add(key)) {
+                viewer.hidePlayer(target);
+            }
+            return;
+        }
+
+        clearPracticeVisibility(viewer, target);
+    }
+
+    private void clearPracticeVisibility(Player viewer, Player target) {
+        if (viewer == null || target == null || viewer.equals(target)) {
+            return;
+        }
+
+        String key = pairKey(viewer, target);
+        if (!practiceHiddenPairs.remove(key)) {
+            return;
+        }
+
+        viewer.showPlayer(target);
+        if (VanishManager.isVanished(target) && !viewer.hasPermission("nardocore.staff.vanish")) {
+            viewer.hidePlayer(target);
+        }
+    }
+
+    private String pairKey(Player viewer, Player target) {
+        return viewer.getUniqueId() + ":" + target.getUniqueId();
+    }
+
+    private Map<UUID, KaosPracticeBridge.PracticeState> collectPracticeStates() {
+        Map<UUID, KaosPracticeBridge.PracticeState> states = new ConcurrentHashMap<>();
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            states.put(online.getUniqueId(), practiceBridge.getState(online));
+        }
+        return states;
+    }
+
     private Scoreboard resolveScoreboard(Player viewer) {
         if (viewer == null || Bukkit.getScoreboardManager() == null) {
             return null;
@@ -251,8 +354,8 @@ public class TagTeamManager {
         return Bukkit.getScoreboardManager().getMainScoreboard();
     }
 
-    private String buildTeamName(Tag tag) {
-        int position = tag == null ? 9999 : tag.getPosition();
+    private String buildTeamName(NametagStyle style) {
+        int position = style == null ? 9999 : style.getPriority();
         if (position < 0) {
             position = 0;
         }
@@ -260,7 +363,7 @@ public class TagTeamManager {
             position = 9999;
         }
 
-        String id = tag == null ? "tag" : safe(tag.getId());
+        String id = style == null ? "tag" : safe(style.getKey());
         int hash = Math.abs(id.hashCode());
         String suffix = String.format("%06x", hash & 0xFFFFFF);
         return TEAM_PREFIX + String.format("%04d", position) + suffix;
@@ -280,5 +383,35 @@ public class TagTeamManager {
 
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private static final class NametagStyle {
+        private final String key;
+        private final String prefix;
+        private final String suffix;
+        private final int priority;
+
+        private NametagStyle(String key, String prefix, String suffix, int priority) {
+            this.key = key == null ? "" : key;
+            this.prefix = prefix == null ? "" : prefix;
+            this.suffix = suffix == null ? "" : suffix;
+            this.priority = priority;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
+
+        public String getSuffix() {
+            return suffix;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
     }
 }
