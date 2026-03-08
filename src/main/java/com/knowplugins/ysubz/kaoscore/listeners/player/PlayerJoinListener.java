@@ -4,12 +4,14 @@ import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.TabListManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.utils.title.TitleUtils;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.VanishRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -44,9 +46,9 @@ public class PlayerJoinListener implements Listener {
       // player.setLevel(2026);
       event.setJoinMessage(null);
 
-      // String header = "\n §a§lFUSION \n";
-      // String footer = "\n §eWebsite: §bfusionmc.com.br \n §eDiscord: §bdc.fusionmc.com.br \n";
-      // TabListManager.setTabList(player, header, footer);
+      String header = "\n §6§lKAOS \n";
+      String footer = "\n §eWebsite: §bkaosmc.com \n §eDiscord: §bdc.kaosmc.com \n";
+      TabListManager.setTabList(player, header, footer);
 
       if (plugin.getTagManager() != null) {
          plugin.getTagManager().getTag(player);
@@ -93,7 +95,7 @@ public class PlayerJoinListener implements Listener {
             Bukkit.getConsoleSender().sendMessage("§c§lERRO ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
          }
       }
-      TitleUtils.sendTitle(player, "§a§lFUSION", "§eBem-vindo!", 20, 10, 20);
+      // TitleUtils.sendTitle(player, "§a§lFUSION", "§eBem-vindo!", 20, 10, 20);
 
       /* NPCManager npcManager = Managers.getNpcManager();
       Location npcLocation = npcManager.getNPCLocation();
@@ -163,9 +165,9 @@ public class PlayerJoinListener implements Listener {
                  "&cVocê foi banido temporariamente.\n\n" +
                          "  &cMotivo: &7" + reason + "\n" +
                          "  &cExpira em: &7" + sdf.format(expires) + "\n" +
-                         "  &eAdquira seu unban em: &bwww.fusionmc.com.br\n" +
+                         "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
                          "  &cBanido injustamente? Contate-nos via\n" +
-                         "  &9&ndiscord.gg/fusionmc";
+                         "  &9&ndiscord.gg/kaosmc";
 
          e.disallow(
                  AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
@@ -188,6 +190,7 @@ public class PlayerJoinListener implements Listener {
          }
 
          GameProfile profile = ((CraftPlayer) player).getProfile();
+         OriginalSkinManager.cache(player, profile);
          changeName(profile, nick);
 
          if (skinData != null && skinData.value != null) {

@@ -3,11 +3,11 @@ package com.knowplugins.ysubz.kaoscore.utils.disguise;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.cmd.commands.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -166,7 +165,7 @@ public final class DisguiseApiService {
             deleteStoredSkin(player);
             refreshTag(player, previousEntry);
 
-            Property originalProperty = SkinCommand.ORIGINAL_SKINS.remove(player.getUniqueId());
+            Property originalProperty = OriginalSkinManager.get(player.getUniqueId());
             if (originalProperty != null) {
                 profile.getProperties().removeAll("textures");
                 profile.getProperties().put("textures", originalProperty);
@@ -174,32 +173,32 @@ public final class DisguiseApiService {
                 return CompletableFuture.completedFuture(true);
             }
 
-            String realName = getOfflineName(player.getUniqueId());
-            if (realName == null || realName.trim().isEmpty()) {
-                new SkinApplier(player).applySkinForSelf();
-                return CompletableFuture.completedFuture(true);
-            }
-
-            return fetchSkin(realName).thenApply(skinData -> {
-                Bukkit.getScheduler().runTask(getPlugin(), () -> {
-                    if (player == null || !player.isOnline()) {
-                        return;
-                    }
-
-                    try {
-                        if (skinData != null && skinData.value != null) {
-                            GameProfile liveProfile = ((CraftPlayer) player).getProfile();
-                            liveProfile.getProperties().removeAll("textures");
-                            liveProfile.getProperties().put("textures", new Property("textures", skinData.value, skinData.signature));
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+                try {
+                    Property fetchedOriginal = OriginalSkinManager.fetchOriginal(player.getUniqueId());
+                    Bukkit.getScheduler().runTask(getPlugin(), () -> {
+                        try {
+                            if (player != null && player.isOnline()) {
+                                if (fetchedOriginal != null) {
+                                    GameProfile liveProfile = ((CraftPlayer) player).getProfile();
+                                    liveProfile.getProperties().removeAll("textures");
+                                    liveProfile.getProperties().put("textures", fetchedOriginal);
+                                }
+                                new SkinApplier(player).applySkinForSelf();
+                            }
+                            future.complete(true);
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                            future.complete(false);
                         }
-                        new SkinApplier(player).applySkinForSelf();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                return true;
+                    });
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    Bukkit.getScheduler().runTask(getPlugin(), () -> future.complete(false));
+                }
             });
+            return future;
         } catch (Exception e) {
             e.printStackTrace();
             return CompletableFuture.completedFuture(false);
@@ -238,19 +237,7 @@ public final class DisguiseApiService {
     }
 
     private static void cacheOriginalSkin(Player player, GameProfile profile) {
-        if (player == null || profile == null) {
-            return;
-        }
-
-        UUID id = player.getUniqueId();
-        if (SkinCommand.ORIGINAL_SKINS.containsKey(id)) {
-            return;
-        }
-
-        Collection<Property> textures = profile.getProperties().get("textures");
-        if (textures != null && !textures.isEmpty()) {
-            SkinCommand.ORIGINAL_SKINS.put(id, textures.iterator().next());
-        }
+        OriginalSkinManager.cache(player, profile);
     }
 
     private static void saveDisguise(Player player, boolean disguised, String nick) {
@@ -311,14 +298,6 @@ public final class DisguiseApiService {
         modifiersField.setAccessible(true);
         modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL);
         nameField.set(profile, name);
-    }
-
-    private static String getOfflineName(UUID uuid) {
-        if (uuid == null) {
-            return null;
-        }
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-        return offlinePlayer == null ? null : offlinePlayer.getName();
     }
 
     private static void refreshTag(Player player, String... staleEntries) {

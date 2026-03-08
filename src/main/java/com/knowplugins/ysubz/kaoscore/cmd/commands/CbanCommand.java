@@ -66,9 +66,9 @@ public class CbanCommand extends Commands {
                 ChatColor.RED + "Você foi banido temporariamente.\n\n" +
                         ChatColor.RED +"Motivo: "+ ChatColor.GRAY  + reason + "\n" +
                         ChatColor.RED + "Expira em: " + ChatColor.GRAY + sdf.format(expires) + "\n" +
-                        ChatColor.YELLOW + "Adquira seu unban em: " + ChatColor.AQUA + "www.fusionmc.com.br\n" +
+                        ChatColor.YELLOW + "Adquira seu unban em: " + ChatColor.AQUA + "www.kaosmc.com\n" +
                         ChatColor.RED + "Banido injustamente? Contate-nos via\n" +
-                        ChatColor.BLUE + "discord.gg/fusionmc";
+                        ChatColor.BLUE + "discord.gg/kaosmc";
 
         Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, expires, sender.getName());
 

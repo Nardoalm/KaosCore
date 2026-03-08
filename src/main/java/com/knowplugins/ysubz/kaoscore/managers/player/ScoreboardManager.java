@@ -86,7 +86,7 @@ public class ScoreboardManager {
         createTeamLine(sb, obj, "line2", "§5", 2); // Online
         createTeamLine(sb, obj, "line1", "§6", 1); // Espaço
 
-        obj.getScore("§afusionmc.com.br").setScore(0);
+        obj.getScore("§6kaosmc.com.br").setScore(0);
     }
 
     private static void createTeamLine(Scoreboard sb, Objective obj, String teamName, String entry, int score) {

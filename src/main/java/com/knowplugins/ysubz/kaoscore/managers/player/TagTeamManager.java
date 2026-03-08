@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -240,8 +241,8 @@ public class TagTeamManager {
         }
 
         if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
-            String prefix = trim(safe(practiceState.getPrefix()) + safe(practiceState.getNameColor()));
-            String suffix = trim(safe(practiceState.getSuffix()));
+            String prefix = trim(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
+            String suffix = trim(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
             String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor());
             return new NametagStyle(teamKey, prefix, suffix, priority);
@@ -252,7 +253,7 @@ public class TagTeamManager {
             return null;
         }
 
-        return new NametagStyle(tag.getId(), trim(format(tag.getPrefix())), trim(format(tag.getSuffix())), tag.getPosition());
+        return new NametagStyle(tag.getId(), trim(resolveText(player, tag.getPrefix())), trim(resolveText(player, tag.getSuffix())), tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
@@ -379,6 +380,22 @@ public class TagTeamManager {
 
     private String format(String value) {
         return ChatColor.translateAlternateColorCodes('&', safe(value));
+    }
+
+    private String resolveText(Player player, String value) {
+        String text = safe(value);
+        if (text.isEmpty()) {
+            return "";
+        }
+
+        if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            try {
+                text = PlaceholderAPI.setPlaceholders(player, text);
+            } catch (Exception ignored) {
+            }
+        }
+
+        return format(text);
     }
 
     private String safe(String value) {

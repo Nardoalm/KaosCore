@@ -8,6 +8,7 @@ import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -100,6 +101,7 @@ public class DisguiseCommand extends Commands {
             String previousEntry = player.getName();
             disguiseManager.recordOriginalName(player);
             GameProfile profile = ((CraftPlayer) player).getProfile();
+            OriginalSkinManager.cache(player, profile);
 
             changeName(profile, newNick);
 

@@ -7,6 +7,7 @@ import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -19,14 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class SkinCommand extends Commands {
-
-    public static final Map<UUID, Property> ORIGINAL_SKINS = new HashMap<>();
 
     public SkinCommand() {
         super("skin", "setskin");
@@ -74,14 +70,7 @@ public class SkinCommand extends Commands {
     private static void setSkin(Player player, String targetSkin, boolean applyForSelf) {
         try {
             GameProfile profile = ((CraftPlayer) player).getProfile();
-
-            UUID id = player.getUniqueId();
-            if (!ORIGINAL_SKINS.containsKey(id)) {
-                Collection<Property> textures = profile.getProperties().get("textures");
-                if (!textures.isEmpty()) {
-                    ORIGINAL_SKINS.put(id, textures.iterator().next());
-                }
-            }
+            OriginalSkinManager.cache(player, profile);
 
             JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SkinCommand.class);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -141,11 +130,11 @@ public class SkinCommand extends Commands {
     public static void resetSkin(Player player) {
         try {
             UUID id = player.getUniqueId();
-            if (ORIGINAL_SKINS.containsKey(id)) {
+            Property originalProperty = OriginalSkinManager.get(id);
+            if (originalProperty != null) {
                 GameProfile profile = ((CraftPlayer) player).getProfile();
                 profile.getProperties().removeAll("textures");
-                profile.getProperties().put("textures", ORIGINAL_SKINS.get(id));
-                ORIGINAL_SKINS.remove(id);
+                profile.getProperties().put("textures", originalProperty);
 
                 new SkinApplier(player).applySkinForSelf();
 
@@ -164,19 +153,16 @@ public class SkinCommand extends Commands {
             JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SkinCommand.class);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
-                    URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + Bukkit.getOfflinePlayer(id).getName());
-                    InputStreamReader reader = new InputStreamReader(url.openStream());
-                    JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
-                    JsonObject textureProperty = json.getAsJsonObject("textures").getAsJsonObject("raw");
-
-                    String value = textureProperty.get("value").getAsString();
-                    String signature = textureProperty.get("signature").getAsString();
+                    Property fetchedOriginal = OriginalSkinManager.fetchOriginal(id);
+                    if (fetchedOriginal == null) {
+                        throw new IllegalStateException("Original skin not found");
+                    }
 
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         try {
                             GameProfile profile = ((CraftPlayer) player).getProfile();
                             profile.getProperties().removeAll("textures");
-                            profile.getProperties().put("textures", new Property("textures", value, signature));
+                            profile.getProperties().put("textures", fetchedOriginal);
 
                             new SkinApplier(player).applySkinForSelf();
 
@@ -184,6 +170,11 @@ public class SkinCommand extends Commands {
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+
+                            if (Managers.getDatabaseManager() != null) {
+                                SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                                repo.deleteAsync(id);
+                            }
                         } catch (Exception ex) {
                             player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao resetar a skin.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
@@ -210,5 +201,13 @@ public class SkinCommand extends Commands {
             return;
         }
         new SkinApplier(player).applySkinForSelf();
+    }
+
+    public static void cacheOriginalSkin(Player player) {
+        OriginalSkinManager.cache(player);
+    }
+
+    public static void cacheOriginalSkin(Player player, GameProfile profile) {
+        OriginalSkinManager.cache(player, profile);
     }
 }

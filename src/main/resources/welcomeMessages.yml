@@ -183,7 +183,7 @@ messages:
     alien:
       name: "Alien"
       text: "{player} §6saiu do ovo e apareceu!"
-      permission: "fusion.alien"
+      permission: "kaos.alien"
 
     jurassic:
       name: "Jurassic Park"
