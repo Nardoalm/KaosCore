@@ -10,6 +10,7 @@ public class Listeners {
       try {
          PluginManager pm = Bukkit.getPluginManager();
          // pm.registerEvents(new ProtectionListener(), plugin);
+         pm.registerEvents(new HitCooldownListener(), plugin);
          pm.registerEvents(new PlayerJoinListener(), plugin);
          // pm.registerEvents(new EntityListener(), plugin);
          pm.registerEvents(new ChatListener(), plugin);
