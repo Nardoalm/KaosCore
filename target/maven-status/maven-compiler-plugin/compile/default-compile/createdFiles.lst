@@ -81,4 +81,5 @@ com\knowplugins\ysubz\kaoscore\clan\ClanRole.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\SkinRepository.class
 com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager$NametagStyle.class
 com\knowplugins\ysubz\kaoscore\managers\player\TabListManager.class
+com\knowplugins\ysubz\kaoscore\listeners\player\HitCooldownListener.class
 com\knowplugins\ysubz\kaoscore\managers\world\ClimateManager.class

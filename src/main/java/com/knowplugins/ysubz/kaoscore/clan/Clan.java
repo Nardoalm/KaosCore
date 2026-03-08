@@ -18,7 +18,7 @@ public class Clan {
     public Clan(String name, String tag, UUID leader) {
         this.name = name;
         this.tag = tag.toUpperCase();
-        this.tagColor = "&7";
+        this.tagColor = "§7";
         this.leader = leader;
         this.members = new HashMap<>();
         this.bans = new ArrayList<>();
