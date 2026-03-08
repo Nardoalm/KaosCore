@@ -7,6 +7,7 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\GamemodeCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\TagManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\GameModeManager.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\integration\practice\KaosPracticeBridge.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\Listeners.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\DisguiseCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\CommandList.java
@@ -27,8 +28,10 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\ProtectionListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\Commands.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\TabListManager.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\SkinCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\MenuCommand.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\GoCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\ScoreboardManager.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\plugin\VanishRepository.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\ClanManager.java

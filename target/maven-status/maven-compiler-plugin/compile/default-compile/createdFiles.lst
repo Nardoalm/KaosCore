@@ -5,6 +5,7 @@ com\knowplugins\ysubz\kaoscore\managers\TagManager.class
 com\knowplugins\ysubz\kaoscore\listeners\player\PlayerQuitListener.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\CommandList.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\PvpCommand.class
+com\knowplugins\ysubz\kaoscore\integration\practice\KaosPracticeBridge$PracticeState.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\CcCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\ClanCommand$1.class
 com\knowplugins\ysubz\kaoscore\listeners\player\ProtectionListener.class
@@ -34,6 +35,7 @@ com\knowplugins\ysubz\kaoscore\utils\title\TitleUtils.class
 com\knowplugins\ysubz\kaoscore\utils\disguise\SkinMatrix.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier$1.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerTagRepository.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\GoCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\VanishRepository.class
 com\knowplugins\ysubz\kaoscore\managers\player\VanishManager.class
 com\knowplugins\ysubz\kaoscore\managers\world\NPCManager.class
@@ -57,6 +59,7 @@ com\knowplugins\ysubz\kaoscore\listeners\world\WeatherListener.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\GamemodeCommand.class
 com\knowplugins\ysubz\kaoscore\managers\player\GameModeManager.class
 com\knowplugins\ysubz\kaoscore\utils\placeholder\PlaceholderManager.class
+com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager$1.class
 com\knowplugins\ysubz\kaoscore\clan\Clan.class
 com\knowplugins\ysubz\kaoscore\listeners\Listeners.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier.class
@@ -66,13 +69,16 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\FlyCommand.class
 com\knowplugins\ysubz\kaoscore\listeners\player\PlayerJoinListener.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\DatabaseManager.class
 com\knowplugins\ysubz\kaoscore\listeners\world\SoundListener.class
+com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager.class
 com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService.class
 com\knowplugins\ysubz\kaoscore\cmd\Commands.class
 com\knowplugins\ysubz\kaoscore\api\KaosCoreAPIImpl.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier$2.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\KaosCore.class
+com\knowplugins\ysubz\kaoscore\integration\practice\KaosPracticeBridge.class
 com\knowplugins\ysubz\kaoscore\clan\ClanRole.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\SkinRepository.class
+com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager$NametagStyle.class
 com\knowplugins\ysubz\kaoscore\managers\player\TabListManager.class
 com\knowplugins\ysubz\kaoscore\managers\world\ClimateManager.class

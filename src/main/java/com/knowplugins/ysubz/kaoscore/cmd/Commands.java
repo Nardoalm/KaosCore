@@ -25,6 +25,7 @@ public abstract class Commands extends Command {
    }
 
    public static void setupCommands(KaosCore plugin) {
+      new GoCommand();
       new GamemodeCommand();
       new ClearChatCommand();
       new VanishCommand();
