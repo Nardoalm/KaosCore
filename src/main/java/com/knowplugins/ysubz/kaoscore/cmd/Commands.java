@@ -34,6 +34,11 @@ public abstract class Commands extends Command {
       new CommandList();
       new TeleportCommand();
       new CbanCommand();
+      new BanCommand();
+      new MuteCommand();
+      new UnmuteCommand();
+      new KickCommand();
+      new AltsCommand();
       new FlyCommand();
       new SetSpawnCommand();
       new UnbanCommand();

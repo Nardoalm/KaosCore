@@ -142,6 +142,39 @@ public class DatabaseManager {
                 "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
                 ");";
 
+        String punishments = "CREATE TABLE IF NOT EXISTS punishments (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "target_uuid CHAR(36) NULL," +
+                "target_name VARCHAR(16) NOT NULL," +
+                "punishment_type VARCHAR(16) NOT NULL," +
+                "reason TEXT NOT NULL," +
+                "created_at BIGINT NOT NULL," +
+                "expires_at BIGINT NULL," +
+                "punisher_uuid CHAR(36) NULL," +
+                "punisher_name VARCHAR(16) NOT NULL," +
+                "source VARCHAR(32) NULL," +
+                "active TINYINT(1) NOT NULL DEFAULT 1," +
+                "removed_at BIGINT NULL," +
+                "removed_by_uuid CHAR(36) NULL," +
+                "removed_by_name VARCHAR(16) NULL," +
+                "removed_reason TEXT NULL," +
+                "INDEX idx_punishments_target_uuid (target_uuid)," +
+                "INDEX idx_punishments_target_name (target_name)," +
+                "INDEX idx_punishments_type_active (punishment_type, active)" +
+                ");";
+
+        String playerAddresses = "CREATE TABLE IF NOT EXISTS player_addresses (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "player_uuid CHAR(36) NOT NULL," +
+                "player_name VARCHAR(16) NOT NULL," +
+                "ip VARCHAR(64) NOT NULL," +
+                "first_seen BIGINT NOT NULL," +
+                "last_seen BIGINT NOT NULL," +
+                "UNIQUE KEY unique_player_ip (player_uuid, ip)," +
+                "INDEX idx_player_addresses_name (player_name)," +
+                "INDEX idx_player_addresses_ip (ip)" +
+                ");";
+
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(clansTable);
             stmt.executeUpdate(clanMembersTable);
@@ -150,6 +183,8 @@ public class DatabaseManager {
             stmt.executeUpdate(disguises);
             stmt.executeUpdate(skins);
             stmt.executeUpdate(playerTags);
+            stmt.executeUpdate(punishments);
+            stmt.executeUpdate(playerAddresses);
 
             Bukkit.getConsoleSender().sendMessage("§a§lSUCESSO -> §aTabelas criadas com sucesso!");
             return true;

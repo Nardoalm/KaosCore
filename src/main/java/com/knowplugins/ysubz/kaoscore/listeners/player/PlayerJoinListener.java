@@ -4,10 +4,14 @@ import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TabListManager;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.utils.title.TitleUtils;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.VanishRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
@@ -31,7 +35,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -153,29 +156,41 @@ public class PlayerJoinListener implements Listener {
 
    @EventHandler
    public void onPreLogin(AsyncPlayerPreLoginEvent e) {
-      if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
-
-         BanEntry ban = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getName());
-         String reason = ban.getReason();
-         Date expires = ban.getExpiration();
-
-         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-         String banMessage =
-                 "&cVocê foi banido temporariamente.\n\n" +
-                         "  &cMotivo: &7" + reason + "\n" +
-                         "  &cExpira em: &7" + sdf.format(expires) + "\n" +
-                         "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
-                         "  &cBanido injustamente? Contate-nos via\n" +
-                         "  &9&ndiscord.gg/kaosmc";
-
-         e.disallow(
-                 AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
-                 ChatColor.translateAlternateColorCodes('&', banMessage)
-         );
+      PlayerAddressRepository addressRepository = Managers.getPlayerAddressRepository();
+      if (addressRepository != null && e.getUniqueId() != null && e.getAddress() != null) {
+         addressRepository.track(e.getUniqueId(), e.getName(), e.getAddress().getHostAddress());
       }
 
+      PunishmentManager punishmentManager = Managers.getPunishmentManager();
+      if (punishmentManager != null) {
+         PunishmentEntry ban = punishmentManager.getActiveBan(e.getUniqueId(), e.getName());
+         if (ban != null) {
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, buildPunishmentMessage(ban));
+            return;
+         }
+      }
 
+      if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
+         BanEntry ban = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getName());
+         if (ban != null) {
+            String reason = ban.getReason() == null ? "Sem motivo informado" : ban.getReason();
+            Date expires = ban.getExpiration();
+            String duration = expires == null ? "Permanente" : PunishmentTime.formatDate(expires.getTime());
+
+            String banMessage =
+                    "&cVocê foi banido.\n\n" +
+                            "  &cMotivo: &7" + reason + "\n" +
+                            "  &cExpira em: &7" + duration + "\n" +
+                            "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
+                            "  &cBanido injustamente? Contate-nos via\n" +
+                            "  &9&ndiscord.gg/kaosmc";
+
+            e.disallow(
+                    AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
+                    ChatColor.translateAlternateColorCodes('&', banMessage)
+            );
+         }
+      }
    }
 
    private void applyStoredDisguise(Player player, String nick, SkinData skinData) {
@@ -227,5 +242,21 @@ public class PlayerJoinListener implements Listener {
       modifiersField.setAccessible(true);
       modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL);
       nameField.set(profile, name);
+   }
+
+   private String buildPunishmentMessage(PunishmentEntry entry) {
+      String expires = entry == null || entry.isPermanent() ? "Permanente" : PunishmentTime.formatDate(entry.getExpiresAt());
+      String reason = entry == null || entry.getReason() == null ? "Sem motivo informado" : entry.getReason();
+      String title = entry != null && entry.isPermanent() ? "Você foi banido permanentemente." : "Você foi banido temporariamente.";
+
+      String message =
+              "&c" + title + "\n\n" +
+                      "  &cMotivo: &7" + reason + "\n" +
+                      "  &cExpira em: &7" + expires + "\n" +
+                      "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
+                      "  &cBanido injustamente? Contate-nos via\n" +
+                      "  &9&ndiscord.gg/kaosmc";
+
+      return ChatColor.translateAlternateColorCodes('&', message);
    }
 }

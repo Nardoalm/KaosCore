@@ -1,7 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentType;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,9 +12,8 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 public class CbanCommand extends Commands {
     public CbanCommand(){
@@ -20,68 +22,60 @@ public class CbanCommand extends Commands {
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
-        if(args.length < 1){
+        if (args.length < 1) {
             sender.sendMessage("§c§lERRO ➔ §cUso correto: /cban <jogador>");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        if (!sender.hasPermission("nardocore.staff.banir")){
-            sender.sendMessage( "§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+        if (!sender.hasPermission("nardocore.staff.banir")) {
+            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
-        if (target == null) {
-            target = DisguiseManager.getOnlinePlayerByName(args[0]);
+        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        if (punishmentManager == null) {
+            sender.sendMessage("§c§lERRO ➔ §cSistema de punições indisponível.");
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            return;
         }
 
-        if (target == null || !target.isOnline()){
+        ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
+        Player onlineTarget = target.getPlayer();
+        if (onlineTarget == null || !onlineTarget.isOnline()) {
             sender.sendMessage("§c§lERRO ➔ §cJogador não existe ou não está online.");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        if (target.getName().equals(sender.getName())){
+        if (sender instanceof Player && target.getUuid() != null && target.getUuid().equals(((Player) sender).getUniqueId())) {
             sender.sendMessage("§c§lERRO ➔ §cVocê não pode se banir!");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         String reason = "Uso de trapaças";
+        long expiresAt = System.currentTimeMillis() + (30L * 86_400_000L);
+        UUID punisherUuid = ModerationCommandUtil.getSenderUuid(sender);
+        String punisherName = ModerationCommandUtil.getSenderName(sender);
 
-        Date today = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_MONTH, 30);
-        Date expires = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "CBAN");
+        if (punishment == null) {
+            sender.sendMessage("§c§lERRO ➔ §cNão foi possível aplicar o cban.");
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            return;
+        }
 
-        String kickMessage =
-                ChatColor.RED + "Você foi banido temporariamente.\n\n" +
-                        ChatColor.RED +"Motivo: "+ ChatColor.GRAY  + reason + "\n" +
-                        ChatColor.RED + "Expira em: " + ChatColor.GRAY + sdf.format(expires) + "\n" +
-                        ChatColor.YELLOW + "Adquira seu unban em: " + ChatColor.AQUA + "www.kaosmc.com\n" +
-                        ChatColor.RED + "Banido injustamente? Contate-nos via\n" +
-                        ChatColor.BLUE + "discord.gg/kaosmc";
+        Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
 
-        Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, expires, sender.getName());
-
-        Player senderPlayer = (Player) sender;
-        senderPlayer.playSound(senderPlayer.getLocation(), Sound.EXPLODE, 1.0f, 1.0f);
         sender.sendMessage(ChatColor.GREEN + "§a§lSUCESSO ➔ §a" + target.getName() + " foi banido por 30 dias com sucesso!");
+        ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
-        Player[] playersOnline = Bukkit.getOnlinePlayers().toArray(new Player[0]);
+        onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
+        onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
 
-        target.getWorld().strikeLightningEffect(target.getLocation());
-        target.kickPlayer(kickMessage);
-
-        for (Player p : playersOnline){
+        for (Player p : Bukkit.getOnlinePlayers()) {
             p.sendMessage("§c§lBANIMENTO ➔ §c" + target.getName() + " §cfoi banido por uso de trapaças.");
             p.playSound(p.getLocation(), Sound.ARROW_HIT, 1.0f, 1.0f);
         }

@@ -1,0 +1,183 @@
+package com.knowplugins.ysubz.kaoscore.managers.plugin;
+
+import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentType;
+import org.bukkit.Bukkit;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class PunishmentRepository {
+
+    private final KaosCore plugin;
+    private final DatabaseManager databaseManager;
+
+    public PunishmentRepository(KaosCore plugin, DatabaseManager databaseManager) {
+        this.plugin = plugin;
+        this.databaseManager = databaseManager;
+    }
+
+    public List<PunishmentEntry> loadActive() {
+        List<PunishmentEntry> result = new ArrayList<>();
+
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT id, target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active, removed_at, removed_by_uuid, removed_by_name, removed_reason FROM punishments WHERE active = 1 AND (expires_at IS NULL OR expires_at = 0 OR expires_at > ?)")) {
+            ps.setLong(1, System.currentTimeMillis());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    PunishmentEntry entry = map(rs);
+                    if (entry != null) {
+                        result.add(entry);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Erro ao carregar punicoes ativas do DB: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public void createAsync(PunishmentEntry entry) {
+        if (entry == null) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("INSERT INTO punishments (target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active) VALUES (?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+                setUuid(ps, 1, entry.getTargetUuid());
+                ps.setString(2, entry.getTargetName());
+                ps.setString(3, entry.getType().name());
+                ps.setString(4, entry.getReason());
+                ps.setLong(5, entry.getCreatedAt());
+                if (entry.isPermanent()) {
+                    ps.setNull(6, Types.BIGINT);
+                } else {
+                    ps.setLong(6, entry.getExpiresAt());
+                }
+                setUuid(ps, 7, entry.getPunisherUuid());
+                ps.setString(8, entry.getPunisherName());
+                ps.setString(9, entry.getSource());
+                ps.setBoolean(10, entry.isActive());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao salvar punicao no DB: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void revokeAsync(PunishmentType type, UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason) {
+        if (type == null) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String sql = buildRevokeSql(targetUuid, targetName);
+            if (sql == null) {
+                return;
+            }
+
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                int index = 1;
+                ps.setLong(index++, System.currentTimeMillis());
+                setUuid(ps, index++, removedByUuid);
+                ps.setString(index++, removedByName);
+                ps.setString(index++, removedReason);
+                ps.setString(index++, type.name());
+                if (targetUuid != null) {
+                    ps.setString(index++, targetUuid.toString());
+                }
+                if (targetName != null && !targetName.trim().isEmpty()) {
+                    ps.setString(index, targetName.toLowerCase());
+                }
+                ps.executeUpdate();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao revogar punicao no DB: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void expireAsync(PunishmentType type, UUID targetUuid, String targetName) {
+        revokeAsync(type, targetUuid, targetName, null, "SYSTEM", "Punicao expirada");
+    }
+
+    private String buildRevokeSql(UUID targetUuid, String targetName) {
+        boolean hasUuid = targetUuid != null;
+        boolean hasName = targetName != null && !targetName.trim().isEmpty();
+
+        if (!hasUuid && !hasName) {
+            return null;
+        }
+
+        if (hasUuid && hasName) {
+            return "UPDATE punishments SET active = 0, removed_at = ?, removed_by_uuid = ?, removed_by_name = ?, removed_reason = ? WHERE active = 1 AND punishment_type = ? AND (target_uuid = ? OR LOWER(target_name) = ?)";
+        }
+
+        if (hasUuid) {
+            return "UPDATE punishments SET active = 0, removed_at = ?, removed_by_uuid = ?, removed_by_name = ?, removed_reason = ? WHERE active = 1 AND punishment_type = ? AND target_uuid = ?";
+        }
+
+        return "UPDATE punishments SET active = 0, removed_at = ?, removed_by_uuid = ?, removed_by_name = ?, removed_reason = ? WHERE active = 1 AND punishment_type = ? AND LOWER(target_name) = ?";
+    }
+
+    private PunishmentEntry map(ResultSet rs) {
+        try {
+            long id = rs.getLong("id");
+            UUID targetUuid = parseUuid(rs.getString("target_uuid"));
+            String targetName = rs.getString("target_name");
+            PunishmentType type = PunishmentType.valueOf(rs.getString("punishment_type"));
+            String reason = rs.getString("reason");
+            long createdAt = rs.getLong("created_at");
+            long expiresAt = rs.getLong("expires_at");
+            if (rs.wasNull()) {
+                expiresAt = 0L;
+            }
+            UUID punisherUuid = parseUuid(rs.getString("punisher_uuid"));
+            String punisherName = rs.getString("punisher_name");
+            String source = rs.getString("source");
+            boolean active = rs.getBoolean("active");
+            long removedAt = rs.getLong("removed_at");
+            if (rs.wasNull()) {
+                removedAt = 0L;
+            }
+            UUID removedByUuid = parseUuid(rs.getString("removed_by_uuid"));
+            String removedByName = rs.getString("removed_by_name");
+            String removedReason = rs.getString("removed_reason");
+            return new PunishmentEntry(id, targetUuid, targetName, type, reason, createdAt, expiresAt, punisherUuid, punisherName, source, active, removedAt, removedByUuid, removedByName, removedReason);
+        } catch (Exception e) {
+            plugin.getLogger().warning("Erro ao mapear punicao do DB: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void setUuid(PreparedStatement ps, int index, UUID uuid) throws Exception {
+        if (uuid == null) {
+            ps.setNull(index, Types.VARCHAR);
+            return;
+        }
+        ps.setString(index, uuid.toString());
+    }
+
+    private UUID parseUuid(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(raw);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+}

@@ -1,5 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.listeners.player;
 
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentTime;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -16,6 +20,17 @@ public class ChatListener implements Listener {
 
         Player p = event.getPlayer();
         String msg = event.getMessage();
+
+        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        if (punishmentManager != null) {
+            PunishmentEntry mute = punishmentManager.getActiveMute(p);
+            if (mute != null) {
+                p.sendMessage("§c§lMUTE ➔ §cVocê está mutado.");
+                p.sendMessage("§cMotivo: §7" + mute.getReason());
+                p.sendMessage("§cDuração: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
+                return;
+            }
+        }
 
         String level = PlaceholderAPI.setPlaceholders(
                 p,
@@ -37,4 +52,3 @@ public class ChatListener implements Listener {
         }
     }
 }
-

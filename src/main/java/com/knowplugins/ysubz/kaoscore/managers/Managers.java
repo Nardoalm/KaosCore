@@ -2,9 +2,12 @@ package com.knowplugins.ysubz.kaoscore.managers;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentRepository;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 
 import java.util.Map;
@@ -15,6 +18,8 @@ public class Managers {
     private final KaosCore plugin;
     private static DatabaseManager databaseManager;
     private static DisguiseManager disguiseManager;
+    private static PunishmentManager punishmentManager;
+    private static PlayerAddressRepository playerAddressRepository;
     private static NPCManager npcManager;
     private static ClanManager clanManager;
 
@@ -27,6 +32,13 @@ public class Managers {
 
         disguiseManager = new DisguiseManager();
         disguiseManager.loadNicksFile(plugin);
+
+        if (databaseManager != null && databaseManager.isConnected()) {
+            PunishmentRepository punishmentRepository = new PunishmentRepository(plugin, databaseManager);
+            punishmentManager = new PunishmentManager(punishmentRepository);
+            punishmentManager.loadActive();
+            playerAddressRepository = new PlayerAddressRepository(plugin, databaseManager);
+        }
 
         // npcManager = new NPCManager(plugin);
         // npcManager.loadSkinCache();
@@ -56,6 +68,14 @@ public class Managers {
 
     public static DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public static PunishmentManager getPunishmentManager() {
+        return punishmentManager;
+    }
+
+    public static PlayerAddressRepository getPlayerAddressRepository() {
+        return playerAddressRepository;
     }
 
     public static NPCManager getNpcManager() {

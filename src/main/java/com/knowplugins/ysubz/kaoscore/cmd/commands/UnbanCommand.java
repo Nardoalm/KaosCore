@@ -1,10 +1,12 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentType;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
+import java.util.UUID;
 
 public class UnbanCommand extends Commands {
     public UnbanCommand(){
@@ -13,36 +15,38 @@ public class UnbanCommand extends Commands {
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
-        if(args.length < 1){
+        if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "§c§lERRO ➔ §cUso correto: /unban <jogador>");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        if (!sender.hasPermission("nardocore.staff.banir")){
+        if (!sender.hasPermission("nardocore.staff.banir")) {
             sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        String targetName = args[0];
+        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
+        UUID senderUuid = ModerationCommandUtil.getSenderUuid(sender);
+        String senderName = ModerationCommandUtil.getSenderName(sender);
+
+        boolean removed = punishmentManager != null && punishmentManager.clearActive(PunishmentType.BAN, target.getUuid(), target.getName(), senderUuid, senderName, "Banimento removido manualmente");
+
         BanList banList = Bukkit.getBanList(BanList.Type.NAME);
-        BanEntry ban = banList.getBanEntry(targetName);
+        BanEntry legacyBan = banList.getBanEntry(target.getName());
+        if (legacyBan != null) {
+            banList.pardon(target.getName());
+        }
 
-        if (ban == null) {
+        if (!removed && legacyBan == null) {
             sender.sendMessage( "§c§lERRO ➔ §cEsse jogador não está banido.");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        banList.pardon(targetName);
-        sender.sendMessage("§a§lSUCESSO ➔ §aO jogador " + targetName + " não está mais banido!");
-
-        Player senderPlayer = (Player) sender;
-
-        senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        sender.sendMessage("§a§lSUCESSO ➔ §aO jogador " + target.getName() + " não está mais banido!");
+        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
     }
 }
