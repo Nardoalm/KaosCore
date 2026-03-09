@@ -17,26 +17,26 @@ import java.util.UUID;
 
 public class CbanCommand extends Commands {
     public CbanCommand(){
-        super("cban", "cb");
+        super("cban", "cb", "cheatban");
     }
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("§c§lERRO ➔ §cUso correto: /cban <jogador>");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cUso correto: /CHEATBAN <jogador>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (!sender.hasPermission("nardocore.staff.banir")) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não tem permissão para usar esse comando.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lERRO ➔ §cSistema de punições indisponível.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cSistema de punições indisponível.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -44,13 +44,13 @@ public class CbanCommand extends Commands {
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         Player onlineTarget = target.getPlayer();
         if (onlineTarget == null || !onlineTarget.isOnline()) {
-            sender.sendMessage("§c§lERRO ➔ §cJogador não existe ou não está online.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cJogador não existe ou não está online.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (sender instanceof Player && target.getUuid() != null && target.getUuid().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não pode se banir!");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não pode se banir!");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -60,16 +60,16 @@ public class CbanCommand extends Commands {
         UUID punisherUuid = ModerationCommandUtil.getSenderUuid(sender);
         String punisherName = ModerationCommandUtil.getSenderName(sender);
 
-        PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "CBAN");
+        PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "CHEATBAN");
         if (punishment == null) {
-            sender.sendMessage("§c§lERRO ➔ §cNão foi possível aplicar o cban.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cNão foi possível aplicar o CHEATBAN.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
 
-        sender.sendMessage(ChatColor.GREEN + "§a§lSUCESSO ➔ §a" + target.getName() + " foi banido por 30 dias com sucesso!");
+        sender.sendMessage(ChatColor.GREEN + "§a§lCHEATBAN ➔ §a" + target.getName() + " foi banido por 30 dias com sucesso!");
         ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
         onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());

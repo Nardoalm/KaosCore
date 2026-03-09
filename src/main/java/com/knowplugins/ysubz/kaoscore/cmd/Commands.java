@@ -19,7 +19,7 @@ public abstract class Commands extends Command {
          SimpleCommandMap simpleCommandMap = (SimpleCommandMap)Bukkit.getServer().getClass().getDeclaredMethod("getCommandMap").invoke(Bukkit.getServer());
          simpleCommandMap.register(this.getName(), "nardocore", this);
       } catch (ReflectiveOperationException var4) {
-        Bukkit.getServer().getConsoleSender().sendMessage( "§c§lERRO ➔ §cNão foi possível iniciar os comandos.");
+        Bukkit.getServer().getConsoleSender().sendMessage( "§c§lCOMANDOS ➔ §cNão foi possível iniciar os comandos.");
       }
 
    }
@@ -37,6 +37,8 @@ public abstract class Commands extends Command {
       new BanCommand();
       new MuteCommand();
       new UnmuteCommand();
+      new WarnCommand();
+      new HistoryCommand();
       new KickCommand();
       new AltsCommand();
       new FlyCommand();
@@ -48,6 +50,7 @@ public abstract class Commands extends Command {
       // new MenuCommand();
       new DisguiseCommand();
       new SkinCommand();
+      new SitCommand();
       new ClanCommand(plugin);
       new CcCommand();
    }

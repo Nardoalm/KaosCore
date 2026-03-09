@@ -67,7 +67,7 @@ public class PlayerJoinListener implements Listener {
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
 
-      if (plugin.getConfig().contains("spawn.location")) {
+       /* if (plugin.getConfig().contains("spawn.location")) {
          try {
             String raw = plugin.getConfig().getString("spawn.location");
             String[] parts = raw.split(";");
@@ -91,13 +91,14 @@ public class PlayerJoinListener implements Listener {
                      player.setFlying(true);
                   }
                } else {
-                  Bukkit.getConsoleSender().sendMessage("§c§lERRO ➔ §cMundo do spawn não encontrado!");
+                  Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cMundo do spawn não encontrado!");
                }
             }
          } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage("§c§lERRO ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
+            Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
          }
-      }
+      } */
+
       // TitleUtils.sendTitle(player, "§a§lFUSION", "§eBem-vindo!", 20, 10, 20);
 
       /* NPCManager npcManager = Managers.getNpcManager();

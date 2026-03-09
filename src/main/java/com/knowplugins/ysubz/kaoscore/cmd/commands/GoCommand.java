@@ -15,12 +15,12 @@ public class GoCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem usar este comando.");
+            sender.sendMessage("§c§lGO ➔ §cApenas jogadores podem usar este comando.");
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.go")){
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar este comando.");
+            sender.sendMessage("§c§lGO ➔ §cVocê não tem permissão para usar este comando.");
             return;
         }
 
@@ -32,7 +32,7 @@ public class GoCommand extends Commands {
         Player target = Bukkit.getPlayer(args[0]);
 
         if (target == null) {
-            sender.sendMessage("§c§lERRO ➔ §cJogador não encontrado.");
+            sender.sendMessage("§c§lGO ➔ §cJogador não encontrado.");
             return;
         }
 

@@ -19,20 +19,20 @@ public class AltsCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("nardocore.staff.alts")) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lALTS ➔ §cVocê não tem permissão para usar esse comando.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lERRO ➔ §cUso correto: /alts <jogador>");
+            sender.sendMessage("§c§lALTS ➔ §cUso correto: /alts <jogador>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
         if (repository == null) {
-            sender.sendMessage("§c§lERRO ➔ §cSistema de alts indisponível.");
+            sender.sendMessage("§c§lALTS ➔ §cSistema de alts indisponível.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }

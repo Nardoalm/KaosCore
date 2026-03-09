@@ -19,7 +19,7 @@ public class FlyCommand extends Commands {
 
         if (args.length > 0) {
             if (!sender.hasPermission("nardocore.staff.fly")) {
-                sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para dar fly em outros jogadores.");
+                sender.sendMessage("§c§lFLY ➔ §cVocê não tem permissão para dar fly em outros jogadores.");
                 Player senderPlayer = (Player) sender;
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
@@ -27,7 +27,7 @@ public class FlyCommand extends Commands {
 
             target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage("§c§lERRO ➔ §cJogador não encontrado.");
+                sender.sendMessage("§c§lFLY ➔ §cJogador não encontrado.");
                 Player senderPlayer = (Player) sender;
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
@@ -40,7 +40,7 @@ public class FlyCommand extends Commands {
             target = (Player) sender;
 
             if (!target.hasPermission("nardocore.member.fly")) {
-                sender.sendMessage(ChatColor.RED + "§c§lERRO ➔ §cVocê não possui permissão para executar este comando.");
+                sender.sendMessage(ChatColor.RED + "§c§lFLY ➔ §cVocê não possui permissão para executar este comando.");
                 Player senderPlayer = (Player) sender;
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
@@ -58,10 +58,10 @@ public class FlyCommand extends Commands {
 
         String status = newStatus ? ChatColor.GREEN + "ativado" : ChatColor.GREEN + "desativado";
 
-        target.sendMessage ("§a§lSUCESSO ➔ §aFly está " + status + ".");
+        target.sendMessage ("§a§lFLY ➔ §aFly está " + status + ".");
 
         if (sender != target) {
-            sender.sendMessage(ChatColor.GREEN + "§a§lSUCESSO ➔ §aFly está " + target.getName() + " " + status + ".");
+            sender.sendMessage(ChatColor.GREEN + "§a§lFLY ➔ §aFly está " + target.getName() + " " + status + ".");
         }
     }
 }

@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.managers;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
@@ -19,6 +20,7 @@ public class Managers {
     private static DatabaseManager databaseManager;
     private static DisguiseManager disguiseManager;
     private static PunishmentManager punishmentManager;
+    private static SitManager sitManager;
     private static PlayerAddressRepository playerAddressRepository;
     private static NPCManager npcManager;
     private static ClanManager clanManager;
@@ -44,6 +46,7 @@ public class Managers {
         // npcManager.loadSkinCache();
 
         clanManager = new ClanManager(plugin);
+        sitManager = new SitManager(plugin);
 
         VanishManager.setupManager();
         // ScoreboardManager.setup();
@@ -72,6 +75,10 @@ public class Managers {
 
     public static PunishmentManager getPunishmentManager() {
         return punishmentManager;
+    }
+
+    public static SitManager getSitManager() {
+        return sitManager;
     }
 
     public static PlayerAddressRepository getPlayerAddressRepository() {

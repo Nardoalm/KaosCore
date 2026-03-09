@@ -2,7 +2,8 @@ package com.knowplugins.ysubz.kaoscore.punishment;
 
 public enum PunishmentType {
     BAN("banimento", "banido"),
-    MUTE("silenciamento", "mutado");
+    MUTE("silenciamento", "mutado"),
+    WARN("advertência", "advertido");
 
     private final String displayName;
     private final String pastName;

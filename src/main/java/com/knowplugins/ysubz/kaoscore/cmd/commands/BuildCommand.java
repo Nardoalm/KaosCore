@@ -23,7 +23,7 @@ public class BuildCommand extends Commands {
         Player player = (Player) sender;
 
         if (!player.hasPermission("nardocore.admin")) {
-            player.sendMessage( "§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            player.sendMessage( "§c§lBUILD ➔ §cVocê não tem permissão para usar esse comando.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
@@ -32,13 +32,13 @@ public class BuildCommand extends Commands {
         if (BuildManager.isBuilder(player)) {
             BuildManager.removeBuilder(player);
             player.setGameMode(GameMode.SURVIVAL);
-            player.sendMessage("§a§lSUCESSO ➔ §aModo construtor desativado.");
+            player.sendMessage("§a§lBUILD ➔ §aModo construtor desativado.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
         } else {
             BuildManager.addBuilder(player);
             player.setGameMode(GameMode.CREATIVE);
-            player.sendMessage("§a§lSUCESSO ➔ §aModo construtor ativado.");
+            player.sendMessage("§a§lBUILD ➔ §aModo construtor ativado.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
         }

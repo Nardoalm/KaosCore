@@ -17,14 +17,14 @@ public class SetNpcCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem usar esse comando.");
+            sender.sendMessage("§c§lNPC ➔ §cApenas jogadores podem usar esse comando.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("nardocore.admin.setnpc")) {
-            player.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            player.sendMessage("§c§lNPC ➔ §cVocê não tem permissão para usar esse comando.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -44,7 +44,7 @@ public class SetNpcCommand extends Commands {
             Managers.getNpcManager().spawnNPC(player, loc);
         }
 
-        player.sendMessage("§a§lSUCESSO ➔ §aSpawn do NPC definido com sucesso!");
+        player.sendMessage("§a§lNPC ➔ §aSpawn do NPC definido com sucesso!");
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CompletableFuture;
 
 public class PunishmentManager {
 
@@ -58,6 +59,20 @@ public class PunishmentManager {
         cache(entry);
         repository.createAsync(entry);
         return entry;
+    }
+
+    public PunishmentEntry warn(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, String source) {
+        if (targetName == null || targetName.trim().isEmpty()) {
+            return null;
+        }
+
+        PunishmentEntry entry = new PunishmentEntry(0L, targetUuid, targetName, PunishmentType.WARN, safe(reason), System.currentTimeMillis(), 0L, punisherUuid, safe(punisherName), safe(source), false, 0L, null, null, null);
+        repository.createAsync(entry);
+        return entry;
+    }
+
+    public CompletableFuture<List<PunishmentEntry>> getHistory(UUID targetUuid, String targetName, int limit) {
+        return repository.loadHistory(targetUuid, targetName, limit);
     }
 
     public boolean clearActive(PunishmentType type, UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason) {

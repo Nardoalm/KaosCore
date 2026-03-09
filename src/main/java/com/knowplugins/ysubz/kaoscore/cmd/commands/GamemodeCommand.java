@@ -15,16 +15,16 @@ public class GamemodeCommand extends Commands {
 
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem utilizar este comando.");
+         sender.sendMessage("§c§lGAMEMODE ➔ §cApenas jogadores podem utilizar este comando.");
       } else {
          Player player = (Player)sender;
 
          if (!player.hasPermission("nardocore.staff.gamemode")) {
-            player.sendMessage("§c§lERRO ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§c§lGAMEMODE ➔ §cVocê não possui permissão para executar este comando.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
 
          } else if (args.length == 0) {
-            player.sendMessage("§c§lERRO ➔ §cUtilize /gamemode <modo> ou /gamemode <jogador> <modo>");
+            player.sendMessage("§c§lGAMEMODE ➔ §cUtilize /gamemode <modo> ou /gamemode <jogador> <modo>");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
 
          } else {
@@ -33,11 +33,11 @@ public class GamemodeCommand extends Commands {
 
                if (GameModeManager.isValidMode(gamemode)) {
                   GameModeManager.setGamemode(player, gamemode);
-                  player.sendMessage("§A§lSUCESSO ➔ §aSeu modo de jogo foi alterado para " + GameModeManager.getFrom(gamemode));
+                  player.sendMessage("§a§lGAMEMODE ➔ §aSeu modo de jogo foi alterado para " + GameModeManager.getFrom(gamemode));
                   player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
                } else {
-                  player.sendMessage("§c§lERRO ➔ §cUtilize /gamemode <modo>");
+                  player.sendMessage("§c§lGAMEMODE ➔ §cUtilize /gamemode <modo>");
                   player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
 
                }
@@ -46,7 +46,7 @@ public class GamemodeCommand extends Commands {
                String gamemode = args[1];
 
                if (target == null || !target.isOnline()) {
-                  player.sendMessage("§c§lERRO ➔ §cJogador não encontrado.");
+                  player.sendMessage("§c§lGAMEMODE ➔ §cJogador não encontrado.");
                   player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                   return;
                }
@@ -54,19 +54,19 @@ public class GamemodeCommand extends Commands {
                GameMode mode = getGameMode(args[0]);
 
                if (target.getGameMode() == mode) {
-                  sender.sendMessage("§c§lERRO ➔ §cVocê ou o jogador já está neste modo de jogo!");
+                  sender.sendMessage("§c§lGAMEMODE ➔ §cVocê ou o jogador já está neste modo de jogo!");
                   return;
                }
 
                if (GameModeManager.isValidMode(gamemode)) {
                   GameModeManager.setGamemode(target, gamemode);
-                  target.sendMessage("§A§lSUCESSO ➔ §aSeu modo de jogo foi alterado para " + GameModeManager.getFrom(gamemode));
+                  target.sendMessage("§a§lGAMEMODE ➔ §aSeu modo de jogo foi alterado para " + GameModeManager.getFrom(gamemode));
                   target.playSound(target.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
-                  player.sendMessage("§A§lSUCESSO ➔ §aO modo de jogo de " + target.getName() + " §afoi alterado para " + GameModeManager.getFrom(gamemode));
+                  player.sendMessage("§a§lGAMEMODE ➔ §aO modo de jogo de " + target.getName() + " §afoi alterado para " + GameModeManager.getFrom(gamemode));
                   player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
                } else {
-                  player.sendMessage("§c§lERRO ➔ §cUtilize /gamemode <jogador> <modo>");
+                  player.sendMessage("§c§lGAMEMODE ➔ §cUtilize /gamemode <jogador> <modo>");
                }
             }
 

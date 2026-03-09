@@ -15,13 +15,13 @@ public class KickCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("nardocore.staff.kickar")) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lKICK ➔ §cVocê não tem permissão para usar esse comando.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lERRO ➔ §cUso correto: /kick <jogador> [motivo]");
+            sender.sendMessage("§c§lKICK ➔ §cUso correto: /kick <jogador> [motivo]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -29,13 +29,13 @@ public class KickCommand extends Commands {
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         Player player = target.getPlayer();
         if (player == null || !player.isOnline()) {
-            sender.sendMessage("§c§lERRO ➔ §cEsse jogador não está online.");
+            sender.sendMessage("§c§lKICK ➔ §cEsse jogador não está online.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (sender instanceof Player && player.getUniqueId().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não pode se expulsar.");
+            sender.sendMessage("§c§lKICK ➔ §cVocê não pode se expulsar.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -45,7 +45,7 @@ public class KickCommand extends Commands {
 
         player.kickPlayer(ModerationCommandUtil.buildKickScreen(reason, senderName));
 
-        sender.sendMessage("§a§lSUCESSO ➔ §a" + target.getName() + " foi expulso do servidor.");
+        sender.sendMessage("§a§lKICK ➔ §a" + target.getName() + " foi expulso do servidor.");
         ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
 
         for (Player online : Bukkit.getOnlinePlayers()) {

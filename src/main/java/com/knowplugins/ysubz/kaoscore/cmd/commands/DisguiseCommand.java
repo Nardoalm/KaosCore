@@ -29,14 +29,14 @@ public class DisguiseCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§c§lDISGUISE ➔ §cApenas jogadores podem utilizar este comando.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("nardocore.member.disguise")) {
-            player.sendMessage("§c§lERRO ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§c§lDISGUISE ➔ §cVocê não possui permissão para executar este comando.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -62,7 +62,7 @@ public class DisguiseCommand extends Commands {
                 }
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§a§lSUCESSO ➔ §aSeu disfarce foi removido.";
+                String message = "§a§lDISGUISE ➔ §aSeu disfarce foi removido.";
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
 
@@ -70,7 +70,7 @@ public class DisguiseCommand extends Commands {
                 repo.saveAsync(player.getUniqueId(), false, null, null);
 
             } catch (Exception exception) {
-                player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao remover o disfarce.");
+                player.sendMessage("§c§lDISGUISE ➔ §cOcorreu um erro ao remover o disfarce.");
                 exception.printStackTrace();
             }
             return;
@@ -88,12 +88,12 @@ public class DisguiseCommand extends Commands {
         }
 
         if (newNick.length() > 16) {
-            player.sendMessage("§c§lERRO ➔ §cO nick não pode ter mais de 16 caracteres.");
+            player.sendMessage("§c§lDISGUISE ➔ §cO nick não pode ter mais de 16 caracteres.");
             return;
         }
 
         if (disguiseManager.isNickInUse(newNick)) {
-            player.sendMessage("§c§lERRO ➔ §cEsse nick já está em uso.");
+            player.sendMessage("§c§lDISGUISE ➔ §cEsse nick já está em uso.");
             return;
         }
 
@@ -123,7 +123,7 @@ public class DisguiseCommand extends Commands {
 
                 new SkinApplier(player).applySkinForOthers();
 
-                String message = "§a§lSUCESSO ➔ §aDisfarce aleatório aplicado: §e" + newNick;
+                String message = "§a§lDISGUISE ➔ §aDisfarce aleatório aplicado: §e" + newNick;
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
             } else {
@@ -135,7 +135,7 @@ public class DisguiseCommand extends Commands {
                 } else {
                     new SkinApplier(player).applySkinForOthers();
 
-                    String message = "§a§lSUCESSO ➔ §aVocê agora é: §e" + newNick;
+                    String message = "§a§lDISGUISE ➔ §aVocê agora é: §e" + newNick;
                     message = PlaceholderManager.replacePlaceholders(message, player);
                     player.sendMessage(message);
                 }
@@ -148,7 +148,7 @@ public class DisguiseCommand extends Commands {
             repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
 
         } catch (Exception exception) {
-            player.sendMessage("§c§lERRO ➔ §cErro ao aplicar disfarce.");
+            player.sendMessage("§c§lDISGUISE ➔ §cErro ao aplicar disfarce.");
             exception.printStackTrace();
         }
     }

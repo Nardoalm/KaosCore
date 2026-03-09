@@ -45,15 +45,15 @@ public class MenuClickListener implements Listener {
 
                                 Location loc = new Location(world, x, y, z, yaw, pitch);
                                 player.teleport(loc);
-                                player.sendMessage("§a§lSUCESSO ➔ §aVocê foi teleportado para o spawn!");
+                                player.sendMessage("§a§lMENU ➔ §aVocê foi teleportado para o spawn!");
                                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
                             }
                         }
                     } catch (Exception e) {
-                        player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao teleportar.");
+                        player.sendMessage("§c§lMENU ➔ §cOcorreu um erro ao teleportar.");
                     }
                 } else {
-                    player.sendMessage("§c§lERRO ➔ §cO spawn ainda não foi definido no servidor.");
+                    player.sendMessage("§c§lMENU ➔ §cO spawn ainda não foi definido no servidor.");
                 }
             }
 

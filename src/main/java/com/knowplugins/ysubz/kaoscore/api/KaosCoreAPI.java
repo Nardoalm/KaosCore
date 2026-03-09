@@ -4,9 +4,11 @@ import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.managers.ClanManager;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
+import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.UUID;
 
@@ -71,4 +73,20 @@ public interface KaosCoreAPI {
     void removeVanish(Player player);
 
     void setVanish(Player player, boolean vanished);
+
+    PunishmentEntry getActiveBan(Player player);
+
+    PunishmentEntry getActiveMute(Player player);
+
+    PunishmentEntry ban(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, long expiresAt, String source);
+
+    PunishmentEntry mute(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, long expiresAt, String source);
+
+    PunishmentEntry warn(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, String source);
+
+    boolean unban(UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason);
+
+    boolean unmute(UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason);
+
+    CompletableFuture<List<PunishmentEntry>> getPunishmentHistory(UUID targetUuid, String targetName, int limit);
 }

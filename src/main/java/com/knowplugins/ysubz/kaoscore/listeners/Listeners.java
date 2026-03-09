@@ -13,6 +13,7 @@ public class Listeners {
          pm.registerEvents(new PlayerJoinListener(), plugin);
          // pm.registerEvents(new EntityListener(), plugin);
          pm.registerEvents(new ChatListener(), plugin);
+         pm.registerEvents(new SitListener(), plugin);
          // pm.registerEvents(new WeatherListener(), plugin);
          // pm.registerEvents(new InteractListener(), plugin);
          // pm.registerEvents(new MenuClickListener(), plugin);

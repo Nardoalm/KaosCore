@@ -31,20 +31,20 @@ public class SkinCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§c§lSKIN ➔ §cApenas jogadores podem utilizar este comando.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("nardocore.member.skin")) {
-            player.sendMessage("§c§lERRO ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§c§lSKIN ➔ §cVocê não possui permissão para executar este comando.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (args.length != 1) {
-            player.sendMessage("§c§lERRO ➔ §cUso correto: /skin <nick> ou /skin reset");
+            player.sendMessage("§c§lSKIN ➔ §cUso correto: /skin <nick> ou /skin reset");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -101,27 +101,27 @@ public class SkinCommand extends Commands {
                             }
 
                             String message = applyForSelf
-                                    ? "§a§lSUCESSO ➔ §aSua skin foi alterada para: " + targetSkin
-                                    : "§a§lSUCESSO ➔ §aSkin do disfarce aplicada para os outros jogadores: " + targetSkin;
+                                    ? "§a§lSKIN ➔ §aSua skin foi alterada para: " + targetSkin
+                                    : "§a§lSKIN ➔ §aSkin do disfarce aplicada para os outros jogadores: " + targetSkin;
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
                         } catch (Exception exception) {
-                            player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao aplicar a textura da skin.");
+                            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao aplicar a textura da skin.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                             exception.printStackTrace();
                         }
                     });
 
                 } catch (Exception exception) {
-                    player.sendMessage("§c§lERRO ➔ §cSkin não encontrada ou erro na API.");
+                    player.sendMessage("§c§lSKIN ➔ §cSkin não encontrada ou erro na API.");
                     player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 }
             });
 
         } catch (Exception exception) {
-            player.sendMessage("§c§lERRO ➔ §cOcorreu um erro interno.");
+            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro interno.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             exception.printStackTrace();
         }
@@ -138,7 +138,7 @@ public class SkinCommand extends Commands {
 
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§a§lSUCESSO ➔ §aSua skin foi resetada para a original.";
+                String message = "§a§lSKIN ➔ §aSua skin foi resetada para a original.";
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
@@ -166,7 +166,7 @@ public class SkinCommand extends Commands {
 
                             new SkinApplier(player).applySkinForSelf();
 
-                            String message = "§a§lSUCESSO ➔ §aSua skin foi resetada para a original.";
+                            String message = "§a§lSKIN ➔ §aSua skin foi resetada para a original.";
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
@@ -176,21 +176,21 @@ public class SkinCommand extends Commands {
                                 repo.deleteAsync(id);
                             }
                         } catch (Exception ex) {
-                            player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao resetar a skin.");
+                            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                         }
                     });
 
                 } catch (Exception exception) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao resetar a skin.");
+                        player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
                         player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                     });
                 }
             });
 
         } catch (Exception exception) {
-            player.sendMessage("§c§lERRO ➔ §cOcorreu um erro ao resetar a skin.");
+            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             exception.printStackTrace();
         }

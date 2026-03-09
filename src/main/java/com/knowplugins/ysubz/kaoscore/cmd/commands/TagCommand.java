@@ -49,7 +49,7 @@ public class TagCommand implements CommandExecutor {
         }
 
         List<Tag> availableTags = plugin.getTagManager().getAvailableTags(player);
-        TextComponent line = new TextComponent("Suas tags: ");
+        TextComponent line = new TextComponent("§aSuas tags: ");
 
         for (int i = 0; i < availableTags.size(); i++) {
             Tag tag = availableTags.get(i);
@@ -60,7 +60,7 @@ public class TagCommand implements CommandExecutor {
             String displayName = format(tag.getColor()) + tag.getName();
             TextComponent component = new TextComponent(displayName);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tag " + tag.getName()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar a tag").create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar a tag" + displayName).create()));
             line.addExtra(component);
 
             if (i < availableTags.size() - 1) {

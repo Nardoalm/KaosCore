@@ -302,7 +302,7 @@ public class TagTeamManager {
         }
 
         String key = pairKey(viewer, target);
-        boolean shouldHideForPractice = viewerState != null && viewerState.isInMatch() && targetState != null && targetState.isSpectating();
+        boolean shouldHideForPractice = shouldHideForPractice(viewerState, targetState);
 
         if (shouldHideForPractice) {
             if (practiceHiddenPairs.add(key)) {
@@ -312,6 +312,28 @@ public class TagTeamManager {
         }
 
         clearPracticeVisibility(viewer, target);
+    }
+
+    private boolean shouldHideForPractice(KaosPracticeBridge.PracticeState viewerState, KaosPracticeBridge.PracticeState targetState) {
+        if (viewerState == null || !viewerState.isInMatch()) {
+            return false;
+        }
+
+        if (targetState == null) {
+            return true;
+        }
+
+        if (targetState.isSpectating() || !targetState.isInMatch()) {
+            return true;
+        }
+
+        String viewerMatchId = safe(viewerState.getMatchId());
+        String targetMatchId = safe(targetState.getMatchId());
+        if (viewerMatchId.isEmpty() || targetMatchId.isEmpty()) {
+            return true;
+        }
+
+        return !viewerMatchId.equalsIgnoreCase(targetMatchId);
     }
 
     private void clearPracticeVisibility(Player viewer, Player target) {

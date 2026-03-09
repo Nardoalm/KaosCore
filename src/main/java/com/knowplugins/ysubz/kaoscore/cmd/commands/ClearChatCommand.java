@@ -17,12 +17,12 @@ public class ClearChatCommand extends Commands {
    @Override
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem executar este comando.");
+         sender.sendMessage("§c§lCHAT ➔ §cApenas jogadores podem executar este comando.");
       } else {
          Player player = (Player)sender;
 
          if (!player.hasPermission("nardocore.cmd.clearchat")) {
-            player.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para executar este comando.");
+            player.sendMessage("§c§lCHAT ➔ §cVocê não tem permissão para executar este comando.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
 
@@ -33,7 +33,7 @@ public class ClearChatCommand extends Commands {
                });
             });
             TextComponent component = new TextComponent("");
-            Arrays.stream(TextComponent.fromLegacyText("§a§lSUCESSO ➔ §aO chat foi limpo.")).forEach(component::addExtra);
+            Arrays.stream(TextComponent.fromLegacyText("§a§lCHAT ➔ §aO chat foi limpo.")).forEach(component::addExtra);
             Bukkit.getOnlinePlayers().forEach((consumer) -> {
                consumer.spigot().sendMessage(component);
             });

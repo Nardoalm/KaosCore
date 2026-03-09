@@ -11,7 +11,7 @@ public class CommandList extends Commands {
 
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem utilizar este comando.");
+         sender.sendMessage("§c§lCOMANDOS ➔ §cApenas jogadores podem utilizar este comando.");
       } else {
          Player player = (Player)sender;
          if (!player.hasPermission("nardocore.staff.commandlist")) {

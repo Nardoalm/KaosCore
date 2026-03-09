@@ -15,7 +15,7 @@ public class PvpCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("nardocore.admin.pvp")) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissao para usar este comando.");
+            sender.sendMessage("§c§lPVP ➔ §cVocê não tem permissao para usar este comando.");
             if (sender instanceof Player) {
                 Player p = (Player) sender;
                 p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
@@ -25,13 +25,13 @@ public class PvpCommand extends Commands {
 
         if(!WorldProtectionListener.getPvp()){
             WorldProtectionListener.setPvp(true);
-            sender.sendMessage("§a§lSUCESSO ➔ §aModo de combate foi ATIVADO.");
+            sender.sendMessage("§a§lPVP ➔ §aModo de combate foi ATIVADO.");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
         } else {
             WorldProtectionListener.setPvp(false);
-            sender.sendMessage("§a§lSUCESSO ➔ §aModo de combate foi DESATIVADO.");
+            sender.sendMessage("§a§lPVP ➔ §aModo de combate foi DESATIVADO.");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }

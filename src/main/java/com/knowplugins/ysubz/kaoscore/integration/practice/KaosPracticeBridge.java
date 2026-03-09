@@ -18,6 +18,20 @@ public class KaosPracticeBridge {
             "§c", "§9", "§a", "§e", "§b", "§d", "§6", "§5", "§3", "§2", "§1", "§4"
     );
 
+    public boolean isAvailable() {
+        return resolveApi() != null;
+    }
+
+    public boolean isInLobby(Player player) {
+        Object api = resolveApi();
+        return api != null && invokeBoolean(api, "isInLobby", player);
+    }
+
+    public boolean isQueueing(Player player) {
+        Object api = resolveApi();
+        return api != null && invokeBoolean(api, "isQueueing", player);
+    }
+
     public PracticeState getState(Player player) {
         if (player == null) {
             return PracticeState.empty();
@@ -31,6 +45,7 @@ public class KaosPracticeBridge {
         boolean inMatch = invokeBoolean(api, "isInMatch", player);
         boolean spectating = invokeBoolean(api, "isSpectating", player);
         boolean overrideDefaultNametag = invokeBoolean(api, "shouldOverrideDefaultNametag", player);
+        String matchId = invokeString(api, "getMatchId", player);
         String teamId = invokeString(api, "getTeamId", player);
         String teamColor = normalizeColor(invokeString(api, "getTeamColor", player));
         Object context = invoke(api, "getNametagContext", player);
@@ -41,7 +56,7 @@ public class KaosPracticeBridge {
         int priority = invokeContextInt(context, "getPriority");
 
         if (spectating) {
-            return new PracticeState(false, false, true, "", "§8", "", 9500, teamId);
+            return new PracticeState(false, false, true, "", "§8", "", 9500, teamId, matchId);
         }
 
         if (overrideDefaultNametag || inMatch) {
@@ -50,7 +65,7 @@ public class KaosPracticeBridge {
                 resolvedColor = fallbackMatchColor(teamId.isEmpty() ? player.getUniqueId().toString() : teamId);
             }
             int resolvedPriority = priority > 0 ? priority : 100;
-            return new PracticeState(true, inMatch, false, prefix, resolvedColor, suffix, resolvedPriority, teamId);
+            return new PracticeState(true, inMatch, false, prefix, resolvedColor, suffix, resolvedPriority, teamId, matchId);
         }
 
         return PracticeState.empty();
@@ -171,8 +186,9 @@ public class KaosPracticeBridge {
         private final String suffix;
         private final int priority;
         private final String teamId;
+        private final String matchId;
 
-        public PracticeState(boolean overrideDefaultNametag, boolean inMatch, boolean spectating, String prefix, String nameColor, String suffix, int priority, String teamId) {
+        public PracticeState(boolean overrideDefaultNametag, boolean inMatch, boolean spectating, String prefix, String nameColor, String suffix, int priority, String teamId, String matchId) {
             this.overrideDefaultNametag = overrideDefaultNametag;
             this.inMatch = inMatch;
             this.spectating = spectating;
@@ -181,10 +197,11 @@ public class KaosPracticeBridge {
             this.suffix = suffix == null ? "" : suffix;
             this.priority = priority;
             this.teamId = teamId == null ? "" : teamId;
+            this.matchId = matchId == null ? "" : matchId;
         }
 
         public static PracticeState empty() {
-            return new PracticeState(false, false, false, "", "", "", 0, "");
+            return new PracticeState(false, false, false, "", "", "", 0, "", "");
         }
 
         public boolean isOverrideDefaultNametag() {
@@ -217,6 +234,10 @@ public class KaosPracticeBridge {
 
         public String getTeamId() {
             return teamId;
+        }
+
+        public String getMatchId() {
+            return matchId;
         }
     }
 }

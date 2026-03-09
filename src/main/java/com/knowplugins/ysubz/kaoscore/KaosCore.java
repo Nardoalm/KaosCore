@@ -9,6 +9,7 @@ import com.knowplugins.ysubz.kaoscore.managers.ClanManager;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TagTeamManager;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.KaosCoreExpansion;
 import org.bukkit.Bukkit;
@@ -88,6 +89,10 @@ public class KaosCore extends JavaPlugin {
       try {
          if (tagTeamManager != null) {
             tagTeamManager.stop();
+         }
+         SitManager sitManager = Managers.getSitManager();
+         if (sitManager != null) {
+            sitManager.cleanupAll();
          }
          Bukkit.getServicesManager().unregisterAll(this);
          DatabaseManager db = Managers.getDatabaseManager();

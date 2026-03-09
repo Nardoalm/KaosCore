@@ -13,6 +13,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class PunishmentRepository {
 
@@ -113,6 +114,44 @@ public class PunishmentRepository {
         revokeAsync(type, targetUuid, targetName, null, "SYSTEM", "Punicao expirada");
     }
 
+    public CompletableFuture<List<PunishmentEntry>> loadHistory(UUID targetUuid, String targetName, int limit) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<PunishmentEntry> result = new ArrayList<>();
+            String sql = buildHistorySql(targetUuid, targetName);
+            if (sql == null) {
+                return result;
+            }
+
+            int resolvedLimit = limit <= 0 ? 10 : limit;
+
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                int index = 1;
+                if (targetUuid != null) {
+                    ps.setString(index++, targetUuid.toString());
+                }
+                if (targetName != null && !targetName.trim().isEmpty()) {
+                    ps.setString(index++, targetName.toLowerCase());
+                }
+                ps.setInt(index, resolvedLimit);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        PunishmentEntry entry = map(rs);
+                        if (entry != null) {
+                            result.add(entry);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao carregar histórico de punicoes do DB: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            return result;
+        });
+    }
+
     private String buildRevokeSql(UUID targetUuid, String targetName) {
         boolean hasUuid = targetUuid != null;
         boolean hasName = targetName != null && !targetName.trim().isEmpty();
@@ -130,6 +169,25 @@ public class PunishmentRepository {
         }
 
         return "UPDATE punishments SET active = 0, removed_at = ?, removed_by_uuid = ?, removed_by_name = ?, removed_reason = ? WHERE active = 1 AND punishment_type = ? AND LOWER(target_name) = ?";
+    }
+
+    private String buildHistorySql(UUID targetUuid, String targetName) {
+        boolean hasUuid = targetUuid != null;
+        boolean hasName = targetName != null && !targetName.trim().isEmpty();
+
+        if (!hasUuid && !hasName) {
+            return null;
+        }
+
+        if (hasUuid && hasName) {
+            return "SELECT id, target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active, removed_at, removed_by_uuid, removed_by_name, removed_reason FROM punishments WHERE target_uuid = ? OR LOWER(target_name) = ? ORDER BY created_at DESC LIMIT ?";
+        }
+
+        if (hasUuid) {
+            return "SELECT id, target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active, removed_at, removed_by_uuid, removed_by_name, removed_reason FROM punishments WHERE target_uuid = ? ORDER BY created_at DESC LIMIT ?";
+        }
+
+        return "SELECT id, target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active, removed_at, removed_by_uuid, removed_by_name, removed_reason FROM punishments WHERE LOWER(target_name) = ? ORDER BY created_at DESC LIMIT ?";
     }
 
     private PunishmentEntry map(ResultSet rs) {

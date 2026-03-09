@@ -24,27 +24,27 @@ public class BanCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("nardocore.staff.banir")) {
-            sender.sendMessage("§c§lERRO ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lBAN ➔ §cVocê não tem permissão para usar esse comando.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage("§c§lERRO ➔ §cUso correto: /ban <jogador> <tempo|perm> [motivo]");
+            sender.sendMessage("§c§lBAN ➔ §cUso correto: /ban <jogador> <tempo|perm> [motivo]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lERRO ➔ §cSistema de punições indisponível.");
+            sender.sendMessage("§c§lBAN ➔ §cSistema de punições indisponível.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         if (target.getName().isEmpty()) {
-            sender.sendMessage("§c§lERRO ➔ §cJogador inválido.");
+            sender.sendMessage("§c§lBAN ➔ §cJogador inválido.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -52,7 +52,7 @@ public class BanCommand extends Commands {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (target.getUuid() != null && target.getUuid().equals(player.getUniqueId())) {
-                sender.sendMessage("§c§lERRO ➔ §cVocê não pode se banir.");
+                sender.sendMessage("§c§lBAN ➔ §cVocê não pode se banir.");
                 ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
                 return;
             }
@@ -60,7 +60,7 @@ public class BanCommand extends Commands {
 
         long duration = PunishmentTime.parseDuration(args[1]);
         if (duration == Long.MIN_VALUE) {
-            sender.sendMessage("§c§lERRO ➔ §cTempo inválido. Ex: 30d, 12h, 30m ou perm.");
+            sender.sendMessage("§c§lBAN ➔ §cTempo inválido. Ex: 30d, 12h, 30m ou perm.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -72,7 +72,7 @@ public class BanCommand extends Commands {
 
         PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "BAN");
         if (punishment == null) {
-            sender.sendMessage("§c§lERRO ➔ §cNão foi possível aplicar o banimento.");
+            sender.sendMessage("§c§lBAN ➔ §cNão foi possível aplicar o banimento.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -86,7 +86,7 @@ public class BanCommand extends Commands {
             onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
         }
 
-        sender.sendMessage("§a§lSUCESSO ➔ §a" + target.getName() + " foi banido" + (punishment.isPermanent() ? " permanentemente" : " por " + PunishmentTime.formatRemaining(punishment.getExpiresAt())) + ".");
+        sender.sendMessage("§a§lBAN ➔ §a" + target.getName() + " foi banido" + (punishment.isPermanent() ? " permanentemente" : " por " + PunishmentTime.formatRemaining(punishment.getExpiresAt())) + ".");
         ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
