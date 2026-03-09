@@ -64,6 +64,24 @@ public class PlayerJoinListener implements Listener {
          }
       }, 1L);
 
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && Managers.getClanManager() != null) {
+            Managers.getClanManager().notifyPendingInvites(player);
+         }
+      }, 20L);
+
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && Managers.getFriendManager() != null) {
+            Managers.getFriendManager().notifyPendingRequests(player);
+         }
+      }, 24L);
+
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && Managers.getFriendManager() != null) {
+            Managers.getFriendManager().notifyFriendJoin(player);
+         }
+      }, 40L);
+
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
 
@@ -179,17 +197,14 @@ public class PlayerJoinListener implements Listener {
             String duration = expires == null ? "Permanente" : PunishmentTime.formatDate(expires.getTime());
 
             String banMessage =
-                    "&cVocê foi banido.\n\n" +
-                            "  &cMotivo: &7" + reason + "\n" +
-                            "  &cExpira em: &7" + duration + "\n" +
-                            "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
-                            "  &cBanido injustamente? Contate-nos via\n" +
-                            "  &9&ndiscord.gg/kaosmc";
+                    "§cVocê foi banido.\n\n" +
+                            "  §cMotivo: §7" + reason + "\n" +
+                            "  §cExpira em: §7" + duration + "\n" +
+                            "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
+                            "  §cBanido injustamente? Contate-nos via\n" +
+                            "  §9§ndiscord.gg/kaosmc";
 
-            e.disallow(
-                    AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
-                    ChatColor.translateAlternateColorCodes('&', banMessage)
-            );
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
          }
       }
    }
@@ -251,13 +266,13 @@ public class PlayerJoinListener implements Listener {
       String title = entry != null && entry.isPermanent() ? "Você foi banido permanentemente." : "Você foi banido temporariamente.";
 
       String message =
-              "&c" + title + "\n\n" +
-                      "  &cMotivo: &7" + reason + "\n" +
-                      "  &cExpira em: &7" + expires + "\n" +
-                      "  &eAdquira seu unban em: &bwww.kaosmc.com\n" +
-                      "  &cBanido injustamente? Contate-nos via\n" +
-                      "  &9&ndiscord.gg/kaosmc";
+              "§c" + title + "\n\n" +
+                      "  §cMotivo: §7" + reason + "\n" +
+                      "  §cExpira em: §7" + expires + "\n" +
+                      "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
+                      "  §cBanido injustamente? Contate-nos via\n" +
+                      "  §9§ndiscord.gg/kaosmc";
 
-      return ChatColor.translateAlternateColorCodes('&', message);
+      return message;
    }
 }

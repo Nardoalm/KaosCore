@@ -1,15 +1,14 @@
 package com.knowplugins.ysubz.kaoscore.clan;
 
-
 public enum ClanRole {
 
-    LEADER("&4&lLIDER", 100),
-    MOD("&c&lMOD", 80),
-    MEMBER("&7Membro", 60),
-    RECRUIT("&8Recruta", 40);
+    LEADER("§4§lLIDER", 100),
+    MOD("§c§lMOD", 80),
+    MEMBER("§7Membro", 60),
+    RECRUIT("§8Recruta", 40);
 
-    private String display;
-    private int power;
+    private final String display;
+    private final int power;
 
     ClanRole(String display, int power) {
         this.display = display;
@@ -25,15 +24,15 @@ public enum ClanRole {
     }
 
     public boolean canPromote(ClanRole target) {
-        return this.power > target.power;
+        return target != null && this.power > target.power;
     }
 
     public boolean canDemote(ClanRole target) {
-        return this.power > target.power;
+        return target != null && this.power > target.power;
     }
 
     public boolean canKick(ClanRole target) {
-        return this.power > target.power;
+        return target != null && this.power > target.power;
     }
 
     public static ClanRole getByName(String name) {

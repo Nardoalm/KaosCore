@@ -1,6 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.clan;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Clan {
 
@@ -8,8 +12,8 @@ public class Clan {
     private String tag;
     private String tagColor;
     private UUID leader;
-    private Map<UUID, ClanRole> members;
-    private List<UUID> bans;
+    private final Map<UUID, ClanRole> members;
+    private final List<UUID> bans;
     private long creationDate;
     private int wins;
     private int losses;
@@ -30,33 +34,53 @@ public class Clan {
         members.put(leader, ClanRole.LEADER);
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getTag() { return tag; }
-    public void setTag(String tag) { this.tag = tag.toUpperCase(); }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getTagColor() { return tagColor; }
-    public void setTagColor(String color) { this.tagColor = color; }
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag.toUpperCase();
+    }
+
+    public String getTagColor() {
+        return tagColor;
+    }
+
+    public void setTagColor(String color) {
+        this.tagColor = color;
+    }
 
     public String getFormattedTag() {
         return tagColor + "[" + tag + "]";
     }
 
-    public UUID getLeader() { return leader; }
+    public UUID getLeader() {
+        return leader;
+    }
+
     public void setLeader(UUID leader) {
         this.leader = leader;
         members.put(leader, ClanRole.LEADER);
     }
 
-    public Map<UUID, ClanRole> getMembers() { return members; }
+    public Map<UUID, ClanRole> getMembers() {
+        return members;
+    }
 
     public ClanRole getRole(UUID playerId) {
-        return members.getOrDefault(playerId, null);
+        return members.get(playerId);
     }
 
     public boolean isLeader(UUID playerId) {
-        return leader.equals(playerId);
+        return leader != null && leader.equals(playerId);
     }
 
     public boolean isMod(UUID playerId) {
@@ -89,24 +113,59 @@ public class Clan {
         bans.remove(playerId);
     }
 
-    public List<UUID> getBans() { return bans; }
+    public List<UUID> getBans() {
+        return bans;
+    }
 
-    public long getCreationDate() { return creationDate; }
+    public long getCreationDate() {
+        return creationDate;
+    }
 
-    public int getWins() { return wins; }
-    public void setWins(int wins) { this.wins = wins; }
-    public void addWin() { this.wins++; }
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
+    }
 
-    public int getLosses() { return losses; }
-    public void setLosses(int losses) { this.losses = losses; }
-    public void addLoss() { this.losses++; }
+    public int getWins() {
+        return wins;
+    }
 
-    public int getElo() { return elo; }
-    public void setElo(int elo) { this.elo = elo; }
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
 
-    public int getMemberCount() { return members.size(); }
+    public void addWin() {
+        this.wins++;
+    }
 
-    public int getMaxMembers() { return 30; }
+    public int getLosses() {
+        return losses;
+    }
 
-    public boolean canInvite() { return members.size() < getMaxMembers(); }
+    public void setLosses(int losses) {
+        this.losses = losses;
+    }
+
+    public void addLoss() {
+        this.losses++;
+    }
+
+    public int getElo() {
+        return elo;
+    }
+
+    public void setElo(int elo) {
+        this.elo = elo;
+    }
+
+    public int getMemberCount() {
+        return members.size();
+    }
+
+    public int getMaxMembers() {
+        return 30;
+    }
+
+    public boolean canInvite() {
+        return members.size() < getMaxMembers();
+    }
 }

@@ -51,6 +51,8 @@ public abstract class Commands extends Command {
       new DisguiseCommand();
       new SkinCommand();
       new SitCommand();
+      new MedalCommand(plugin);
+      new FriendCommand();
       new ClanCommand(plugin);
       new CcCommand();
    }

@@ -50,4 +50,20 @@ public class PlaceholderManager {
 
         return player.getName();
     }
+
+    public static String getAccountName(Player player) {
+        if (player == null) {
+            return "Unknown";
+        }
+
+        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        if (disguiseManager != null) {
+            String originalName = disguiseManager.getOriginalName(player);
+            if (originalName != null && !originalName.trim().isEmpty()) {
+                return originalName;
+            }
+        }
+
+        return player.getName();
+    }
 }

@@ -3,6 +3,10 @@ package com.knowplugins.ysubz.kaoscore.utils.placeholder;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.MedalManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.medal.Medal;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
@@ -54,7 +58,9 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         Tag tag = core.getTagManager() == null ? null : core.getTagManager().getTag(player);
-        Clan clan = core.getClanManager() == null ? null : core.getClanManager().getClan(player);
+        MedalManager medalManager = core.getMedalManager();
+        Medal medal = medalManager == null ? null : medalManager.getMedal(player);
+        Clan clan = shouldHideClan(player) || core.getClanManager() == null ? null : core.getClanManager().getClan(player);
 
         if (params.equalsIgnoreCase("tag_name")) {
             return clean(tag == null ? null : tag.getName());
@@ -83,6 +89,42 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         if (params.equalsIgnoreCase("tag_display")) {
             if (tag == null) return "";
             return safe(tag.getPrefix()) + safe(tag.getName()) + safe(tag.getSuffix());
+        }
+
+        if (params.equalsIgnoreCase("medal_name")) {
+            return safe(medal == null ? null : medal.getName());
+        }
+
+        if (params.equalsIgnoreCase("medal_id")) {
+            return safe(medal == null ? null : medal.getId());
+        }
+
+        if (params.equalsIgnoreCase("medal_chat")) {
+            return medalManager == null ? "" : safe(medalManager.getChatDisplay(player));
+        }
+
+        if (params.equalsIgnoreCase("medal_nametag")) {
+            return medalManager == null ? "" : safe(medalManager.getNametagDisplay(player));
+        }
+
+        if (params.equalsIgnoreCase("medal_chat_static")) {
+            return medalManager == null ? "" : safe(medalManager.getStaticChatDisplay(player));
+        }
+
+        if (params.equalsIgnoreCase("medal_nametag_static")) {
+            return medalManager == null ? "" : safe(medalManager.getStaticNametagDisplay(player));
+        }
+
+        if (params.equalsIgnoreCase("medal_animated")) {
+            return medal != null && medal.isAnimated() ? "true" : "false";
+        }
+
+        if (params.equalsIgnoreCase("friend_count")) {
+            return Managers.getFriendManager() == null ? "0" : String.valueOf(Managers.getFriendManager().getFriendCount(player.getUniqueId()));
+        }
+
+        if (params.equalsIgnoreCase("friend_online_count")) {
+            return Managers.getFriendManager() == null ? "0" : String.valueOf(Managers.getFriendManager().getOnlineFriendCount(player.getUniqueId()));
         }
 
         if (params.equalsIgnoreCase("clan_tag")) {
@@ -146,5 +188,12 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
     private String clean(String value) {
         if (value == null) return "";
         return value.replaceAll("(?i)&[0-9A-FK-OR]", "").replaceAll("(?i)§[0-9A-FK-OR]", "");
+    }
+
+    private boolean shouldHideClan(Player player) {
+        if (player == null) {
+            return false;
+        }
+        return DisguiseManager.isDisguised(player) && Managers.getDisguiseManager() != null;
     }
 }

@@ -13,7 +13,8 @@ public class CcCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) return;
         Player p = (Player) sender;
-        if (args.length == 0) { p.sendMessage("Uso correto: /cc <mensagem>"); return; }
+        if (!p.hasPermission("nardocore.clan.use.chat")) { p.sendMessage("§cVocê não tem permissão para usar o chat do clan."); return; }
+        if (args.length == 0) { p.sendMessage("§cUso correto: /cc <mensagem>"); return; }
         if (!Managers.getClanManager().isInClan(p.getUniqueId())) { p.sendMessage("§cVocê não está em um clan."); return; }
         String msg = String.join(" ", args);
         Clan clan = Managers.getClanManager().getPlayerClan(p.getUniqueId());

@@ -1,17 +1,24 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
-
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import org.bukkit.Bukkit;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class DatabaseManager {
 
     private final KaosCore plugin;
     private Properties props;
-    private String host, database, username, password;
+    private String host;
+    private String database;
+    private String username;
+    private String password;
     private int port;
     private boolean connected;
     private String jdbcUrl;
@@ -27,7 +34,9 @@ public class DatabaseManager {
     }
 
     public synchronized boolean connect() {
-        if (connected) return true;
+        if (connected) {
+            return true;
+        }
 
         try {
             try {
@@ -69,7 +78,9 @@ public class DatabaseManager {
         if (props == null) {
             connect();
         }
-        if (props == null) throw new SQLException("Database properties not initialized");
+        if (props == null) {
+            throw new SQLException("Database properties not initialized");
+        }
         return DriverManager.getConnection(jdbcUrl, props);
     }
 
@@ -93,7 +104,10 @@ public class DatabaseManager {
                 "tag VARCHAR(6) NOT NULL," +
                 "tag_color VARCHAR(64) NOT NULL," +
                 "leader VARCHAR(36) NOT NULL," +
-                "created BIGINT NOT NULL" +
+                "created BIGINT NOT NULL," +
+                "wins INT NOT NULL DEFAULT 0," +
+                "losses INT NOT NULL DEFAULT 0," +
+                "elo INT NOT NULL DEFAULT 1000" +
                 ");";
 
         String clanMembersTable = "CREATE TABLE IF NOT EXISTS clan_members (" +
@@ -105,6 +119,16 @@ public class DatabaseManager {
                 "joined BIGINT NOT NULL" +
                 ");";
 
+        String clanInvitesTable = "CREATE TABLE IF NOT EXISTS clan_invites (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "clan_name VARCHAR(32) NOT NULL," +
+                "inviter_uuid CHAR(36) NOT NULL," +
+                "target_uuid CHAR(36) NOT NULL," +
+                "created_at BIGINT NOT NULL," +
+                "UNIQUE KEY unique_clan_invite (target_uuid, clan_name)," +
+                "INDEX idx_clan_invites_target (target_uuid)" +
+                ");";
+
         String friendsTable = "CREATE TABLE IF NOT EXISTS friends (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "player_uuid VARCHAR(36) NOT NULL," +
@@ -112,6 +136,16 @@ public class DatabaseManager {
                 "friend_name VARCHAR(16) NOT NULL," +
                 "since BIGINT NOT NULL," +
                 "UNIQUE KEY unique_friend (player_uuid, friend_uuid)" +
+                ");";
+
+        String friendRequestsTable = "CREATE TABLE IF NOT EXISTS friend_requests (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "requester_uuid CHAR(36) NOT NULL," +
+                "requester_name VARCHAR(16) NOT NULL," +
+                "target_uuid CHAR(36) NOT NULL," +
+                "created_at BIGINT NOT NULL," +
+                "UNIQUE KEY unique_friend_request (requester_uuid, target_uuid)," +
+                "INDEX idx_friend_requests_target (target_uuid)" +
                 ");";
 
         String vanishes = "CREATE TABLE IF NOT EXISTS vanishes (" +
@@ -139,6 +173,12 @@ public class DatabaseManager {
         String playerTags = "CREATE TABLE IF NOT EXISTS player_tags (" +
                 "uuid CHAR(36) NOT NULL PRIMARY KEY," +
                 "tag_id VARCHAR(64) NOT NULL," +
+                "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ");";
+
+        String playerMedals = "CREATE TABLE IF NOT EXISTS player_medals (" +
+                "uuid CHAR(36) NOT NULL PRIMARY KEY," +
+                "medal_id VARCHAR(64) NOT NULL," +
                 "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
                 ");";
 
@@ -178,13 +218,21 @@ public class DatabaseManager {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(clansTable);
             stmt.executeUpdate(clanMembersTable);
+            stmt.executeUpdate(clanInvitesTable);
             stmt.executeUpdate(friendsTable);
+            stmt.executeUpdate(friendRequestsTable);
             stmt.executeUpdate(vanishes);
             stmt.executeUpdate(disguises);
             stmt.executeUpdate(skins);
             stmt.executeUpdate(playerTags);
+            stmt.executeUpdate(playerMedals);
             stmt.executeUpdate(punishments);
             stmt.executeUpdate(playerAddresses);
+
+            ensureColumn(conn, "clans", "created", "BIGINT NOT NULL DEFAULT 0");
+            ensureColumn(conn, "clans", "wins", "INT NOT NULL DEFAULT 0");
+            ensureColumn(conn, "clans", "losses", "INT NOT NULL DEFAULT 0");
+            ensureColumn(conn, "clans", "elo", "INT NOT NULL DEFAULT 1000");
 
             Bukkit.getConsoleSender().sendMessage("§a§lSUCESSO -> §aTabelas criadas com sucesso!");
             return true;
@@ -192,6 +240,19 @@ public class DatabaseManager {
             Bukkit.getConsoleSender().sendMessage("§c§lERRO -> §cErro ao criar as tabelas: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void ensureColumn(Connection conn, String tableName, String columnName, String definition) throws SQLException {
+        DatabaseMetaData metaData = conn.getMetaData();
+        try (ResultSet rs = metaData.getColumns(conn.getCatalog(), null, tableName, columnName)) {
+            if (rs.next()) {
+                return;
+            }
+        }
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition);
         }
     }
 }

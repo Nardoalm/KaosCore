@@ -4,6 +4,7 @@ import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,23 +33,35 @@ public class ChatListener implements Listener {
             }
         }
 
-        String level = PlaceholderAPI.setPlaceholders(
-                p,
-                "%kaos_level% "
-        );
+        String level = PlaceholderAPI.setPlaceholders(p, "%kaos_level%");
+        String medal = PlaceholderAPI.setPlaceholders(p, "%kaoscore_medal_chat%");
+        String tag = PlaceholderAPI.setPlaceholders(p, "%kaoscore_tag_prefix%");
+        String clan = PlaceholderAPI.setPlaceholders(p, "%kaoscore_clan_tag%");
+        String displayName = PlaceholderManager.getDisplayName(p);
 
-        String tag = PlaceholderAPI.setPlaceholders(
-                p,
-                "%kaoscore_tag_prefix%"
-        );
+        StringBuilder prefix = new StringBuilder();
+        appendPart(prefix, level);
+        appendPart(prefix, medal);
+        appendPart(prefix, tag);
+        appendPart(prefix, clan);
 
-        String format = level + tag + p.getName() + " §8» §7" + msg;
+        String format = prefix + displayName + " §8» §7" + msg;
 
         if(event.getPlayer().hasPermission("nardocore.member.vip")) {
-            format = level + tag + p.getName() + " §8» §f" + msg;
+            format = prefix + displayName + " §8» §f" + msg;
         }
         for (Player online : Bukkit.getOnlinePlayers()) {
             online.sendMessage(format);
+        }
+    }
+
+    private void appendPart(StringBuilder builder, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+        builder.append(value);
+        if (!value.endsWith(" ")) {
+            builder.append(' ');
         }
     }
 }

@@ -24,6 +24,7 @@ public class Managers {
     private static PlayerAddressRepository playerAddressRepository;
     private static NPCManager npcManager;
     private static ClanManager clanManager;
+    private static FriendManager friendManager;
 
     public Managers(KaosCore plugin) {
         this.plugin = plugin;
@@ -42,14 +43,15 @@ public class Managers {
             playerAddressRepository = new PlayerAddressRepository(plugin, databaseManager);
         }
 
-        // npcManager = new NPCManager(plugin);
-        // npcManager.loadSkinCache();
-
         clanManager = new ClanManager(plugin);
+        clanManager.loadClans();
+        friendManager = new FriendManager(plugin);
+        friendManager.loadFriends();
         sitManager = new SitManager(plugin);
 
         VanishManager.setupManager();
-        // ScoreboardManager.setup();
+        // npcManager = new NPCManager(plugin);
+        // npcManager.loadSkinCache();
 
         if (databaseManager != null && databaseManager.isConnected()) {
             DisguiseRepository repo = new DisguiseRepository(plugin, databaseManager);
@@ -86,10 +88,16 @@ public class Managers {
     }
 
     public static NPCManager getNpcManager() {
-         return npcManager;
+        return npcManager;
     }
 
-    public static ClanManager getClanManager() { return clanManager; }
+    public static ClanManager getClanManager() {
+        return clanManager;
+    }
+
+    public static FriendManager getFriendManager() {
+        return friendManager;
+    }
 
     public static void setDatabaseManager(DatabaseManager db) {
         databaseManager = db;

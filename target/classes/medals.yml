@@ -1,0 +1,35 @@
+medals:
+  bronze:
+    name: "Bronze"
+    permission: "kaoscore.medal.bronze"
+    chat: "§6[BR] "
+    nametag: "§6[BR] "
+    interval: 10
+  champion:
+    name: "Champion"
+    permission: "kaoscore.medal.champion"
+    chat-frames:
+      - "§e✦ "
+      - "§6✦ "
+      - "§c✦ "
+      - "§6✦ "
+    nametag-frames:
+      - "§e✦ "
+      - "§6✦ "
+      - "§c✦ "
+      - "§6✦ "
+    interval: 10
+  galaxy:
+    name: "Galaxy"
+    permission: "kaoscore.medal.galaxy"
+    chat-frames:
+      - "§b✧ "
+      - "§d✧ "
+      - "§f✧ "
+      - "§d✧ "
+    nametag-frames:
+      - "§b✧ "
+      - "§d✧ "
+      - "§f✧ "
+      - "§d✧ "
+    interval: 10

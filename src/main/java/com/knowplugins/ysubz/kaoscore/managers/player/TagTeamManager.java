@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.managers.player;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.MedalManager;
 import com.knowplugins.ysubz.kaoscore.managers.TagManager;
 import com.knowplugins.ysubz.kaoscore.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -28,14 +29,16 @@ public class TagTeamManager {
 
     private final KaosCore plugin;
     private final TagManager tagManager;
+    private final MedalManager medalManager;
     private final KaosPracticeBridge practiceBridge;
     private final ConcurrentMap<UUID, Scoreboard> trackedBoards;
     private final Set<String> practiceHiddenPairs;
     private BukkitTask syncTask;
 
-    public TagTeamManager(KaosCore plugin, TagManager tagManager) {
+    public TagTeamManager(KaosCore plugin, TagManager tagManager, MedalManager medalManager) {
         this.plugin = plugin;
         this.tagManager = tagManager;
+        this.medalManager = medalManager;
         this.practiceBridge = new KaosPracticeBridge();
         this.trackedBoards = new ConcurrentHashMap<>();
         this.practiceHiddenPairs = ConcurrentHashMap.newKeySet();
@@ -138,6 +141,10 @@ public class TagTeamManager {
     }
 
     private void syncAll() {
+        if (medalManager != null) {
+            medalManager.advanceAnimations(10);
+        }
+
         Set<UUID> onlinePlayers = new HashSet<>();
         Map<UUID, KaosPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
 
@@ -253,7 +260,10 @@ public class TagTeamManager {
             return null;
         }
 
-        return new NametagStyle(tag.getId(), trim(resolveText(player, tag.getPrefix())), trim(resolveText(player, tag.getSuffix())), tag.getPosition());
+        String medalPrefix = medalManager == null ? "" : medalManager.getNametagDisplay(player);
+        String tagPrefix = resolveText(player, tag.getPrefix());
+        String tagSuffix = resolveText(player, tag.getSuffix());
+        return new NametagStyle(tag.getId(), trim(medalPrefix + tagPrefix), trim(tagSuffix), tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
