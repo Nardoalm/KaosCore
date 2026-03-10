@@ -26,7 +26,7 @@ public class ChatListener implements Listener {
         if (punishmentManager != null) {
             PunishmentEntry mute = punishmentManager.getActiveMute(p);
             if (mute != null) {
-                p.sendMessage("§c§lMUTE ➔ §cVocê está mutado.");
+                p.sendMessage("§c§lMUTE ➔ §cVocê está mutado.\n");
                 p.sendMessage("§cMotivo: §7" + mute.getReason());
                 p.sendMessage("§cDuração: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
                 return;
@@ -36,14 +36,12 @@ public class ChatListener implements Listener {
         String level = PlaceholderAPI.setPlaceholders(p, "%kaos_level%");
         String medal = PlaceholderAPI.setPlaceholders(p, "%kaoscore_medal_chat%");
         String tag = PlaceholderAPI.setPlaceholders(p, "%kaoscore_tag_prefix%");
-        String clan = PlaceholderAPI.setPlaceholders(p, "%kaoscore_clan_tag%");
         String displayName = PlaceholderManager.getDisplayName(p);
 
         StringBuilder prefix = new StringBuilder();
-        appendPart(prefix, level);
         appendPart(prefix, medal);
+        appendPart(prefix, level);
         appendPart(prefix, tag);
-        appendPart(prefix, clan);
 
         String format = prefix + displayName + " §8» §7" + msg;
 

@@ -16,7 +16,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public class SitListener implements Listener {
+    private final Set<UUID> processingTeleport = new HashSet<>();
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
@@ -64,9 +69,20 @@ public class SitListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+
+        if (processingTeleport.contains(player.getUniqueId())) {
+            return;
+        }
+
         SitManager sitManager = Managers.getSitManager();
         if (sitManager != null) {
-            sitManager.cleanup(event.getPlayer());
+            processingTeleport.add(player.getUniqueId());
+            try {
+                sitManager.cleanup(player);
+            } finally {
+                processingTeleport.remove(player.getUniqueId());
+            }
         }
     }
 
