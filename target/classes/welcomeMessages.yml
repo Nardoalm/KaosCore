@@ -8,177 +8,177 @@ messages:
     invasor:
       name: "Invasor"
       text: "{player} §6invadiu o lobby!"
-      permission: "welcome.invasor"
+      permission: "kaoscore.welcome.invasor"
 
     area:
       name: "Tô na área"
       text: "{player} §6tá na área!"
-      permission: "welcome.invasor"
+      permission: "kaoscore.welcome.invasor"
 
     amongus:
       name: "Among Us"
       text: "{player} §6saiu da ventilação!"
-      permission: "welcome.amongus"
+      permission: "kaoscore.welcome.amongus"
 
     minecraft:
       name: "Minecraft"
       text: "{player} §6spawnou no bloco de grama!"
-      permission: "welcome.minecraft"
+      permission: "kaoscore.welcome.minecraft"
 
     fortnite:
       name: "Fortnite"
       text: "{player} §6pousou no ônibus de batalha!"
-      permission: "welcome.fortnite"
+      permission: "kaoscore.welcome.fortnite"
 
     mario:
       name: "Mario"
       text: "{player} §6pulou do cano do lobby!"
-      permission: "welcome.mario"
+      permission: "kaoscore.welcome.mario"
 
     pokemon:
       name: "Pokémon"
       text: "{player} §6foi teleportado pelo Prof. Carvalho!"
-      permission: "welcome.pokemon"
+      permission: "kaoscore.welcome.pokemon"
 
     pacman:
       name: "Pac Man"
       text: "{player} §6wakka wakka chegou!"
-      permission: "welcome.pacman"
+      permission: "kaoscore.welcome.pacman"
 
     zelda:
       name: "Zelda"
       text: "{player} §6ouviu a ocarina e apareceu!"
-      permission: "welcome.zelda"
+      permission: "kaoscore.welcome.zelda"
 
     streetfighter:
       name: "Street Fighter"
       text: "{player} §6KO! Round 1!"
-      permission: "welcome.streetfighter"
+      permission: "kaoscore.welcome.streetfighter"
 
     stardew:
       name: "Stardew Valley"
       text: "{player} §6veio farmar no lobby!"
-      permission: "welcome.stardewvalley"
+      permission: "kaoscore.welcome.stardewvalley"
 
     tomjerry:
       name: "Tom & Jerry"
       text: "{player} §6foi perseguido até o lobby!"
-      permission: "welcome.tomjerry"
+      permission: "kaoscore.welcome.tomjerry"
 
     bobesponja:
       name: "Bob Esponja"
       text: "{player} §6está pronto, capitão!"
-      permission: "welcome.bobesponja"
+      permission: "kaoscore.welcome.bobesponja"
 
     pica_pau:
       name: "Pica-Pau"
       text: "{player} §6ha-ha-ha-ha apareceu!"
-      permission: "welcome.picapau"
+      permission: "kaoscore.welcome.picapau"
 
     scooby:
       name: "Scooby-Doo"
       text: "{player} §6fugiu do fantasma!"
-      permission: "welcome.scooby"
+      permission: "kaoscore.welcome.scooby"
 
     simpsons:
       name: "Os Simpsons"
       text: "{player} §6D'oh! Chegou atrasado!"
-      permission: "welcome.simpsons"
+      permission: "kaoscore.welcome.simpsons"
 
     coragem:
       name: "Coragem"
       text: "{player} §6voltou para o quintal!"
-      permission: "welcome.coragem"
+      permission: "kaoscore.welcome.coragem"
 
     dragonball:
       name: "Dragon Ball"
       text: "{player} §6chegou voando na nuvem voadora!"
-      permission: "welcome.dragonball"
+      permission: "kaoscore.welcome.dragonball"
 
     naruto:
       name: "Naruto"
       text: "{player} §6dattebayo no lobby!"
-      permission: "welcome.naruto"
+      permission: "kaoscore.welcome.naruto"
 
     cavaleiros:
       name: "Cavaleiros do Zodíaco"
       text: "{player} §6explodiu o cosmo aqui!"
-      permission: "welcome.cavaleiros"
+      permission: "kaoscore.welcome.cavaleiros"
 
     onepiece:
       name: "One Piece"
       text: "{player} §6encontrou o tesouro: este lobby!"
-      permission: "welcome.onepiece"
+      permission: "kaoscore.welcome.onepiece"
 
     starwars:
       name: "Star Wars"
       text: "{player} §6fez o salto hiperespacial!"
-      permission: "welcome.starwars"
+      permission: "kaoscore.welcome.starwars"
 
     harrypotter:
       name: "Harry Potter"
       text: "{player} §6engoliu a pedra filosofal!"
-      permission: "welcome.harrypotter"
+      permission: "kaoscore.welcome.harrypotter"
 
     stranger:
       name: "Stranger Things"
       text: "{player} §6saiu do Mundo Invertido!"
-      permission: "welcome.stranger"
+      permission: "kaoscore.welcome.stranger"
 
     homemaranha:
       name: "Homem-Aranha"
       text: "{player} §6swingou até o lobby!"
-      permission: "welcome.homemaranha"
+      permission: "kaoscore.welcome.homemaranha"
 
     batman:
       name: "Batman"
       text: "{player} §6chegou na Batcaverna!"
-      permission: "welcome.batman"
+      permission: "kaoscore.welcome.batman"
 
     trollface:
       name: "Trollface"
       text: "{player} §6Problem? (acabou de chegar)"
-      permission: "welcome.trollface"
+      permission: "kaoscore.welcome.trollface"
 
     doge:
       name: "Doge"
       text: "{player} §6wow. such lobby. very join."
-      permission: "welcome.doge"
+      permission: "kaoscore.welcome.doge"
 
     grumpycat:
       name: "Grumpy Cat"
       text: "{player} §6não queria estar aqui mesmo..."
-      permission: "welcome.grumpycat"
+      permission: "kaoscore.welcome.grumpycat"
 
     thriller:
       name: "Thriller"
       text: "{player} §6saiu do clipe do Michael Jackson!"
-      permission: "welcome.thriller"
+      permission: "kaoscore.welcome.thriller"
 
     futebol:
       name: "Futebol"
       text: "{player} §6GOOOOL! Entrou no lobby!"
-      permission: "welcome.futebol"
+      permission: "kaoscore.welcome.futebol"
 
     houdini:
       name: "Houdini"
       text: "{player} §6escapou das correntes e apareceu!"
-      permission: "welcome.houdini"
+      permission: "kaoscore.welcome.houdini"
 
     cavaleiro:
       name: "Cavaleiro"
       text: "{player} §6chegou montado em seu cavalo!"
-      permission: "welcome.cavaleiro"
+      permission: "kaoscore.welcome.cavaleiro"
 
     velozes:
       name: "Velozes e Furiosos"
       text: "{player} §6chegou em 2ª marcha!"
-      permission: "welcome.velozes"
+      permission: "kaoscore.welcome.velozes"
 
     sushi:
       name: "Sushi"
       text: "{player} §6foi enrolado e chegou!"
-      permission: "welcome.sushi"
+      permission: "kaoscore.welcome.sushi"
 
     alien:
       name: "Alien"
@@ -188,34 +188,34 @@ messages:
     jurassic:
       name: "Jurassic Park"
       text: "{player} §6sobreviveu aos raptors!"
-      permission: "welcome.jurassic"
+      permission: "kaoscore.welcome.jurassic"
 
     gta:
       name: "GTA"
       text: "{player} §6chegou de carro roubado!"
-      permission: "welcome.gta"
+      permission: "kaoscore.welcome.gta"
 
     walkingdead:
       name: "The Walking Dead"
       text: "{player} §6sobreviveu aos zumbis!"
-      permission: "welcome.walkingdead"
+      permission: "kaoscore.welcome.walkingdead"
 
     dnd:
       name: "D&D"
       text: "{player} §6rolou um 20 no dado!"
-      permission: "welcome.dnd"
+      permission: "kaoscore.welcome.dnd"
 
     pirata:
       name: "Pirata"
       text: "{player} §6veio pelo tesouro perdido!"
-      permission: "welcome.pirata"
+      permission: "kaoscore.welcome.pirata"
 
     cyberpunk:
       name: "Cyberpunk"
       text: "{player} §6chegou em Night City!"
-      permission: "welcome.cyberpunk"
+      permission: "kaoscore.welcome.cyberpunk"
 
     shakespeare:
       name: "Shakespeare"
       text: "{player} §6- Ser ou não ser... no lobby!"
-      permission: "welcome.shakespeare"
+      permission: "kaoscore.welcome.shakespeare"

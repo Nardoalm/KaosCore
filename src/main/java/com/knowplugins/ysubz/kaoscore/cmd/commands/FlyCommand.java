@@ -18,7 +18,7 @@ public class FlyCommand extends Commands {
         Player target;
 
         if (args.length > 0) {
-            if (!sender.hasPermission("nardocore.staff.fly")) {
+            if (!sender.hasPermission("kaoscore.staff.fly")) {
                 sender.sendMessage("§c§lFLY ➔ §cVocê não tem permissão para dar fly em outros jogadores.");
                 Player senderPlayer = (Player) sender;
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
@@ -39,7 +39,7 @@ public class FlyCommand extends Commands {
             }
             target = (Player) sender;
 
-            if (!target.hasPermission("nardocore.member.fly")) {
+            if (!target.hasPermission("kaoscore.member.fly")) {
                 sender.sendMessage(ChatColor.RED + "§c§lFLY ➔ §cVocê não possui permissão para executar este comando.");
                 Player senderPlayer = (Player) sender;
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);

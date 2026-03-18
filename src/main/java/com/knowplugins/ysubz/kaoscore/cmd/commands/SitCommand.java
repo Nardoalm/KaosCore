@@ -22,16 +22,22 @@ public class SitCommand extends Commands {
 
         Player player = (Player) sender;
         SitManager sitManager = Managers.getSitManager();
+
         if (sitManager == null) {
+            player.sendMessage("§c§lSIT ➔ §cO sistema de assentos está temporariamente indisponível.");
             return;
         }
 
         if (!sitManager.hasPermission(player)) {
-            player.sendMessage("§c§lSIT ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§c§lSIT ➔ §cVocê não tem permissão para executar esse comando.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
-        sitManager.sit(player);
+        if (!sitManager.sit(player)) {
+            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+        } else {
+            player.sendMessage("§e§lSIT ➔ §eVocê sentou. Pressiona §6SHIFT §epara levantar.");
+        }
     }
 }

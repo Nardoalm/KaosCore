@@ -18,40 +18,76 @@ public class ScoreboardManager {
 
     private static final Map<UUID, Scoreboard> BOARDS = new HashMap<>();
     private static int index = 0;
-    private static final String[] ANIMATION = {
-            "§f§lF§a§lUSION",
-            "§a§lF§f§lU§a§lSION",
-            "§a§lFU§f§lS§a§lION",
-            "§a§lFUS§f§lI§a§lON",
-            "§a§lFUSI§f§lO§a§lN",
-            "§a§lFUSIO§f§lN",
-            "§f§lFUSION",
-            "§f§lFUSION",
-            "§a§lFUSION",
-            "§a§lFUSION",
-            "§f§lFUSION",
-            "§f§lFUSION"
+    private static final String[] DEFAULT_ANIMATION = {
+            "§f§lF§b§lREEP",
+            "§b§lF§f§lR§b§lEEP",
+            "§b§lFR§f§lE§b§lEP",
+            "§b§lFRE§f§lE§b§lP",
+            "§b§lFREE§f§lP",
+            "§f§lFREEP",
+            "§f§lFREEP",
+            "§b§lFREEP",
+            "§b§lFREEP",
+            "§f§lFREEP",
+            "§f§lFREEP"
     };
+    private static String[] animation = DEFAULT_ANIMATION;
+    private static BukkitRunnable task;
 
     public static void setup() {
-        new BukkitRunnable() {
+        KaosCore plugin = KaosCore.getInstance();
+        if (plugin == null) {
+            return;
+        }
+
+        if (!plugin.getConfig().getBoolean("features.scoreboard.enabled", true)) {
+            return;
+        }
+
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+
+        // Load animation frames from config (optional).
+        java.util.List<String> frames = plugin.getConfig().getStringList("features.scoreboard.title-animation");
+        if (frames != null && !frames.isEmpty()) {
+            java.util.List<String> colored = new java.util.ArrayList<>();
+            for (String frame : frames) {
+                if (frame != null) {
+                    colored.add(org.bukkit.ChatColor.translateAlternateColorCodes('&', frame));
+                }
+            }
+            if (!colored.isEmpty()) {
+                animation = colored.toArray(new String[0]);
+            } else {
+                animation = DEFAULT_ANIMATION;
+            }
+        } else {
+            animation = DEFAULT_ANIMATION;
+        }
+
+        int period = Math.max(2, plugin.getConfig().getInt("features.scoreboard.update-ticks", 4));
+
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 index++;
-                if (index >= ANIMATION.length) index = 0;
+                if (index >= animation.length) index = 0;
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     update(player);
                 }
             }
-        }.runTaskTimer(KaosCore.getInstance(), 0L, 4L);
+        };
+        task.runTaskTimer(plugin, 0L, period);
     }
 
     public static void update(Player player) {
         Scoreboard sb = BOARDS.get(player.getUniqueId());
         Objective obj;
 
-        if (sb == null) {
+        if (sb == null || sb.getObjective("sidebar") == null || sb.getTeam("line0") == null) {
             sb = Bukkit.getScoreboardManager().getNewScoreboard();
             obj = sb.registerNewObjective("sidebar", "dummy");
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -66,15 +102,19 @@ public class ScoreboardManager {
         }
 
         if (obj != null) {
-            obj.setDisplayName(ANIMATION[index]);
+            obj.setDisplayName(animation[index]);
             String rank = PlaceholderAPI.setPlaceholders(
                     player,
-                    "%luckperms_prefix%"
+                    "%kaoscore_prefix%"
             );
             String onlinePlayers = "§a" + Bukkit.getOnlinePlayers().size();
+            KaosCore plugin = KaosCore.getInstance();
+            String bottom = plugin == null ? "§afreepmc.com.br" : org.bukkit.ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.scoreboard.bottom", "&afreepmc.com.br"));
+            String lobbyLine = plugin == null ? "§fLobby: §a#1" : org.bukkit.ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.scoreboard.lobby-line", "&fLobby: &a#1"));
             updateLine(sb, "line5", "§fRank: §7", rank);
             updateLine(sb, "line3", "§fOnline: ", onlinePlayers);
-            updateLine(sb, "line2", "§fLobby: §a#1", "");
+            updateLine(sb, "line2", lobbyLine, "");
+            updateLine(sb, "line0", bottom, "");
         }
     }
 
@@ -85,8 +125,7 @@ public class ScoreboardManager {
         createTeamLine(sb, obj, "line3", "§4", 3); // Espaço
         createTeamLine(sb, obj, "line2", "§5", 2); // Online
         createTeamLine(sb, obj, "line1", "§6", 1); // Espaço
-
-        obj.getScore("§6kaosmc.com.br").setScore(0);
+        createTeamLine(sb, obj, "line0", "§0", 0); // Rodapé configurável
     }
 
     private static void createTeamLine(Scoreboard sb, Objective obj, String teamName, String entry, int score) {

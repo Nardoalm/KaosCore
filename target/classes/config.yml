@@ -1,4 +1,104 @@
-licenca: "COLOQUE_SUA_CHAVE_AQUI" # Gere no discord.
+license: "COLOQUE_SUA_CHAVE_AQUI" # Gere no discord.
+
+features:
+  nametag:
+    enabled: true
+
+  scoreboard:
+    enabled: true
+    update-ticks: 4
+    bottom: "&afreepmc.com.br"
+    lobby-line: "&fLobby: &a#1"
+    title-animation:
+      - "&f&lF&b&lREEP"
+      - "&b&lF&f&lR&b&lEEP"
+      - "&b&lFR&f&lE&b&lEP"
+      - "&b&lFRE&f&lE&b&lP"
+      - "&b&lFREE&f&lP"
+      - "&f&lFREEP"
+      - "&f&lFREEP"
+      - "&b&lFREEP"
+      - "&b&lFREEP"
+      - "&f&lFREEP"
+      - "&f&lFREEP"
+
+  tablist:
+    enabled: true
+    header:
+      - ""
+      - "&b&lFREEP"
+      - ""
+    footer:
+      - ""
+      - "&eWebsite: &bfreepmc.com.br"
+      - "&eDiscord: &bdc.freepmc.com.br"
+      - ""
+
+  welcome-messages:
+    enabled: true
+
+  protections:
+    # Protecoes que sao comuns em lobby, mas podem atrapalhar servidores de PvP.
+    spawn:
+      enabled: true
+      cancel-damage: true
+      cancel-hunger: true
+      cancel-combust: true
+
+    # true = PvP liberado / false = bloqueia dano entre jogadores
+    pvp:
+      enabled: true
+
+    world:
+      enabled: true
+      cancel-block-break: true
+      cancel-block-place: true
+
+    entities:
+      cancel-spawn: true
+      clear-drops: true
+
+sit:
+  enabled: true
+  carry:
+    require-empty-hand: true
+  ride:
+    # Tempo (em ticks) que bloqueia o "descer" logo após subir em um jogador.
+    # Isso evita que o player desça instantaneamente por estar segurando SHIFT.
+    dismount-lock-ticks: 10
+  right-click:
+    enabled: false
+    require-empty-hand: true
+
+divulgar:
+  enabled: true
+  permission: "kaoscore.member.divulgar"
+  bypass-permission: "kaoscore.staff.divulgar"
+  cooldown-seconds: 60
+  broadcast:
+    - ""
+    - "&6&lDIVULGAR &8➔ &e{player} &7divulgou:"
+    - " &b{link}"
+    - ""
+
+autobroadcast:
+  enabled: true
+  interval-seconds: 300
+  random: true
+  messages:
+    - "&eDica: &7Use &f/welcomemessage &7para escolher sua mensagem de entrada."
+    - "&eDiscord: &bdc.freepmc.com.br"
+
+spawn-limits:
+  enabled: false
+  only-spawn-world: true
+  bypass-permission: "kaoscore.spawnlimits.bypass"
+  check-interval-ticks: 10
+  void-level-y: -10
+  max-distance-from-spawn: 250.0
+  message-void: "&cVocê caiu no void e voltou ao spawn."
+  message-radius: "&cVocê foi muito longe do spawn e voltou."
+  sound: "ENDERMAN_TELEPORT"
 
 database:
   mysql:
@@ -9,6 +109,7 @@ database:
     password: "root"
 
 npc-spawn:
+  enabled: false
   world: world
   x: 10.5
   y: 64.0

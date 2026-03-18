@@ -1,0 +1,24 @@
+# KaosCore - NPCs
+# Cada NPC eh apenas visual (enviado por pacotes). Voce pode criar quantos quiser.
+#
+# /setnpc <id> [skinNick]
+# /removenpc <id>
+#
+# commands:
+# - "menu" (abre o menu principal do KaosCore)
+# - "player:spawn"
+# - "console:warp practice"
+#
+npcs:
+  practice:
+    enabled: true
+    world: world
+    x: 10.5
+    y: 64.0
+    z: 10.5
+    yaw: 90.0
+    pitch: 0.0
+    skin-nick: "Heeph"
+    commands:
+      - "menu"
+

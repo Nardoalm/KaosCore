@@ -101,7 +101,7 @@ public class DatabaseManager {
         String clansTable = "CREATE TABLE IF NOT EXISTS clans (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "name VARCHAR(32) NOT NULL UNIQUE," +
-                "tag VARCHAR(6) NOT NULL," +
+                "tag VARCHAR(8) NOT NULL," +
                 "tag_color VARCHAR(64) NOT NULL," +
                 "leader VARCHAR(36) NOT NULL," +
                 "created BIGINT NOT NULL," +
@@ -182,6 +182,12 @@ public class DatabaseManager {
                 "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
                 ");";
 
+        String playerWelcomeMessages = "CREATE TABLE IF NOT EXISTS player_welcome_messages (" +
+                "uuid CHAR(36) NOT NULL PRIMARY KEY," +
+                "message_id VARCHAR(64) NOT NULL," +
+                "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ");";
+
         String punishments = "CREATE TABLE IF NOT EXISTS punishments (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "target_uuid CHAR(36) NULL," +
@@ -215,6 +221,66 @@ public class DatabaseManager {
                 "INDEX idx_player_addresses_ip (ip)" +
                 ");";
 
+        String permissionGroups = "CREATE TABLE IF NOT EXISTS kaoscore_groups (" +
+                "name VARCHAR(64) NOT NULL PRIMARY KEY," +
+                "priority INT NOT NULL DEFAULT 0," +
+                "prefix TEXT NULL," +
+                "suffix TEXT NULL," +
+                "is_default TINYINT(1) NOT NULL DEFAULT 0," +
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ");";
+
+        String permissionGroupPermissions = "CREATE TABLE IF NOT EXISTS kaoscore_group_permissions (" +
+                "group_name VARCHAR(64) NOT NULL," +
+                "permission VARCHAR(128) NOT NULL," +
+                "value TINYINT(1) NOT NULL DEFAULT 1," +
+                "PRIMARY KEY (group_name, permission)," +
+                "INDEX idx_kgp_group (group_name)" +
+                ");";
+
+        String permissionGroupInherits = "CREATE TABLE IF NOT EXISTS kaoscore_group_inherits (" +
+                "group_name VARCHAR(64) NOT NULL," +
+                "inherit_group VARCHAR(64) NOT NULL," +
+                "PRIMARY KEY (group_name, inherit_group)," +
+                "INDEX idx_kgi_group (group_name)" +
+                ");";
+
+        String permissionUserPermissions = "CREATE TABLE IF NOT EXISTS kaoscore_user_permissions (" +
+                "uuid CHAR(36) NOT NULL," +
+                "permission VARCHAR(128) NOT NULL," +
+                "value TINYINT(1) NOT NULL DEFAULT 1," +
+                "expires_at BIGINT NULL," +
+                "PRIMARY KEY (uuid, permission)," +
+                "INDEX idx_kup_uuid (uuid)" +
+                ");";
+
+        String permissionUserGrants = "CREATE TABLE IF NOT EXISTS kaoscore_user_grants (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                "uuid CHAR(36) NOT NULL," +
+                "player_name VARCHAR(16) NOT NULL," +
+                "group_name VARCHAR(64) NOT NULL," +
+                "given_by_uuid CHAR(36) NULL," +
+                "given_by_name VARCHAR(16) NOT NULL," +
+                "reason TEXT NULL," +
+                "created_at BIGINT NOT NULL," +
+                "expires_at BIGINT NULL," +
+                "active TINYINT(1) NOT NULL DEFAULT 1," +
+                "removed_at BIGINT NULL," +
+                "removed_by_uuid CHAR(36) NULL," +
+                "removed_by_name VARCHAR(16) NULL," +
+                "removed_reason TEXT NULL," +
+                "INDEX idx_kug_uuid_active (uuid, active)," +
+                "INDEX idx_kug_group (group_name)" +
+                ");";
+
+        String skinCacheByName = "CREATE TABLE IF NOT EXISTS kaoscore_skin_cache (" +
+                "nick VARCHAR(16) NOT NULL PRIMARY KEY," +
+                "skin_value TEXT NOT NULL," +
+                "skin_signature TEXT NULL," +
+                "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ");";
+
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(clansTable);
             stmt.executeUpdate(clanMembersTable);
@@ -226,18 +292,25 @@ public class DatabaseManager {
             stmt.executeUpdate(skins);
             stmt.executeUpdate(playerTags);
             stmt.executeUpdate(playerMedals);
+            stmt.executeUpdate(playerWelcomeMessages);
             stmt.executeUpdate(punishments);
             stmt.executeUpdate(playerAddresses);
+            stmt.executeUpdate(permissionGroups);
+            stmt.executeUpdate(permissionGroupPermissions);
+            stmt.executeUpdate(permissionGroupInherits);
+            stmt.executeUpdate(permissionUserPermissions);
+            stmt.executeUpdate(permissionUserGrants);
+            stmt.executeUpdate(skinCacheByName);
 
             ensureColumn(conn, "clans", "created", "BIGINT NOT NULL DEFAULT 0");
             ensureColumn(conn, "clans", "wins", "INT NOT NULL DEFAULT 0");
             ensureColumn(conn, "clans", "losses", "INT NOT NULL DEFAULT 0");
             ensureColumn(conn, "clans", "elo", "INT NOT NULL DEFAULT 1000");
 
-            Bukkit.getConsoleSender().sendMessage("§a§lSUCESSO -> §aTabelas criadas com sucesso!");
+            Bukkit.getConsoleSender().sendMessage("§a[KaosCore] §a§lSUCESSO -> §aTabelas criadas com sucesso!");
             return true;
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage("§c§lERRO -> §cErro ao criar as tabelas: " + e.getMessage());
+            Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §c§lERRO -> §cErro ao criar as tabelas: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

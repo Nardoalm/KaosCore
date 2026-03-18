@@ -22,8 +22,8 @@ public class TabListManager {
 
             Class<?> chatSerializerClass = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent$ChatSerializer");
 
-            Object tabHeader = chatSerializerClass.getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
-            Object tabFooter = chatSerializerClass.getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
+            Object tabHeader = chatSerializerClass.getMethod("a", String.class).invoke(null, "{\"text\":\"" + escapeJson(header) + "\"}");
+            Object tabFooter = chatSerializerClass.getMethod("a", String.class).invoke(null, "{\"text\":\"" + escapeJson(footer) + "\"}");
 
             Field a = packetClass.getDeclaredField("a");
             a.setAccessible(true);
@@ -42,5 +42,16 @@ public class TabListManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String escapeJson(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "")
+                .replace("\n", "\\n");
     }
 }

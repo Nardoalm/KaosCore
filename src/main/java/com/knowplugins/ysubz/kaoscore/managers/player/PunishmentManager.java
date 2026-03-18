@@ -1,8 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
+import com.knowplugins.ysubz.kaoscore.managers.plugin.DiscordWebhookManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentRepository;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -13,12 +14,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class PunishmentManager {
 
+    private static final String REPLACED_REASON = "Substituida por nova punicao";
+
     private final PunishmentRepository repository;
+    private final DiscordWebhookManager webhookManager;
     private final ConcurrentMap<String, PunishmentEntry> activeByUuid;
     private final ConcurrentMap<String, PunishmentEntry> activeByName;
 
-    public PunishmentManager(PunishmentRepository repository) {
+    public PunishmentManager(PunishmentRepository repository, DiscordWebhookManager webhookManager) {
         this.repository = repository;
+        this.webhookManager = webhookManager;
         this.activeByUuid = new ConcurrentHashMap<>();
         this.activeByName = new ConcurrentHashMap<>();
     }
@@ -53,11 +58,15 @@ public class PunishmentManager {
             return null;
         }
 
-        clearActive(type, targetUuid, targetName, punisherUuid, punisherName, "Substituida por nova punicao");
+        clearActive(type, targetUuid, targetName, punisherUuid, punisherName, REPLACED_REASON);
 
         PunishmentEntry entry = new PunishmentEntry(0L, targetUuid, targetName, type, safe(reason), System.currentTimeMillis(), expiresAt, punisherUuid, safe(punisherName), safe(source), true, 0L, null, null, null);
         cache(entry);
         repository.createAsync(entry);
+
+        if (webhookManager != null) {
+            webhookManager.logPunishmentApplied(entry);
+        }
         return entry;
     }
 
@@ -68,6 +77,10 @@ public class PunishmentManager {
 
         PunishmentEntry entry = new PunishmentEntry(0L, targetUuid, targetName, PunishmentType.WARN, safe(reason), System.currentTimeMillis(), 0L, punisherUuid, safe(punisherName), safe(source), false, 0L, null, null, null);
         repository.createAsync(entry);
+
+        if (webhookManager != null) {
+            webhookManager.logPunishmentApplied(entry);
+        }
         return entry;
     }
 
@@ -84,6 +97,11 @@ public class PunishmentManager {
         uncache(active);
         active.deactivate(removedByUuid, safe(removedByName), safe(removedReason));
         repository.revokeAsync(type, targetUuid, targetName, removedByUuid, safe(removedByName), safe(removedReason));
+
+        if (webhookManager != null) {
+            boolean replaced = safe(removedReason).equalsIgnoreCase(REPLACED_REASON);
+            webhookManager.logPunishmentRevoked(active, replaced);
+        }
         return true;
     }
 
@@ -111,6 +129,10 @@ public class PunishmentManager {
             uncache(entry);
             entry.deactivate(null, "SYSTEM", "Punicao expirada");
             repository.expireAsync(type, entry.getTargetUuid(), entry.getTargetName());
+
+            if (webhookManager != null) {
+                webhookManager.logPunishmentExpired(entry);
+            }
             return null;
         }
 

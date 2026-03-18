@@ -14,7 +14,7 @@ public class InventoryProtectListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
-        if (!player.hasPermission("nardocore.admin.build")) {
+        if (!player.hasPermission("kaoscore.admin.build")) {
             event.setCancelled(true);
         }
     }
@@ -23,7 +23,7 @@ public class InventoryProtectListener implements Listener {
     public void onInventoryDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
 
-        if (!player.hasPermission("nardocore.admin.build")) {
+        if (!player.hasPermission("kaoscore.admin.build")) {
             event.setCancelled(true);
         }
     }
@@ -32,7 +32,7 @@ public class InventoryProtectListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
 
-        if (!player.hasPermission("nardocore.admin.build")) {
+        if (!player.hasPermission("kaoscore.admin.build")) {
             event.setCancelled(true);
         }
     }
@@ -41,7 +41,7 @@ public class InventoryProtectListener implements Listener {
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
 
-        if (!player.hasPermission("nardocore.admin.build")) {
+        if (!player.hasPermission("kaoscore.admin.build")) {
             event.setCancelled(true);
         }
     }

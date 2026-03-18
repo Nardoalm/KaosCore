@@ -88,7 +88,7 @@ public class SkinApplier {
             onlinePlayer.hidePlayer(player);
             onlinePlayer.showPlayer(player);
 
-            if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("nardocore.staff.vanish")) {
+            if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("kaoscore.staff.vanish")) {
                 onlinePlayer.hidePlayer(player);
             }
         }

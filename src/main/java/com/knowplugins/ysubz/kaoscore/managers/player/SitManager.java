@@ -4,19 +4,28 @@ import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.material.Stairs;
 import org.bukkit.util.Vector;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class SitManager {
 
-    private static final String PERMISSION = "kaoscore.vip.sit";
+    private static final String SEAT_CUSTOM_NAME = "KaosCoreSeat";
+    private static final String SEAT_METADATA_KEY = "kaoscore_seat";
+    private static final double BASE_Y_OFFSET = -1.7D;
+
+    public static final ThreadLocal<Boolean> SPAWNING_SEAT = ThreadLocal.withInitial(() -> false);
+
     private final KaosCore plugin;
     private final KaosPracticeBridge practiceBridge;
     private final ConcurrentMap<UUID, ArmorStand> seatsByPlayer;
@@ -27,275 +36,247 @@ public class SitManager {
         this.practiceBridge = new KaosPracticeBridge();
         this.seatsByPlayer = new ConcurrentHashMap<>();
         this.seatOwnersByStand = new ConcurrentHashMap<>();
+
+        cleanupOrphanSeats();
     }
 
     public boolean hasPermission(Player player) {
-        return player != null && player.hasPermission(PERMISSION);
+        return player != null && (player.hasPermission("kaoscore.vip.sit") ||
+                player.hasPermission("kaoscore.vip.sit") ||
+                player.hasPermission("kaoscore.member.vip"));
     }
 
     public boolean sit(Player player) {
-        if (!hasPermission(player) || !canUseMechanic(player)) {
-            return false;
-        }
+        if (!hasPermission(player) || !canUseMechanic(player)) return false;
 
         if (isSitting(player)) {
             unsit(player);
             return true;
         }
 
-        cleanupSeat(player);
-
-        if (player.isInsideVehicle() || player.getPassenger() != null) {
+        if (player.isInsideVehicle() || player.getPassenger() != null || player.isFlying()) {
+            player.sendMessage("§c§lSIT ➔ §cVocê não pode sentar agora.");
             return false;
         }
 
-        Location location = player.getLocation().clone().add(0.0D, -1.45D, 0.0D);
-        ArmorStand seat = player.getWorld().spawn(location, ArmorStand.class);
-        seat.setVisible(false);
-        seat.setGravity(false);
-        seat.setMarker(true);
-        seat.setBasePlate(false);
-        seat.setArms(false);
-        seat.setSmall(false);
-        seat.setCustomNameVisible(false);
-        seat.setRemoveWhenFarAway(false);
-
-        if (!seat.setPassenger(player)) {
-            seat.remove();
+        if (!((Entity) player).isOnGround()) {
+            player.sendMessage("§c§lSIT ➔ §cVocê precisa estar no chão para sentar.");
             return false;
         }
 
-        seatsByPlayer.put(player.getUniqueId(), seat);
-        seatOwnersByStand.put(seat.getUniqueId(), player.getUniqueId());
+        Location loc = player.getLocation().clone();
+        loc.setX(loc.getBlockX() + 0.5D);
+        loc.setZ(loc.getBlockZ() + 0.5D);
+        loc.setPitch(0.0F);
+        loc.setY(player.getLocation().getY() + BASE_Y_OFFSET);
+
+        if (isLocationOccupied(loc)) {
+            player.sendMessage("§c§lSIT ➔ §cAlguém já está sentado aqui.");
+            return false;
+        }
+
+        ArmorStand seat = spawnSeat(loc);
+        mountWithDelay(seat, player);
+        return true;
+    }
+
+    public boolean sitOnBlock(Player player, Block clickedBlock) {
+        if (!hasPermission(player) || !canUseMechanic(player)) return false;
+        if (player == null || clickedBlock == null) return false;
+
+        if (isSitting(player)) unsit(player);
+        if (player.isInsideVehicle() || player.getPassenger() != null) return false;
+
+        Location loc = clickedBlock.getLocation().clone().add(0.5D, 0.0D, 0.5D);
+        loc.setPitch(0.0F);
+        loc.setYaw(player.getLocation().getYaw());
+
+        double surface = 0.5D;
+        if (clickedBlock.getType().name().contains("STEP") || clickedBlock.getType().name().contains("SLAB")) {
+            surface = (clickedBlock.getData() & 0x8) != 0 ? 1.0D : 0.5D;
+        } else if (clickedBlock.getState().getData() instanceof Stairs) {
+            loc.setYaw(yawFromFace(((Stairs) clickedBlock.getState().getData()).getFacing()));
+        }
+
+        loc.add(0.0D, surface + BASE_Y_OFFSET, 0.0D);
+
+        if (isLocationOccupied(loc)) {
+            player.sendMessage("§c§lSIT ➔ §cEste assento já está ocupado.");
+            return false;
+        }
+
+        ArmorStand seat = spawnSeat(loc);
+        mountWithDelay(seat, player);
         return true;
     }
 
     public boolean carry(Player carrier, Player target) {
-        if (!hasPermission(carrier) || !canCarry(carrier, target)) {
-            return false;
-        }
+        if (!hasPermission(carrier) || !canInteract(carrier, target)) return false;
+        boolean mounted = carrier.setPassenger(target);
+        if (!mounted) mounted = mount(carrier, target);
+        return mounted;
+    }
 
-        return carrier.setPassenger(target);
+    public boolean ride(Player rider, Player target) {
+        if (!hasPermission(rider) || !canInteract(rider, target)) return false;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (rider.isOnline() && target.isOnline() && !rider.isDead() && !target.isDead()) {
+                boolean mounted = target.setPassenger(rider);
+                if (!mounted) mount(target, rider);
+            }
+        }, 10L);
+
+        return true;
     }
 
     public boolean launch(Player carrier) {
-        if (!hasPermission(carrier) || !canUseMechanic(carrier)) {
-            return false;
-        }
+        if (!hasPermission(carrier) || !canUseMechanic(carrier)) return false;
+        if (!(carrier.getPassenger() instanceof Player)) return false;
 
-        Entity passenger = carrier.getPassenger();
-        if (!(passenger instanceof Player)) {
-            return false;
-        }
+        Player launched = (Player) carrier.getPassenger();
+        carrier.eject();
 
-        Player launched = (Player) passenger;
-        if (!canBeAffected(launched)) {
-            return false;
-        }
-
-        if (!carrier.eject()) {
-            return false;
-        }
-
-        Vector vector = carrier.getLocation().getDirection().normalize().multiply(1.5D);
-        vector.setY(1.0D);
-
+        Vector vector = carrier.getLocation().getDirection().normalize().multiply(1.5D).setY(1.0D);
         Bukkit.getScheduler().runTask(plugin, () -> {
-            if (!launched.isOnline()) {
-                return;
-            }
-            launched.setVelocity(vector);
+            if (launched.isOnline()) launched.setVelocity(vector);
         });
 
         return true;
     }
 
-    public void handleSeatDismount(Player player, Entity dismounted) {
-        if (player == null || !(dismounted instanceof ArmorStand)) {
-            return;
-        }
+    public void handleSeatDismount(Player player) {
+        ArmorStand seat = seatsByPlayer.remove(player.getUniqueId());
+        if (seat != null) {
+            seatOwnersByStand.remove(seat.getUniqueId());
+            seat.remove();
 
-        ArmorStand seat = (ArmorStand) dismounted;
-        UUID owner = seatOwnersByStand.get(seat.getUniqueId());
-        if (owner == null || !owner.equals(player.getUniqueId())) {
-            return;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                Location loc = player.getLocation();
+                loc.setY(loc.getY() + 0.5);
+                player.teleport(loc);
+            }, 1L);
         }
-
-        removeSeat(seat);
     }
 
     public void cleanup(Player player) {
-        if (player == null) {
-            return;
-        }
-
-        cleanupSeat(player);
-
-        if (player.getPassenger() != null) {
-            Entity passenger = player.getPassenger();
-            player.eject();
-            if (passenger instanceof Player) {
-                ((Player) passenger).setFallDistance(0.0F);
-            }
-        }
-
-        if (player.isInsideVehicle()) {
-            Entity vehicle = player.getVehicle();
-            if (vehicle instanceof ArmorStand) {
-                removeSeat((ArmorStand) vehicle);
-            } else {
-                player.leaveVehicle();
-            }
-        }
+        if (player == null) return;
+        unsit(player);
+        if (player.getPassenger() != null) player.eject();
     }
 
     public void cleanupAll() {
-        for (Map.Entry<UUID, ArmorStand> entry : seatsByPlayer.entrySet()) {
-            ArmorStand seat = entry.getValue();
-            if (seat != null && !seat.isDead()) {
-                seat.remove();
-            }
+        for (ArmorStand seat : seatsByPlayer.values()) {
+            if (seat != null && !seat.isDead()) seat.remove();
         }
         seatsByPlayer.clear();
         seatOwnersByStand.clear();
     }
 
-    private boolean canCarry(Player carrier, Player target) {
-        if (carrier == null || target == null || carrier.equals(target)) {
+    private void cleanupOrphanSeats() {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (org.bukkit.World world : Bukkit.getWorlds()) {
+                for (ArmorStand stand : world.getEntitiesByClass(ArmorStand.class)) {
+                    if (stand.hasMetadata(SEAT_METADATA_KEY)) stand.remove();
+                }
+            }
+        }, 20L);
+    }
+
+    private ArmorStand spawnSeat(Location location) {
+        SPAWNING_SEAT.set(true);
+        try {
+            ArmorStand seat = location.getWorld().spawn(location, ArmorStand.class);
+            seat.setVisible(false);
+            seat.setGravity(false);
+            seat.setBasePlate(false);
+            seat.setArms(false);
+            seat.setSmall(true);
+            seat.setMarker(false);
+            seat.setCustomName(SEAT_CUSTOM_NAME);
+            seat.setCustomNameVisible(false);
+            seat.setMetadata(SEAT_METADATA_KEY, new FixedMetadataValue(plugin, true));
+            return seat;
+        } finally {
+            SPAWNING_SEAT.set(false);
+        }
+    }
+
+    private void mountWithDelay(ArmorStand seat, Player player) {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (seat.isDead() || !seat.isValid() || !player.isOnline()) {
+                seat.remove();
+                return;
+            }
+
+            boolean mounted = seat.setPassenger(player);
+            if (!mounted) mounted = mount(seat, player);
+
+            if (mounted) {
+                seatsByPlayer.put(player.getUniqueId(), seat);
+                seatOwnersByStand.put(seat.getUniqueId(), player.getUniqueId());
+            } else {
+                seat.remove();
+            }
+        }, 2L);
+    }
+
+    private boolean isLocationOccupied(Location location) {
+        for (Entity entity : location.getWorld().getNearbyEntities(location, 0.3, 0.3, 0.3)) {
+            if (entity instanceof ArmorStand && entity.hasMetadata(SEAT_METADATA_KEY)) return true;
+        }
+        return false;
+    }
+
+    private boolean mount(Entity vehicle, Entity passenger) {
+        if (vehicle == null || passenger == null) return false;
+        try {
+            net.minecraft.server.v1_8_R3.Entity nmsPassenger = ((CraftEntity) passenger).getHandle();
+            net.minecraft.server.v1_8_R3.Entity nmsVehicle = ((CraftEntity) vehicle).getHandle();
+            nmsPassenger.mount(nmsVehicle);
+            return passenger.getVehicle() != null && passenger.getVehicle().equals(vehicle);
+        } catch (Throwable ignored) {
             return false;
         }
+    }
 
-        if (carrier.hasMetadata("NPC") || target.hasMetadata("NPC")) {
-            return false;
+    private float yawFromFace(BlockFace face) {
+        switch (face) {
+            case NORTH: return 180.0F;
+            case SOUTH: return 0.0F;
+            case WEST: return 90.0F;
+            case EAST: return -90.0F;
+            default: return 0.0F;
         }
+    }
 
-        if (!canUseMechanic(carrier) || !canBeAffected(target)) {
-            return false;
-        }
-
-        if (!carrier.getWorld().equals(target.getWorld())) {
-            return false;
-        }
-
-        if (carrier.getPassenger() != null || carrier.isInsideVehicle()) {
-            return false;
-        }
-
-        if (target.getPassenger() != null || target.isInsideVehicle()) {
-            return false;
-        }
-
-        return !isSitting(carrier) && !isSitting(target);
+    private boolean canInteract(Player p1, Player p2) {
+        if (p1 == p2 || p1.hasMetadata("NPC") || p2.hasMetadata("NPC")) return false;
+        if (!canUseMechanic(p1) || !canUseMechanic(p2)) return false;
+        if (p1.getPassenger() != null || p2.getPassenger() != null) return false;
+        return !isSitting(p1) && !isSitting(p2);
     }
 
     private boolean canUseMechanic(Player player) {
-        if (player == null || !player.isOnline() || player.isDead() || VanishManager.isVanished(player)) {
-            return false;
-        }
-
-        if (!practiceBridge.isAvailable()) {
-            return true;
-        }
-
-        KaosPracticeBridge.PracticeState state = practiceBridge.getState(player);
-        if (state.isInMatch() || state.isSpectating() || practiceBridge.isQueueing(player)) {
-            return false;
-        }
-
-        return practiceBridge.isInLobby(player);
-    }
-
-    private boolean canBeAffected(Player player) {
-        return player != null && player.isOnline() && !player.isDead() && !VanishManager.isVanished(player) && canUseMechanic(player);
+        if (player == null || !player.isOnline() || player.isDead()) return false;
+        try {
+            if (practiceBridge != null && practiceBridge.isAvailable()) {
+                KaosPracticeBridge.PracticeState state = practiceBridge.getState(player);
+                if (state.isInMatch() || state.isSpectating() || practiceBridge.isQueueing(player)) return false;
+            }
+        } catch (Exception ignored) {}
+        return true;
     }
 
     private boolean isSitting(Player player) {
-        if (player == null) {
-            return false;
-        }
-
-        if (player.isInsideVehicle() && player.getVehicle() instanceof ArmorStand) {
-            ArmorStand vehicle = (ArmorStand) player.getVehicle();
-            UUID owner = seatOwnersByStand.get(vehicle.getUniqueId());
-            if (owner != null && owner.equals(player.getUniqueId()) && !vehicle.isDead()) {
-                return true;
-            }
-        }
-
-        ArmorStand seat = seatsByPlayer.get(player.getUniqueId());
-        if (seat == null) {
-            return false;
-        }
-
-        return !seat.isDead() && player.isInsideVehicle() && seat.equals(player.getVehicle());
+        return seatsByPlayer.containsKey(player.getUniqueId());
     }
 
     private void unsit(Player player) {
-        if (player == null) {
-            return;
-        }
-
-        ArmorStand seat = seatsByPlayer.get(player.getUniqueId());
-        if (seat == null && player.isInsideVehicle() && player.getVehicle() instanceof ArmorStand) {
-            ArmorStand vehicle = (ArmorStand) player.getVehicle();
-            UUID owner = seatOwnersByStand.get(vehicle.getUniqueId());
-            if (owner != null && owner.equals(player.getUniqueId())) {
-                seat = vehicle;
-            }
-        }
-
-        if (seat == null) {
-            return;
-        }
-
-        if (player.isInsideVehicle() && seat.equals(player.getVehicle())) {
-            player.leaveVehicle();
-        }
-
-        removeSeat(seat);
-    }
-
-    public void unsitIfSitting(Player player) {
-        if (isSitting(player)) {
-            unsit(player);
-        }
-    }
-
-    private void cleanupSeat(Player player) {
-        if (player == null) {
-            return;
-        }
-
-        ArmorStand seat = seatsByPlayer.get(player.getUniqueId());
+        ArmorStand seat = seatsByPlayer.remove(player.getUniqueId());
         if (seat != null) {
-            removeSeat(seat);
-            return;
-        }
-
-        if (player.isInsideVehicle() && player.getVehicle() instanceof ArmorStand) {
-            ArmorStand vehicle = (ArmorStand) player.getVehicle();
-            if (seatOwnersByStand.containsKey(vehicle.getUniqueId())) {
-                removeSeat(vehicle);
-            }
-        }
-    }
-
-    private void removeSeat(ArmorStand seat) {
-        if (seat == null) {
-            return;
-        }
-
-        UUID owner = seatOwnersByStand.remove(seat.getUniqueId());
-        if (owner != null) {
-            seatsByPlayer.remove(owner);
-        }
-
-        Entity passenger = seat.getPassenger();
-        if (passenger != null) {
+            seatOwnersByStand.remove(seat.getUniqueId());
             seat.eject();
-        }
-
-        if (!seat.isDead()) {
             seat.remove();
         }
     }

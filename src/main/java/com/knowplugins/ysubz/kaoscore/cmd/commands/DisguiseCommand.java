@@ -34,14 +34,21 @@ public class DisguiseCommand extends Commands {
         }
 
         Player player = (Player) sender;
-
-        if (!player.hasPermission("nardocore.member.disguise")) {
-            player.sendMessage("§c§lDISGUISE ➔ §cVocê não possui permissão para executar este comando.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        if (disguiseManager == null) {
+            player.sendMessage("§c§lDISGUISE ➔ §cSistema de disguise indisponível.");
             return;
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        // /fake reset (ou /fake off): sempre permite remover se estiver disfarçado (evita ficar preso em fake).
+        if (args.length >= 1 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("off"))) {
+            if (!DisguiseManager.isDisguised(player)) {
+                player.sendMessage("§c§lDISGUISE ➔ §cVocê não está disfarçado.");
+                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                return;
+            }
+            args = new String[0];
+        }
 
         if (args.length == 0 && DisguiseManager.isDisguised(player)) {
             try {
@@ -73,6 +80,12 @@ public class DisguiseCommand extends Commands {
                 player.sendMessage("§c§lDISGUISE ➔ §cOcorreu um erro ao remover o disfarce.");
                 exception.printStackTrace();
             }
+            return;
+        }
+
+        if (!player.hasPermission("kaoscore.member.disguise")) {
+            player.sendMessage("§c§lDISGUISE ➔ §cVocê não possui permissão para executar este comando.");
+            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
@@ -127,7 +140,7 @@ public class DisguiseCommand extends Commands {
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
             } else {
-                if (player.hasPermission("nardocore.staff.disguise")) {
+                if (player.hasPermission("kaoscore.staff.disguise")) {
                     String message = "§eBuscando skin para o nick §f" + newNick + "§e...";
                     message = PlaceholderManager.replacePlaceholders(message, player);
                     player.sendMessage(message);
@@ -162,3 +175,4 @@ public class DisguiseCommand extends Commands {
         nameField.set(profile, name);
     }
 }
+

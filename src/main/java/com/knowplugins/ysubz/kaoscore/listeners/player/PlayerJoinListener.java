@@ -10,13 +10,14 @@ import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.utils.title.TitleUtils;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.utils.title.TitleAPI;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.VanishRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
@@ -28,7 +29,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,13 +45,22 @@ public class PlayerJoinListener implements Listener {
       Player player = event.getPlayer();
       KaosCore plugin = JavaPlugin.getPlugin(KaosCore.class);
 
-      // player.setGameMode(GameMode.SURVIVAL);
-      // player.setLevel(2026);
+      player.setGameMode(GameMode.SURVIVAL);
+      player.setLevel(2026);
       event.setJoinMessage(null);
 
-      String header = "\n §6§lKAOS \n";
-      String footer = "\n §eWebsite: §bkaosmc.com \n §eDiscord: §bdc.kaosmc.com \n";
-      TabListManager.setTabList(player, header, footer);
+      if (plugin.getConfig().getBoolean("features.tablist.enabled", true)) {
+         String header = String.join("\n", plugin.getConfig().getStringList("features.tablist.header"));
+         String footer = String.join("\n", plugin.getConfig().getStringList("features.tablist.footer"));
+         TabListManager.setTabList(player, header, footer);
+      }
+
+      if (!plugin.getConfig().getBoolean("features.scoreboard.enabled", true)) {
+         try {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+         } catch (Exception ignored) {
+         }
+      }
 
       if (plugin.getTagManager() != null) {
          plugin.getTagManager().getTag(player);
@@ -84,8 +93,59 @@ public class PlayerJoinListener implements Listener {
 
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
+      TitleAPI.sendTitle(player, "§b§lFREEP", "§eBem-vindo!", 20, 10, 20);
 
-       /* if (plugin.getConfig().contains("spawn.location")) {
+      NPCManager npcManager = Managers.getNpcManager();
+      if (npcManager != null) {
+         npcManager.spawnAll(player);
+      }
+
+      player.getInventory().clear();
+
+      ItemStack itemMenu = new ItemStack(Material.COMPASS);
+      ItemMeta metaMenu = itemMenu.getItemMeta();
+      metaMenu.setDisplayName("§aMenu de Opções §7(Clique Direito)");
+      itemMenu.setItemMeta(metaMenu);
+      player.getInventory().setItem(4, itemMenu);
+
+      if (Managers.getDatabaseManager() != null) {
+         VanishRepository vanishRepo = new VanishRepository(plugin, Managers.getDatabaseManager());
+         DisguiseRepository disguiseRepo = new DisguiseRepository(plugin, Managers.getDatabaseManager());
+         SkinRepository skinRepo = new SkinRepository(plugin, Managers.getDatabaseManager());
+
+         UUID uuid = player.getUniqueId();
+
+         vanishRepo.load(uuid).thenAccept(isVanished -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+               if (player.isOnline() && isVanished && player.hasPermission("kaoscore.staff.vanish")) {
+                  VanishManager.addVanish(player);
+               }
+            });
+         });
+
+         disguiseRepo.load(uuid).thenAccept(isDisguised -> {
+            if (isDisguised != null) {
+               String nick = isDisguised;
+               skinRepo.load(uuid).thenAccept(skinData ->
+                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredDisguise(player, nick, skinData))
+               );
+               return;
+            }
+
+            skinRepo.load(uuid).thenAccept(skinData -> {
+               if (skinData != null && skinData.value != null && !skinData.value.trim().isEmpty()) {
+                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredSkin(player, skinData));
+                  return;
+               }
+
+               Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
+            });
+         });
+      } else {
+         Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
+      }
+
+      if (plugin.getConfig().contains("spawn.location")) {
          try {
             String raw = plugin.getConfig().getString("spawn.location");
             String[] parts = raw.split(";");
@@ -102,7 +162,7 @@ public class PlayerJoinListener implements Listener {
 
                   Location loc = new Location(world, x, y, z, yaw, pitch);
                   player.teleport(loc);
-                  if (player.hasPermission("nardocore.member.fly")) {
+                  if (player.hasPermission("kaoscore.vip.fly")) {
                      Location newLocation = player.getLocation().clone().add(0, 4, 0);
                      player.teleport(newLocation);
                      player.setAllowFlight(true);
@@ -115,62 +175,20 @@ public class PlayerJoinListener implements Listener {
          } catch (Exception e) {
             Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
          }
-      } */
-
-      // TitleUtils.sendTitle(player, "§a§lFUSION", "§eBem-vindo!", 20, 10, 20);
-
-      /* NPCManager npcManager = Managers.getNpcManager();
-      Location npcLocation = npcManager.getNPCLocation();
-
-      if (npcLocation != null) {
-         npcManager.spawnNPC(player, npcLocation);
-      }
-
-      player.getInventory().clear();
-
-      ItemStack itemMenu = new ItemStack(Material.COMPASS);
-      ItemMeta metaMenu = itemMenu.getItemMeta();
-      metaMenu.setDisplayName("§aMenu de Opções §7(Clique Direito)");
-      itemMenu.setItemMeta(metaMenu);
-
-      player.getInventory().setItem(0, itemMenu); */
-
-      if (Managers.getDatabaseManager() != null) {
-         VanishRepository vanishRepo = new VanishRepository(plugin, Managers.getDatabaseManager());
-         DisguiseRepository disguiseRepo = new DisguiseRepository(plugin, Managers.getDatabaseManager());
-         SkinRepository skinRepo = new SkinRepository(plugin, Managers.getDatabaseManager());
-
-         UUID uuid = player.getUniqueId();
-
-         vanishRepo.load(uuid).thenAccept(isVanished -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-               if (player.isOnline() && isVanished && player.hasPermission("nardocore.staff.vanish")) {
-                  VanishManager.addVanish(player);
-               }
-            });
-         });
-
-         disguiseRepo.load(uuid).thenAccept(isDisguised -> {
-            if (isDisguised != null) {
-               String nick = isDisguised;
-               skinRepo.load(uuid).thenAccept(skinData ->
-                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredDisguise(player, nick, skinData))
-               );
-            }
-         });
       }
 
       WelcomeMessage.sendWelcomeMessage(player);
    }
 
    @EventHandler
-   public void onAdvancement(PlayerAchievementAwardedEvent event) {
-      event.setCancelled(true);
+   public void onPlayerJoinTime(PlayerJoinEvent event) {
+      Player player = event.getPlayer();
+      player.setPlayerTime(6000L, false);
    }
 
    @EventHandler
-   public void onQuit(PlayerQuitEvent event) {
-      event.setQuitMessage(null);
+   public void onAdvancement(PlayerAchievementAwardedEvent event) {
+      event.setCancelled(true);
    }
 
    @EventHandler
@@ -196,13 +214,16 @@ public class PlayerJoinListener implements Listener {
             Date expires = ban.getExpiration();
             String duration = expires == null ? "Permanente" : PunishmentTime.formatDate(expires.getTime());
 
-            String banMessage =
-                    "§cVocê foi banido.\n\n" +
-                            "  §cMotivo: §7" + reason + "\n" +
-                            "  §cExpira em: §7" + duration + "\n" +
-                            "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
-                            "  §cBanido injustamente? Contate-nos via\n" +
-                            "  §9§ndiscord.gg/kaosmc";
+            KaosCore plugin = KaosCore.getInstance();
+            PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
+            String banMessage = messages != null
+                    ? messages.buildBanScreen(expires == null, reason, duration)
+                    : ("§cVocê foi banido.\n\n" +
+                    "  §cMotivo: §7" + reason + "\n" +
+                    "  §cExpira em: §7" + duration + "\n" +
+                    "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
+                    "  §cBanido injustamente? Contate-nos via\n" +
+                    "  §9§ndiscord.gg/freepmc");
 
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
          }
@@ -251,6 +272,25 @@ public class PlayerJoinListener implements Listener {
       }
    }
 
+   private void applyStoredSkin(Player player, SkinData skinData) {
+      if (player == null || !player.isOnline() || skinData == null || skinData.value == null || skinData.value.trim().isEmpty()) {
+         return;
+      }
+
+      try {
+         GameProfile profile = ((CraftPlayer) player).getProfile();
+         OriginalSkinManager.cache(player, profile);
+
+         profile.getProperties().removeAll("textures");
+         profile.getProperties().put("textures", new Property("textures", skinData.value, skinData.signature));
+
+         new SkinApplier(player).applySkinForSelf();
+      } catch (Exception e) {
+         e.printStackTrace();
+         Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> applyJoinSkin(player), 2L);
+      }
+   }
+
    private void changeName(GameProfile profile, String name) throws Exception {
       Field nameField = profile.getClass().getDeclaredField("name");
       nameField.setAccessible(true);
@@ -261,6 +301,12 @@ public class PlayerJoinListener implements Listener {
    }
 
    private String buildPunishmentMessage(PunishmentEntry entry) {
+      KaosCore plugin = KaosCore.getInstance();
+      PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
+      if (messages != null) {
+         return messages.buildBanScreen(entry);
+      }
+
       String expires = entry == null || entry.isPermanent() ? "Permanente" : PunishmentTime.formatDate(entry.getExpiresAt());
       String reason = entry == null || entry.getReason() == null ? "Sem motivo informado" : entry.getReason();
       String title = entry != null && entry.isPermanent() ? "Você foi banido permanentemente." : "Você foi banido temporariamente.";
@@ -269,10 +315,28 @@ public class PlayerJoinListener implements Listener {
               "§c" + title + "\n\n" +
                       "  §cMotivo: §7" + reason + "\n" +
                       "  §cExpira em: §7" + expires + "\n" +
-                      "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
+                      "  §eAdquira seu unban em: §bwww.freepmc.com.br\n" +
                       "  §cBanido injustamente? Contate-nos via\n" +
-                      "  §9§ndiscord.gg/kaosmc";
+                      "  §9§ndiscord.gg/freepmc";
 
       return message;
    }
+
+   private void applyJoinSkin(Player player) {
+      if (player == null || !player.isOnline()) {
+         return;
+      }
+
+      if (DisguiseManager.isDisguised(player)) {
+         return;
+      }
+
+      KaosCore plugin = KaosCore.getInstance();
+      if (plugin == null || plugin.getSkinPoolManager() == null) {
+         return;
+      }
+
+      plugin.getSkinPoolManager().applyJoinSkin(player);
+   }
 }
+

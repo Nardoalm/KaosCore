@@ -50,7 +50,7 @@ public class VanishManager {
                Player player = Bukkit.getPlayer(uuid);
                if (player == null) continue;
 
-               sendActionBar(player, "§a§lVANISH ➔ §aVocê está invisível!");
+               sendActionBar(player, "§aVocê está invisível!");
 
                updateVanishState(player);
             }
@@ -60,7 +60,7 @@ public class VanishManager {
 
    private static void updateVanishState(Player player) {
       for (Player online : Bukkit.getOnlinePlayers()) {
-         if (!online.hasPermission("nardocore.staff.vanish")) {
+         if (!online.hasPermission("kaoscore.staff.vanish")) {
             online.hidePlayer(player);
          }
       }

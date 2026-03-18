@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -60,7 +60,7 @@ public class TagCommand implements CommandExecutor {
             String displayName = format(tag.getColor()) + tag.getName();
             TextComponent component = new TextComponent(displayName);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tag " + tag.getName()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar a tag" + displayName).create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar " + displayName).create()));
             line.addExtra(component);
 
             if (i < availableTags.size() - 1) {
@@ -71,7 +71,7 @@ public class TagCommand implements CommandExecutor {
         if (line.getExtra() != null && !line.getExtra().isEmpty()) {
             player.spigot().sendMessage(line);
         } else {
-            player.sendMessage("Suas tags: ");
+            player.sendMessage("§aSuas tags: ");
         }
 
         return true;

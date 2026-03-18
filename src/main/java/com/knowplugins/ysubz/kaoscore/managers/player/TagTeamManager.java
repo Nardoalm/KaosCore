@@ -1,11 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.MedalManager;
-import com.knowplugins.ysubz.kaoscore.managers.TagManager;
-import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +15,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -141,10 +141,6 @@ public class TagTeamManager {
     }
 
     private void syncAll() {
-        if (medalManager != null) {
-            medalManager.advanceAnimations(10);
-        }
-
         Set<UUID> onlinePlayers = new HashSet<>();
         Map<UUID, KaosPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
 
@@ -153,6 +149,7 @@ public class TagTeamManager {
             Scoreboard scoreboard = resolveScoreboard(viewer);
             if (scoreboard != null) {
                 refreshViewer(viewer, scoreboard, practiceStates);
+                cleanupEmptyTeams(scoreboard);
             }
         }
 
@@ -248,8 +245,8 @@ public class TagTeamManager {
         }
 
         if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
-            String prefix = trim(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
-            String suffix = trim(resolveText(player, practiceState.getSuffix()));
+            String prefix = trimTeamPart(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
+            String suffix = trimTeamPart(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
             String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor());
             return new NametagStyle(teamKey, prefix, suffix, priority);
@@ -260,10 +257,62 @@ public class TagTeamManager {
             return null;
         }
 
-        String medalPrefix = medalManager == null ? "" : medalManager.getNametagDisplay(player);
+        // Medal medal = medalManager == null ? null : medalManager.getMedal(player);
+        // String medalId = medal == null ? "" : safe(medal.getId());
+        // String medalPrefix = medal == null ? "" : safe(medal.getStaticNametag());
+
+        // Clan should always appear (except while disguised). User requested it as suffix, not prefix.
+        Clan clan = null;
+        ClanManager clanManager = Managers.getClanManager();
+        if (clanManager != null && !DisguiseManager.isDisguised(player)) {
+            clan = clanManager.getClan(player);
+        }
+        String clanKey = clan == null ? "" : safe(clan.getName());
+        String clanTagValue = "";
+        String clanSuffix = "";
+        if (clan != null) {
+            clanTagValue = safe(clan.getTag());
+            if (!clanTagValue.isEmpty()) {
+                clanSuffix = " " + safe(clan.getTagColor()) + "[" + clanTagValue + "]";
+            }
+        }
+
         String tagPrefix = resolveText(player, tag.getPrefix());
+        String tagColor = resolveText(player, tag.getColor());
         String tagSuffix = resolveText(player, tag.getSuffix());
-        return new NametagStyle(tag.getId(), trim(medalPrefix + tagPrefix), trim(tagSuffix), tag.getPosition());
+
+        // Avoid duplicating the clan tag if the tag suffix already contains it via placeholders/config.
+        if (!clanTagValue.isEmpty() && !clanSuffix.isEmpty()) {
+            String strippedSuffix = ChatColor.stripColor(safe(tagSuffix));
+            String token = "[" + clanTagValue + "]";
+            if (strippedSuffix != null && strippedSuffix.contains(token)) {
+                clanSuffix = "";
+            }
+        }
+
+        // Scoreboard teams are shared: include medal id + clan in the key so one player's state doesn't override others.
+        String key = tag.getId()
+                // + ":" + (medalId.isEmpty() ? "none" : medalId)
+                + ":" + (clanKey.isEmpty() ? "none" : clanKey.toLowerCase(Locale.ROOT));
+
+
+        // Always end the scoreboard prefix with a real color/reset (from tag.color) so medal/tag formatting
+        // doesn't leak into the player's name (e.g., bold staying enabled).
+        String tailColor = lastResettingColor(tagColor);
+        if (tailColor.isEmpty()) {
+            tailColor = lastResettingColor(tagPrefix);
+        }
+
+        String prefix;
+        if (!tailColor.isEmpty()) {
+            int available = 16 - tailColor.length();
+            String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
+            prefix = trimTeamPart(trimmedBody + tailColor);
+        } else {
+            prefix = trimTeamPart(tagPrefix);
+        }
+
+        return new NametagStyle(key, prefix, trimTeamPart(tagSuffix + clanSuffix), tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
@@ -357,7 +406,7 @@ public class TagTeamManager {
         }
 
         viewer.showPlayer(target);
-        if (VanishManager.isVanished(target) && !viewer.hasPermission("nardocore.staff.vanish")) {
+        if (VanishManager.isVanished(target) && !viewer.hasPermission("kaoscore.staff.vanish")) {
             viewer.hidePlayer(target);
         }
     }
@@ -398,16 +447,70 @@ public class TagTeamManager {
 
         String id = style == null ? "tag" : safe(style.getKey());
         int hash = Math.abs(id.hashCode());
-        String suffix = String.format("%06x", hash & 0xFFFFFF);
+        String suffix = String.format("%08x", hash);
         return TEAM_PREFIX + String.format("%04d", position) + suffix;
     }
 
-    private String trim(String value) {
-        String safeValue = safe(value);
-        if (safeValue.length() <= 16) {
-            return safeValue;
+    private void cleanupEmptyTeams(Scoreboard scoreboard) {
+        if (scoreboard == null) {
+            return;
         }
-        return safeValue.substring(0, 16);
+
+        Set<Team> teams = new HashSet<>(scoreboard.getTeams());
+        for (Team team : teams) {
+            if (team == null) {
+                continue;
+            }
+
+            String name = team.getName();
+            if (name == null || !name.startsWith(TEAM_PREFIX) || name.length() != TEAM_PREFIX.length() + 12) {
+                continue;
+            }
+
+            Set<String> entries = team.getEntries();
+            if (entries == null || entries.isEmpty()) {
+                try {
+                    team.unregister();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private String trimTeamPart(String value) {
+        return trimTeamPart(value, 16);
+    }
+
+    private String trimTeamPart(String value, int maxLen) {
+        String safeValue = safe(value);
+        if (safeValue.isEmpty() || maxLen <= 0) {
+            return "";
+        }
+
+        int length = safeValue.length();
+        int end = Math.min(length, maxLen);
+
+        // Never return a string that ends with a dangling color char (it would combine with the first
+        // char of the player's name and produce e.g. "§l").
+        while (end > 0) {
+            char last = safeValue.charAt(end - 1);
+            if (last == ChatColor.COLOR_CHAR) {
+                end--;
+                continue;
+            }
+            // Avoid cutting in the middle of a surrogate pair (custom font icons, etc).
+            if (end < length && Character.isHighSurrogate(last)) {
+                end--;
+                continue;
+            }
+            break;
+        }
+
+        if (end <= 0) {
+            return "";
+        }
+
+        return safeValue.substring(0, end);
     }
 
     private String format(String value) {
@@ -432,6 +535,26 @@ public class TagTeamManager {
 
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private String lastResettingColor(String text) {
+        String value = safe(text);
+        if (value.length() < 2) {
+            return "";
+        }
+
+        for (int i = value.length() - 2; i >= 0; i--) {
+            if (value.charAt(i) != ChatColor.COLOR_CHAR) {
+                continue;
+            }
+
+            char code = Character.toLowerCase(value.charAt(i + 1));
+            if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f') || code == 'r') {
+                return "" + ChatColor.COLOR_CHAR + code;
+            }
+        }
+
+        return "";
     }
 
     private static final class NametagStyle {
@@ -464,3 +587,4 @@ public class TagTeamManager {
         }
     }
 }
+

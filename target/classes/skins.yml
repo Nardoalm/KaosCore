@@ -1,0 +1,11 @@
+# KaosCore - Skins pool (para contas piratas/offline)
+# Coloque nicks PREMIUM que existem na Mojang. No startup o plugin baixa e salva a textura em cache.
+
+pool:
+  nicks:
+    - "ysubz"
+    - "descontinuar"
+
+# Preenchido automaticamente (cache persistente).
+cache: {}
+

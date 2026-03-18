@@ -15,12 +15,12 @@ public class DiscordCommand extends Commands {
    @Override
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§9§lDISCORD ➔ §ediscord.gg/kaosmc");
+         sender.sendMessage("§9§lDISCORD ➔ §ediscord.gg/freepmc");
          return;
       }
 
       Player player = (Player) sender;
-      String link = "https://discord.gg/kaosmc";
+      String link = "https://discord.gg/freepmc";
 
       sendRawJson.sendDiscordLink(player, link);
 

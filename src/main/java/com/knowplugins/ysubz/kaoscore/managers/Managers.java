@@ -1,15 +1,17 @@
 package com.knowplugins.ysubz.kaoscore.managers;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.*;
+import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.AutoBroadcastManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentRepository;
+import com.knowplugins.ysubz.kaoscore.managers.world.ClimateManager;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
+import com.knowplugins.ysubz.kaoscore.managers.world.SpawnLimitsManager;
+import com.knowplugins.ysubz.kaoscore.managers.world.WhitelistManager;
 
 import java.util.Map;
 import java.util.UUID;
@@ -17,14 +19,21 @@ import java.util.UUID;
 public class Managers {
 
     private final KaosCore plugin;
+    private static ScoreboardManager scoreboardManager;
     private static DatabaseManager databaseManager;
+    private static WhitelistManager whitelistManager;
     private static DisguiseManager disguiseManager;
     private static PunishmentManager punishmentManager;
     private static SitManager sitManager;
+    private static WelcomeMessageManager welcomeMessageManager;
     private static PlayerAddressRepository playerAddressRepository;
     private static NPCManager npcManager;
     private static ClanManager clanManager;
     private static FriendManager friendManager;
+    private static ClimateManager climateManager;
+    private static AutoBroadcastManager autoBroadcastManager;
+    private static SpawnLimitsManager spawnLimitsManager;
+    private static PermissionManager permissionManager;
 
     public Managers(KaosCore plugin) {
         this.plugin = plugin;
@@ -33,12 +42,15 @@ public class Managers {
     public void loadAll() {
         plugin.getLogger().info("Inicializando sistemas e managers...");
 
+        whitelistManager = new WhitelistManager(plugin);
+
         disguiseManager = new DisguiseManager();
         disguiseManager.loadNicksFile(plugin);
 
         if (databaseManager != null && databaseManager.isConnected()) {
+            permissionManager = new PermissionManager(plugin, databaseManager);
             PunishmentRepository punishmentRepository = new PunishmentRepository(plugin, databaseManager);
-            punishmentManager = new PunishmentManager(punishmentRepository);
+            punishmentManager = new PunishmentManager(punishmentRepository, plugin == null ? null : plugin.getWebhookManager());
             punishmentManager.loadActive();
             playerAddressRepository = new PlayerAddressRepository(plugin, databaseManager);
         }
@@ -48,10 +60,19 @@ public class Managers {
         friendManager = new FriendManager(plugin);
         friendManager.loadFriends();
         sitManager = new SitManager(plugin);
-
+        welcomeMessageManager = new WelcomeMessageManager(plugin);
+        climateManager = new ClimateManager();
+        if (plugin.getConfig().getBoolean("features.scoreboard.enabled", true)) {
+            ScoreboardManager.setup();
+        }
         VanishManager.setupManager();
-        // npcManager = new NPCManager(plugin);
-        // npcManager.loadSkinCache();
+
+        if (plugin.getConfig().getBoolean("npc-spawn.enabled", false)) {
+            npcManager = new NPCManager(plugin, databaseManager);
+        } else {
+            npcManager = null;
+        }
+
 
         if (databaseManager != null && databaseManager.isConnected()) {
             DisguiseRepository repo = new DisguiseRepository(plugin, databaseManager);
@@ -64,11 +85,18 @@ public class Managers {
             });
         }
 
+        autoBroadcastManager = new AutoBroadcastManager(plugin);
+        spawnLimitsManager = new SpawnLimitsManager(plugin);
+
         plugin.getLogger().info("Sistemas carregados com sucesso!");
     }
 
     public static DisguiseManager getDisguiseManager() {
         return disguiseManager;
+    }
+
+    public static WhitelistManager getWhitelistManager() {
+        return whitelistManager;
     }
 
     public static DatabaseManager getDatabaseManager() {
@@ -81,6 +109,10 @@ public class Managers {
 
     public static SitManager getSitManager() {
         return sitManager;
+    }
+
+    public static WelcomeMessageManager getWelcomeMessageManager() {
+        return welcomeMessageManager;
     }
 
     public static PlayerAddressRepository getPlayerAddressRepository() {
@@ -101,5 +133,17 @@ public class Managers {
 
     public static void setDatabaseManager(DatabaseManager db) {
         databaseManager = db;
+    }
+
+    public static AutoBroadcastManager getAutoBroadcastManager() {
+        return autoBroadcastManager;
+    }
+
+    public static SpawnLimitsManager getSpawnLimitsManager() {
+        return spawnLimitsManager;
+    }
+
+    public static PermissionManager getPermissionManager() {
+        return permissionManager;
     }
 }
