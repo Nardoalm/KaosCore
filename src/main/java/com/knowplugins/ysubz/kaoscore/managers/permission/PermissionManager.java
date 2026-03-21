@@ -219,6 +219,11 @@ public final class PermissionManager {
         refreshAllOnline();
     }
 
+    public void reload() {
+        syncFromPermissionsFile();
+        reloadGroups();
+    }
+
     public void refreshAllOnline() {
         if (plugin == null) {
             return;

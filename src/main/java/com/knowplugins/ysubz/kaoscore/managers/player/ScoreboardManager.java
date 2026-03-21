@@ -40,13 +40,16 @@ public class ScoreboardManager {
             return;
         }
 
-        if (!plugin.getConfig().getBoolean("features.scoreboard.enabled", true)) {
-            return;
-        }
-
         if (task != null) {
             task.cancel();
             task = null;
+        }
+
+        if (!plugin.getConfig().getBoolean("features.scoreboard.enabled", true)) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                remove(player);
+            }
+            return;
         }
 
         // Load animation frames from config (optional).
@@ -81,6 +84,10 @@ public class ScoreboardManager {
             }
         };
         task.runTaskTimer(plugin, 0L, period);
+    }
+
+    public static void reload() {
+        setup();
     }
 
     public static void update(Player player) {

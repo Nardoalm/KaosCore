@@ -13,7 +13,6 @@ public class CcCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) return;
         Player p = (Player) sender;
-        if (!p.hasPermission("kaoscore.clan.use.chat")) { p.sendMessage("§cVocê não tem permissão para usar o chat do clan."); return; }
         if (args.length == 0) { p.sendMessage("§cUso correto: /cc <mensagem>"); return; }
         if (!Managers.getClanManager().isInClan(p.getUniqueId())) { p.sendMessage("§cVocê não está em um clan."); return; }
         String msg = String.join(" ", args);
@@ -21,7 +20,7 @@ public class CcCommand extends Commands {
         clan.getMembers().keySet().forEach(uuid -> {
             Player target = org.bukkit.Bukkit.getPlayer(uuid);
             if (target != null) {
-                target.sendMessage("§6[CLAN] §8» §f" + p.getDisplayName() + " §8» §7" + msg);
+                target.sendMessage("§6[CLAN] " + p.getDisplayName() + " §8» §7" + msg);
             }
         });
     }

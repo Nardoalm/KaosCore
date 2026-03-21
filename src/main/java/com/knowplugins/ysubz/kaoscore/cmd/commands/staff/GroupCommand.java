@@ -268,18 +268,18 @@ public final class GroupCommand extends Commands {
     private void sendHelp(CommandSender sender) {
         List<String> lines = new ArrayList<>();
         lines.add("§e§lGROUP ➔ §eComandos:");
-        lines.add("§e/group list");
-        lines.add("§e/group info <grupo>");
-        lines.add("§e/group create <grupo> [default]");
-        lines.add("§e/group delete <grupo>");
-        lines.add("§e/group default <grupo>");
-        lines.add("§e/group setpriority <grupo> <prioridade>");
-        lines.add("§e/group setprefix <grupo> <prefix>");
-        lines.add("§e/group setsuffix <grupo> <suffix>");
-        lines.add("§e/group addperm <grupo> <perm> [true|false]");
-        lines.add("§e/group delperm <grupo> <perm>");
-        lines.add("§e/group inherit add|remove <grupo> <pai>");
-        lines.add("§e/group reload");
+        lines.add("§e• §e/group list");
+        lines.add("§e• §e/group info <grupo>");
+        lines.add("§e• §e/group create <grupo> [default]");
+        lines.add("§e• §e/group delete <grupo>");
+        lines.add("§e• §e/group default <grupo>");
+        lines.add("§e• §e/group setpriority <grupo> <prioridade>");
+        lines.add("§e• §e/group setprefix <grupo> <prefix>");
+        lines.add("§e• §e/group setsuffix <grupo> <suffix>");
+        lines.add("§e• §e/group addperm <grupo> <perm> [true|false]");
+        lines.add("§e• §e/group delperm <grupo> <perm>");
+        lines.add("§e• §e/group inherit add|remove <grupo> <pai>");
+        lines.add("§e• §e/group reload");
         for (String line : lines) {
             sender.sendMessage(line);
         }

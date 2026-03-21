@@ -270,6 +270,19 @@ public final class NPCManager {
         entityIdByNpcIdByViewer.remove(viewer.getUniqueId());
     }
 
+    public void shutdown() {
+        if (plugin != null && Bukkit.isPrimaryThread()) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online != null && online.isOnline()) {
+                    despawnAll(online);
+                }
+            }
+        }
+        npcsById.clear();
+        npcByEntityIdByViewer.clear();
+        entityIdByNpcIdByViewer.clear();
+    }
+
     public boolean isNpcEntity(Player viewer, int entityId) {
         if (viewer == null) {
             return false;

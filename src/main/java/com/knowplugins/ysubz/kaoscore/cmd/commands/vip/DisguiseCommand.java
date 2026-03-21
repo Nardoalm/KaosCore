@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands;
+package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
@@ -12,6 +12,7 @@ import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -19,6 +20,9 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class DisguiseCommand extends Commands {
 
@@ -37,6 +41,11 @@ public class DisguiseCommand extends Commands {
         DisguiseManager disguiseManager = Managers.getDisguiseManager();
         if (disguiseManager == null) {
             player.sendMessage("§c§lDISGUISE ➔ §cSistema de disguise indisponível.");
+            return;
+        }
+
+        if (args.length >= 1 && args[0].equalsIgnoreCase("list") && player.hasPermission("kaoscore.staff.disguise")) {
+            sendDisguiseList(player, disguiseManager);
             return;
         }
 
@@ -173,6 +182,43 @@ public class DisguiseCommand extends Commands {
         modifiersField.setAccessible(true);
         modifiersField.setInt(nameField, nameField.getModifiers() & ~Modifier.FINAL);
         nameField.set(profile, name);
+    }
+
+    private void sendDisguiseList(Player viewer, DisguiseManager disguiseManager) {
+        List<Player> disguisedPlayers = new ArrayList<>();
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (DisguiseManager.isDisguised(online)) {
+                disguisedPlayers.add(online);
+            }
+        }
+
+        disguisedPlayers.sort(Comparator.comparing(player -> {
+            String nick = disguiseManager.getDisguiseNick(player);
+            return nick == null || nick.trim().isEmpty() ? player.getName() : nick;
+        }, String.CASE_INSENSITIVE_ORDER));
+
+        if (disguisedPlayers.isEmpty()) {
+            viewer.sendMessage("§e§lFAKE ➔ §cNenhum jogador está disfarçado no momento.");
+            return;
+        }
+
+        viewer.sendMessage("§e§lFAKE ➔ §fJogadores disfarçados online: §e" + disguisedPlayers.size());
+        for (Player disguised : disguisedPlayers) {
+            String fakeNick = disguiseManager.getDisguiseNick(disguised);
+            if (fakeNick == null || fakeNick.trim().isEmpty()) {
+                fakeNick = disguised.getName();
+            }
+
+            String originalName = disguiseManager.getOriginalName(disguised);
+            if (originalName == null || originalName.trim().isEmpty()) {
+                originalName = Bukkit.getOfflinePlayer(disguised.getUniqueId()).getName();
+            }
+            if (originalName == null || originalName.trim().isEmpty()) {
+                originalName = disguised.getName();
+            }
+
+            viewer.sendMessage(" §7- §f" + fakeNick + " §8-> §e" + originalName);
+        }
     }
 }
 

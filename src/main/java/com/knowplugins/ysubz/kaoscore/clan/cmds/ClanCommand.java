@@ -45,11 +45,6 @@ public class ClanCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!hasPermission(player, BASE_PERMISSION)) {
-            player.sendMessage("§cVocê não tem permissão para usar o sistema de clan.");
-            return;
-        }
-
         if (args.length == 0) {
             sendHelp(player);
             return;
@@ -120,10 +115,6 @@ public class ClanCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!hasPermission(player, BASE_PERMISSION)) {
-            return Collections.emptyList();
-        }
-
         if (args.length == 1) {
             List<String> commands = Arrays.asList(
                     "criar",
@@ -145,7 +136,6 @@ public class ClanCommand extends Commands {
                     "chat"
             );
             return commands.stream()
-                    .filter(command -> hasPermission(player, permissionFor(command)))
                     .filter(command -> command.startsWith(args[0].toLowerCase(Locale.ROOT)))
                     .collect(Collectors.toList());
         }
@@ -263,7 +253,7 @@ public class ClanCommand extends Commands {
         }
 
         if (clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cO líder não pode sair! Use /clan transferir primeiro.");
+            player.sendMessage("§cVocê é o líder, não pode sair! Use /clan transferir primeiro.");
             return;
         }
 
@@ -747,9 +737,7 @@ public class ClanCommand extends Commands {
     }
 
     private void sendHelpLine(Player player, String subCommand, String text) {
-        if (hasPermission(player, permissionFor(subCommand))) {
-            player.sendMessage(text);
-        }
+        player.sendMessage(text);
     }
 
     private boolean requirePermission(Player player, String subCommand) {

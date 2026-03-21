@@ -53,11 +53,12 @@ public class KaosCore extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        String key = getConfig().getString("license");
+        /* String key = getConfig().getString("license");
 
         Bukkit.getConsoleSender().sendMessage("§e[KaosCore] Verificando licença...");
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            carregarSistemas();
             LicenseManager license = new LicenseManager(key);
 
             if (license.isValid()) {
@@ -75,10 +76,11 @@ public class KaosCore extends JavaPlugin {
                     Bukkit.getPluginManager().disablePlugin(this);
                 });
             }
-        });
+        }); */
+        loadSystem();
     }
 
-    private void carregarSistemas() {
+    private void loadSystem() {
         saveResource("tags.yml", false);
         saveResource("medals.yml", false);
         saveResource("webhooks.yml", false);
@@ -137,6 +139,69 @@ public class KaosCore extends JavaPlugin {
         getLogger().info("Todos os sistemas foram carregados!");
     }
 
+    public synchronized void reloadSystems() {
+        reloadConfig();
+
+        saveResource("tags.yml", false);
+        saveResource("medals.yml", false);
+        saveResource("webhooks.yml", false);
+        saveResource("skins.yml", false);
+        saveResource("whitelist.yml", false);
+        saveResource("welcomeMessages.yml", false);
+        saveResource("punish.yml", false);
+        saveResource("permissions.yml", false);
+        saveResource("npcs.yml", false);
+
+        if (webhookManager == null) {
+            webhookManager = new DiscordWebhookManager(this);
+        } else {
+            webhookManager.reload();
+        }
+
+        if (punishmentMessageManager == null) {
+            punishmentMessageManager = new PunishmentMessageManager(this);
+        } else {
+            punishmentMessageManager.reload();
+        }
+
+        if (managers == null) {
+            managers = new Managers(this);
+            managers.loadAll();
+        } else {
+            managers.reloadAll();
+        }
+
+        if (tagManager == null) {
+            tagManager = new TagManager(this);
+        } else {
+            tagManager.loadTags();
+        }
+
+        if (medalManager == null) {
+            medalManager = new MedalManager(this);
+        } else {
+            medalManager.loadMedals();
+        }
+
+        if (tagTeamManager != null) {
+            tagTeamManager.stop();
+            tagTeamManager = null;
+        }
+
+        boolean nametagEnabled = getConfig().getBoolean("features.nametag.enabled", true);
+        if (nametagEnabled) {
+            tagTeamManager = new TagTeamManager(this, tagManager, medalManager);
+            tagTeamManager.start();
+            tagManager.refreshAll();
+        }
+
+        if (Managers.getDisguiseManager() != null) {
+            Managers.getDisguiseManager().loadNicksFile(this);
+        }
+
+        getLogger().info("Configuracoes recarregadas com sucesso!");
+    }
+
     @Override
     public void onDisable() {
         try {
@@ -166,6 +231,6 @@ public class KaosCore extends JavaPlugin {
             Managers.getSitManager().cleanupAll();
         }
 
-        Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §c§lTCHAU :( -> §cO plugin foi desativado.");
+        Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cO plugin foi desativado.");
     }
 }

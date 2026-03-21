@@ -11,6 +11,7 @@ import com.knowplugins.ysubz.kaoscore.clan.cmds.CcCommand;
 import com.knowplugins.ysubz.kaoscore.clan.cmds.ClanCommand;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.*;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.staff.*;
+import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -55,7 +56,7 @@ public abstract class Commands extends Command {
       new VanishCommand();
       new DiscordCommand();
       new PingCommand();
-      new CommandList();
+      // new CommandList();
       new TeleportCommand();
       new TpallCommand();
       new CbanCommand();
@@ -83,7 +84,7 @@ public abstract class Commands extends Command {
       new DinnerboneCommand();
       new WhitelistCommand();
       new WelcomeMessageCommand();
-      new DivulgarCommand();
+      new DiscloseCommand();
       new ReportCommand();
       new MedalCommand(plugin);
       new FriendCommand();
@@ -91,6 +92,7 @@ public abstract class Commands extends Command {
       new CcCommand();
       new SetTagCommand();
       new TrollCommand();
+      new KaosCoreCommand(plugin);
    }
 
    public abstract void perform(CommandSender sender, String label, String[] args);

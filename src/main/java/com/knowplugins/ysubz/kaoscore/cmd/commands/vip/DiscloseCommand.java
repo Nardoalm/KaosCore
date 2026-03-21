@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands;
+package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
@@ -13,11 +13,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class DivulgarCommand extends Commands {
+public class DiscloseCommand extends Commands {
 
     private static final ConcurrentMap<UUID, Long> LAST_USE = new ConcurrentHashMap<>();
 
-    public DivulgarCommand() {
+    public DiscloseCommand() {
         super("divulgar", "div");
     }
 

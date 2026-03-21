@@ -145,37 +145,39 @@ public class PlayerJoinListener implements Listener {
          Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
       }
 
-      if (plugin.getConfig().contains("spawn.location")) {
-         try {
-            String raw = plugin.getConfig().getString("spawn.location");
-            String[] parts = raw.split(";");
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (plugin.getConfig().contains("spawn.location")) {
+            try {
+               String raw = plugin.getConfig().getString("spawn.location");
+               String[] parts = raw.split(";");
 
-            if (parts.length >= 6) {
-               World world = Bukkit.getWorld(parts[0]);
+               if (parts.length >= 6) {
+                  World world = Bukkit.getWorld(parts[0]);
 
-               if (world != null) {
-                  double x = Double.parseDouble(parts[1]);
-                  double y = Double.parseDouble(parts[2]);
-                  double z = Double.parseDouble(parts[3]);
-                  float yaw = Float.parseFloat(parts[4]);
-                  float pitch = Float.parseFloat(parts[5]);
+                  if (world != null) {
+                     double x = Double.parseDouble(parts[1]);
+                     double y = Double.parseDouble(parts[2]);
+                     double z = Double.parseDouble(parts[3]);
+                     float yaw = Float.parseFloat(parts[4]);
+                     float pitch = Float.parseFloat(parts[5]);
 
-                  Location loc = new Location(world, x, y, z, yaw, pitch);
-                  player.teleport(loc);
-                  if (player.hasPermission("kaoscore.vip.fly")) {
-                     Location newLocation = player.getLocation().clone().add(0, 4, 0);
-                     player.teleport(newLocation);
-                     player.setAllowFlight(true);
-                     player.setFlying(true);
+                     Location loc = new Location(world, x, y, z, yaw, pitch);
+                     player.teleport(loc);
+                     if (player.hasPermission("kaoscore.vip.fly")) {
+                        Location newLocation = player.getLocation().clone().add(0, 4, 0);
+                        player.teleport(newLocation);
+                        player.setAllowFlight(true);
+                        player.setFlying(true);
+                     }
+                  } else {
+                     Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cMundo do spawn não encontrado!");
                   }
-               } else {
-                  Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cMundo do spawn não encontrado!");
                }
+            } catch (Exception e) {
+               Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
             }
-         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
          }
-      }
+      }, 10L);
 
       WelcomeMessage.sendWelcomeMessage(player);
    }
@@ -223,7 +225,7 @@ public class PlayerJoinListener implements Listener {
                     "  §cExpira em: §7" + duration + "\n" +
                     "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
                     "  §cBanido injustamente? Contate-nos via\n" +
-                    "  §9§ndiscord.gg/freepmc");
+                    "  §9§ndiscord.gg/freep");
 
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
          }

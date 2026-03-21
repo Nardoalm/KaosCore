@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands;
+package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
 
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import org.bukkit.Bukkit;

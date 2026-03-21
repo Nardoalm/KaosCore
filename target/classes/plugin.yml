@@ -6,6 +6,9 @@ author: ysubz
 description: Plugin de core com sistema completo.
 depend: [PlaceholderAPI, ProtocolLib]
 commands:
+  kaoscore:
+    description: Comando principal do KaosCore
+    usage: /kaoscore reload
   tag:
     description: Sistema de tags do KaosCore
     usage: /tag [nomeDaTag]

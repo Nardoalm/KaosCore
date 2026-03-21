@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.listeners.player;
 
-import com.knowplugins.ysubz.kaoscore.cmd.commands.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.utils.menu.AnvilInputMenu;
 import com.knowplugins.ysubz.kaoscore.utils.menu.SkinMenu;
 import org.bukkit.Sound;

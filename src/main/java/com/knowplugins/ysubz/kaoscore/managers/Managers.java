@@ -91,6 +91,73 @@ public class Managers {
         plugin.getLogger().info("Sistemas carregados com sucesso!");
     }
 
+    public void reloadAll() {
+        plugin.getLogger().info("Recarregando managers...");
+
+        if (whitelistManager == null) {
+            whitelistManager = new WhitelistManager(plugin);
+        } else {
+            whitelistManager.load();
+        }
+
+        if (disguiseManager == null) {
+            disguiseManager = new DisguiseManager();
+        }
+        disguiseManager.loadNicksFile(plugin);
+
+        if (databaseManager != null && databaseManager.isConnected()) {
+            if (permissionManager == null) {
+                permissionManager = new PermissionManager(plugin, databaseManager);
+            } else {
+                permissionManager.reload();
+            }
+        }
+
+        if (clanManager == null) {
+            clanManager = new ClanManager(plugin);
+        }
+        clanManager.reload();
+
+        if (friendManager == null) {
+            friendManager = new FriendManager(plugin);
+        }
+        friendManager.loadFriends();
+
+        if (welcomeMessageManager == null) {
+            welcomeMessageManager = new WelcomeMessageManager(plugin);
+        } else {
+            welcomeMessageManager.reload();
+        }
+
+        climateManager = new ClimateManager();
+
+        ScoreboardManager.reload();
+        VanishManager.setupManager();
+
+        if (npcManager != null) {
+            npcManager.shutdown();
+            npcManager = null;
+        }
+        if (plugin.getConfig().getBoolean("npc-spawn.enabled", false)) {
+            npcManager = new NPCManager(plugin, databaseManager);
+            npcManager.refreshAllViewers();
+        }
+
+        if (autoBroadcastManager == null) {
+            autoBroadcastManager = new AutoBroadcastManager(plugin);
+        } else {
+            autoBroadcastManager.reload();
+        }
+
+        if (spawnLimitsManager == null) {
+            spawnLimitsManager = new SpawnLimitsManager(plugin);
+        } else {
+            spawnLimitsManager.reload();
+        }
+
+        plugin.getLogger().info("Managers recarregados com sucesso!");
+    }
+
     public static DisguiseManager getDisguiseManager() {
         return disguiseManager;
     }

@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 
 public class FriendCommand extends Commands {
 
-    private static final String BASE_PERMISSION = "kaoscore.amigo.use";
-
     public FriendCommand() {
         super("amigo", "amiga", "amigue", "amigos", "amigas", "amigues", "friend", "friends");
     }
@@ -40,11 +38,6 @@ public class FriendCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!hasPermission(player, BASE_PERMISSION)) {
-            player.sendMessage("§cVocê não tem permissão para usar o sistema de amizade.");
-            return;
-        }
-
         if (args.length == 0) {
             sendHelp(player);
             return;
@@ -93,10 +86,6 @@ public class FriendCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!hasPermission(player, BASE_PERMISSION)) {
-            return Collections.emptyList();
-        }
-
         FriendManager friendManager = Managers.getFriendManager();
         if (friendManager == null) {
             return Collections.emptyList();
@@ -378,17 +367,11 @@ public class FriendCommand extends Commands {
     }
 
     private void sendHelpLine(Player player, String subCommand, String text) {
-        if (hasPermission(player, permissionFor(subCommand))) {
-            player.sendMessage(text);
-        }
+        player.sendMessage(text);
     }
 
     private boolean requirePermission(Player player, String subCommand) {
-        if (hasPermission(player, permissionFor(subCommand))) {
-            return true;
-        }
-        player.sendMessage("§cVocê não tem permissão para usar /amigo " + subCommand + ".");
-        return false;
+        return true;
     }
 
     private boolean hasPermission(Player player, String permission) {
@@ -396,14 +379,7 @@ public class FriendCommand extends Commands {
     }
 
     private String permissionFor(String subCommand) {
-        String normalized = subCommand.toLowerCase(Locale.ROOT);
-        if (normalized.equals("gui")) {
-            return BASE_PERMISSION; // GUI nao precisa de permissao extra alem da base.
-        }
-        if (normalized.equals("add")) {
-            normalized = "adicionar";
-        }
-        return BASE_PERMISSION + "." + normalized;
+        return "";
     }
 
     private List<String> listAddTargets(Player viewer, String startLower) {

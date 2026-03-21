@@ -12,6 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TagCommand implements CommandExecutor {
@@ -36,10 +38,14 @@ public class TagCommand implements CommandExecutor {
         if (args != null && args.length > 0) {
             Tag selected = plugin.getTagManager().getTagByNameOrId(args[0]);
             if (selected == null) {
+                player.sendMessage("§cTag não encontrada.");
+                sendAvailableTags(player);
                 return true;
             }
 
             if (!plugin.getTagManager().canUse(player, selected)) {
+                player.sendMessage("§cVocê não possui permissão para usar essa tag.");
+                sendAvailableTags(player);
                 return true;
             }
 
@@ -48,7 +54,19 @@ public class TagCommand implements CommandExecutor {
             return true;
         }
 
+        sendAvailableTags(player);
+        return true;
+    }
+
+    private void sendAvailableTags(Player player) {
         List<Tag> availableTags = plugin.getTagManager().getAvailableTags(player);
+        if (availableTags.isEmpty()) {
+            Tag fallback = plugin.getTagManager().getTagByNameOrId("membro");
+            if (fallback != null) {
+                availableTags = new ArrayList<>(Collections.singletonList(fallback));
+            }
+        }
+
         TextComponent line = new TextComponent("§aSuas tags: ");
 
         for (int i = 0; i < availableTags.size(); i++) {
@@ -71,10 +89,8 @@ public class TagCommand implements CommandExecutor {
         if (line.getExtra() != null && !line.getExtra().isEmpty()) {
             player.spigot().sendMessage(line);
         } else {
-            player.sendMessage("§aSuas tags: ");
+            player.sendMessage("§cNenhuma tag disponível.");
         }
-
-        return true;
     }
 
     private String format(String text) {

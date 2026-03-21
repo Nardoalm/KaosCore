@@ -126,6 +126,11 @@ public class ClanManager {
         }
     }
 
+    public void reload() {
+        loadTagColors();
+        loadClans();
+    }
+
     public void saveClans() {
         if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
             return;

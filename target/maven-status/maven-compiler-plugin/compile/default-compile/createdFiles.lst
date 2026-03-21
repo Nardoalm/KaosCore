@@ -8,7 +8,7 @@ com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerAddressRepository.class
 com\knowplugins\ysubz\kaoscore\listeners\player\ProtectionListener.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\KickCommand.class
 com\knowplugins\ysubz\kaoscore\managers\permission\EffectivePermissions.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\SkinCommand.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\DiscloseCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\SkinData.class
 com\knowplugins\ysubz\kaoscore\managers\permission\PermissionManager.class
 com\knowplugins\ysubz\kaoscore\listeners\entity\NPCInteractListener.class
@@ -28,6 +28,7 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\staff\VanishCommand.class
 com\knowplugins\ysubz\kaoscore\clan\ClanInvite.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\DiscordCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\SkinCacheRepository.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\TrollCommand.class
 com\knowplugins\ysubz\kaoscore\clan\cmds\ClanCommand$TagColorOption.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\PingCommand.class
 com\knowplugins\ysubz\kaoscore\managers\permission\GroupGrant.class
@@ -41,8 +42,10 @@ com\knowplugins\ysubz\kaoscore\managers\player\VanishManager.class
 com\knowplugins\ysubz\kaoscore\listeners\player\WhitelistListener.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\FriendCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\WarnCommand.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\SkinCommand.class
 com\knowplugins\ysubz\kaoscore\managers\player\CooldownManager.class
 com\knowplugins\ysubz\kaoscore\utils\medal\Medal.class
+com\knowplugins\ysubz\kaoscore\listeners\player\SendTellListener.class
 com\knowplugins\ysubz\kaoscore\managers\Managers.class
 com\knowplugins\ysubz\kaoscore\managers\player\ScoreboardManager.class
 com\knowplugins\ysubz\kaoscore\listeners\player\WelcomeMessageMenuListener.class
@@ -57,10 +60,8 @@ com\knowplugins\ysubz\kaoscore\utils\skin\SkinPoolManager$FetchType.class
 com\knowplugins\ysubz\kaoscore\managers\player\GameModeManager.class
 com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager$1.class
 com\knowplugins\ysubz\kaoscore\clan\Clan.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\SitCommand.class
 com\knowplugins\ysubz\kaoscore\managers\player\MedalManager.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\FlyCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\DatabaseManager.class
 com\knowplugins\ysubz\kaoscore\listeners\world\SoundListener.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\MedalCommand.class
@@ -69,14 +70,15 @@ com\knowplugins\ysubz\kaoscore\managers\player\SitManager.class
 com\knowplugins\ysubz\kaoscore\utils\tag\Tag.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerWelcomeMessageRepository.class
 com\knowplugins\ysubz\kaoscore\utils\punishment\PunishmentType.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\SitCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\Commands.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\AltsCommand.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinPoolManager.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\DiscordWebhookManager.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinApplier$2.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\KaosCore.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerMedalRepository.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\FlyCommand.class
 com\knowplugins\ysubz\kaoscore\clan\cmds\ClanCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\FriendCommand$1.class
 com\knowplugins\ysubz\kaoscore\managers\player\PunishmentManager.class
@@ -90,8 +92,10 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\staff\HistoryCommand.class
 com\knowplugins\ysubz\kaoscore\managers\world\ClimateManager.class
 com\knowplugins\ysubz\kaoscore\listeners\entity\MenuClickListener.class
 com\knowplugins\ysubz\kaoscore\listeners\player\PlayerQuitListener.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\KaosCoreCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\PvpCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\PunishmentMessageManager.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\WelcomeMessageCommand.class
 com\knowplugins\ysubz\kaoscore\utils\skin\SkinPoolManager$FetchResult.class
 com\knowplugins\ysubz\kaoscore\utils\discord\DiscordWebhookClient.class
@@ -108,6 +112,7 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\staff\TeleportCommand.class
 com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService$RemoteSkinData.class
 com\knowplugins\ysubz\kaoscore\api\KaosCoreAPI.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\TagCommand.class
+com\knowplugins\ysubz\kaoscore\cmd\commands\vip\DinnerboneCommand.class
 com\knowplugins\ysubz\kaoscore\listeners\world\TimeListener.class
 com\knowplugins\ysubz\kaoscore\managers\player\WelcomeMessageManager.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\BanCommand.class
@@ -140,14 +145,12 @@ com\knowplugins\ysubz\kaoscore\managers\world\NPCManager$Skin.class
 com\knowplugins\ysubz\kaoscore\utils\welcomeMessages\WelcomeMessage.class
 com\knowplugins\ysubz\kaoscore\utils\menu\AnvilInputMenu.class
 com\knowplugins\ysubz\kaoscore\utils\placeholder\PlaceholderManager.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\TrollCommand.class
 com\knowplugins\ysubz\kaoscore\utils\skin\OriginalSkinManager.class
 com\knowplugins\ysubz\kaoscore\listeners\Listeners.class
 com\knowplugins\ysubz\kaoscore\listeners\player\PlayerJoinListener.class
 com\knowplugins\ysubz\kaoscore\managers\player\ClanManager.class
 com\knowplugins\ysubz\kaoscore\managers\player\TagTeamManager.class
 com\knowplugins\ysubz\kaoscore\utils\disguise\DisguiseApiService.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\DivulgarCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\UnmuteCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\PunishmentRepository.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\SetTagCommand.class
@@ -161,7 +164,6 @@ com\knowplugins\ysubz\kaoscore\cmd\commands\staff\ModerationCommandUtil$Target.c
 com\knowplugins\ysubz\kaoscore\integration\practice\KaosPracticeBridge.class
 com\knowplugins\ysubz\kaoscore\clan\ClanRole.class
 com\knowplugins\ysubz\kaoscore\utils\menu\SkinMenu.class
-com\knowplugins\ysubz\kaoscore\cmd\commands\DinnerboneCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\GrantCommand.class
 com\knowplugins\ysubz\kaoscore\cmd\commands\staff\GroupCommand.class
 com\knowplugins\ysubz\kaoscore\managers\plugin\SkinRepository.class
