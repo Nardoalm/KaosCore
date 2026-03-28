@@ -57,7 +57,7 @@ public class FriendManager {
         friends.clear();
         requests.clear();
 
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
@@ -446,7 +446,7 @@ public class FriendManager {
 
     private List<FriendRequest> loadRequestsFromDatabase(UUID targetId) {
         List<FriendRequest> result = new ArrayList<>();
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return result;
         }
 
@@ -494,7 +494,7 @@ public class FriendManager {
     }
 
     private void cleanupExpiredRequests() {
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
@@ -515,7 +515,7 @@ public class FriendManager {
     }
 
     private void saveFriend(UUID playerId, UUID friendId, long since) {
-        if (playerId == null || friendId == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (playerId == null || friendId == null || !hasDatabase()) {
             return;
         }
 
@@ -533,7 +533,7 @@ public class FriendManager {
     }
 
     private void deleteFriendPair(UUID playerId, UUID friendId) {
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
@@ -550,7 +550,7 @@ public class FriendManager {
     }
 
     private void saveRequest(FriendRequest request) {
-        if (request == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (request == null || !hasDatabase()) {
             return;
         }
 
@@ -580,7 +580,7 @@ public class FriendManager {
     }
 
     private void deleteRequest(UUID requesterId, UUID targetId) {
-        if (requesterId == null || targetId == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (requesterId == null || targetId == null || !hasDatabase()) {
             return;
         }
 
@@ -618,6 +618,10 @@ public class FriendManager {
             return "";
         }
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean hasDatabase() {
+        return Managers.getDatabaseManager() != null;
     }
 }
 

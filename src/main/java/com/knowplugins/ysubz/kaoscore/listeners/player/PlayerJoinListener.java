@@ -9,6 +9,7 @@ import com.knowplugins.ysubz.kaoscore.managers.player.TabListManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
@@ -21,7 +22,7 @@ import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
-import com.knowplugins.ysubz.kaoscore.utils.welcomeMessages.WelcomeMessage;
+import com.knowplugins.ysubz.kaoscore.utils.welcome.WelcomeMessage;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -29,8 +30,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -43,10 +42,10 @@ public class PlayerJoinListener implements Listener {
    @EventHandler
    public void onPlayerJoin(PlayerJoinEvent event) {
       Player player = event.getPlayer();
-      KaosCore plugin = JavaPlugin.getPlugin(KaosCore.class);
+      KaosCore plugin = KaosCore.getInstance();
 
-      player.setGameMode(GameMode.SURVIVAL);
-      player.setLevel(2026);
+      // player.setGameMode(GameMode.SURVIVAL);
+      // player.setLevel(2026);
       event.setJoinMessage(null);
 
       if (plugin.getConfig().getBoolean("features.tablist.enabled", true)) {
@@ -93,20 +92,31 @@ public class PlayerJoinListener implements Listener {
 
       player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
-      TitleAPI.sendTitle(player, "§b§lFREEP", "§eBem-vindo!", 20, 10, 20);
+      if (plugin.getConfig().getBoolean("features.join-title.enabled", true)) {
+         String title = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.join-title.title", "&b&lFREEP"));
+         String subtitle = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.join-title.subtitle", "&eBem-vindo!"));
+         int fadeIn = Math.max(0, plugin.getConfig().getInt("features.join-title.fade-in", 20));
+         int stay = Math.max(0, plugin.getConfig().getInt("features.join-title.stay", 10));
+         int fadeOut = Math.max(0, plugin.getConfig().getInt("features.join-title.fade-out", 20));
+         TitleAPI.sendTitle(player, title, subtitle, fadeIn, stay, fadeOut);
+      }
 
       NPCManager npcManager = Managers.getNpcManager();
       if (npcManager != null) {
-         npcManager.spawnAll(player);
+         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline() && Managers.getNpcManager() != null) {
+               Managers.getNpcManager().spawnAll(player);
+            }
+         }, 20L);
       }
 
-      player.getInventory().clear();
+      /* player.getInventory().clear();
 
       ItemStack itemMenu = new ItemStack(Material.COMPASS);
       ItemMeta metaMenu = itemMenu.getItemMeta();
       metaMenu.setDisplayName("§aMenu de Opções §7(Clique Direito)");
       itemMenu.setItemMeta(metaMenu);
-      player.getInventory().setItem(4, itemMenu);
+      player.getInventory().setItem(4, itemMenu); */
 
       if (Managers.getDatabaseManager() != null) {
          VanishRepository vanishRepo = new VanishRepository(plugin, Managers.getDatabaseManager());
@@ -127,22 +137,32 @@ public class PlayerJoinListener implements Listener {
             if (isDisguised != null) {
                String nick = isDisguised;
                skinRepo.load(uuid).thenAccept(skinData ->
-                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredDisguise(player, nick, skinData))
+                  Bukkit.getScheduler().runTask(plugin, () -> {
+                     applyStoredDisguise(player, nick, hasStoredTextures(skinData) ? skinData : null);
+                     if (isPendingSkinLookup(skinData)) {
+                        SkinCommand.setSkinForOthers(player, skinData.name);
+                     }
+                  })
                );
                return;
             }
 
             skinRepo.load(uuid).thenAccept(skinData -> {
-               if (skinData != null && skinData.value != null && !skinData.value.trim().isEmpty()) {
+               if (hasStoredTextures(skinData)) {
                   Bukkit.getScheduler().runTask(plugin, () -> applyStoredSkin(player, skinData));
                   return;
                }
 
-               Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
+               if (isPendingSkinLookup(skinData)) {
+                  Bukkit.getScheduler().runTask(plugin, () -> SkinCommand.setSkin(player, skinData.name));
+                  return;
+               }
+
+               scheduleJoinSkinRefresh(plugin, player);
             });
          });
       } else {
-         Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
+         scheduleJoinSkinRefresh(plugin, player);
       }
 
       Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -177,7 +197,7 @@ public class PlayerJoinListener implements Listener {
                Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
             }
          }
-      }, 10L);
+      }, 4L);
 
       WelcomeMessage.sendWelcomeMessage(player);
    }
@@ -339,6 +359,30 @@ public class PlayerJoinListener implements Listener {
       }
 
       plugin.getSkinPoolManager().applyJoinSkin(player);
+   }
+
+   private void scheduleJoinSkinRefresh(KaosCore plugin, Player player) {
+      if (plugin == null || player == null) {
+         return;
+      }
+
+      Bukkit.getScheduler().runTaskLater(plugin, () -> applyJoinSkin(player), 2L);
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && !DisguiseManager.isDisguised(player)) {
+            applyJoinSkin(player);
+         }
+      }, 40L);
+   }
+
+   private boolean hasStoredTextures(SkinData skinData) {
+      return skinData != null && skinData.value != null && !skinData.value.trim().isEmpty();
+   }
+
+   private boolean isPendingSkinLookup(SkinData skinData) {
+      return skinData != null
+              && skinData.name != null
+              && !skinData.name.trim().isEmpty()
+              && (skinData.value == null || skinData.value.trim().isEmpty());
    }
 }
 

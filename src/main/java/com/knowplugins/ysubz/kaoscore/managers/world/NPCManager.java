@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
@@ -31,6 +32,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -49,6 +51,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class NPCManager {
 
+    private static final long NPC_TABLIST_REMOVE_DELAY_TICKS = 60L;
+
     private final KaosCore plugin;
     private final File file;
     private final Object fileLock = new Object();
@@ -56,10 +60,9 @@ public final class NPCManager {
 
     private final ConcurrentMap<String, NpcDefinition> npcsById = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Skin> skinByNick = new ConcurrentHashMap<>();
+    private final Set<String> loadingSkins = ConcurrentHashMap.newKeySet();
 
-    // viewer -> (entityId -> npcId)
     private final ConcurrentMap<UUID, ConcurrentMap<Integer, String>> npcByEntityIdByViewer = new ConcurrentHashMap<>();
-    // viewer -> (npcId -> entityId)
     private final ConcurrentMap<UUID, ConcurrentMap<String, Integer>> entityIdByNpcIdByViewer = new ConcurrentHashMap<>();
 
     public NPCManager(KaosCore plugin, DatabaseManager databaseManager) {
@@ -279,6 +282,8 @@ public final class NPCManager {
             }
         }
         npcsById.clear();
+        skinByNick.clear();
+        loadingSkins.clear();
         npcByEntityIdByViewer.clear();
         entityIdByNpcIdByViewer.clear();
     }
@@ -294,6 +299,10 @@ public final class NPCManager {
     public boolean handleInteract(Player viewer, int entityId) {
         if (viewer == null || !viewer.isOnline()) {
             return false;
+        }
+
+        if (PracticeModeBlocker.check(viewer, true)) {
+            return true;
         }
 
         Map<Integer, String> map = npcByEntityIdByViewer.get(viewer.getUniqueId());
@@ -320,6 +329,10 @@ public final class NPCManager {
             return;
         }
 
+        if (!ensureSkinReady(npc)) {
+            return;
+        }
+
         UUID viewerId = viewer.getUniqueId();
         ConcurrentMap<String, Integer> npcToEntity = entityIdByNpcIdByViewer.computeIfAbsent(viewerId, k -> new ConcurrentHashMap<>());
         if (npcToEntity.containsKey(npc.id)) {
@@ -332,7 +345,7 @@ public final class NPCManager {
 
         // GameProfile name precisa ser sem cores e <= 16.
         String profileName = buildProfileName(npc.id);
-        GameProfile profile = new GameProfile(UUID.randomUUID(), profileName);
+        GameProfile profile = new GameProfile(buildProfileUuid(npc), profileName);
         applySkin(profile, npc);
 
         EntityPlayer entity = new EntityPlayer(server, world, profile, new PlayerInteractManager(world));
@@ -356,7 +369,7 @@ public final class NPCManager {
                 }
             } catch (Exception ignored) {
             }
-        }, 40L);
+        }, NPC_TABLIST_REMOVE_DELAY_TICKS);
     }
 
     private void applySkin(GameProfile profile, NpcDefinition npc) {
@@ -407,11 +420,17 @@ public final class NPCManager {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            boolean changed = false;
             for (String nick : unique) {
                 Skin resolved = resolveSkinBlocking(nick);
                 if (resolved != null && resolved.value != null && !resolved.value.trim().isEmpty()) {
                     skinByNick.put(normalize(nick), resolved);
+                    changed = true;
                 }
+            }
+
+            if (changed) {
+                Bukkit.getScheduler().runTask(plugin, this::refreshAllViewers);
             }
         });
     }
@@ -429,11 +448,37 @@ public final class NPCManager {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Skin resolved = resolveSkinBlocking(clean);
-            if (resolved != null && resolved.value != null && !resolved.value.trim().isEmpty()) {
-                skinByNick.put(clean, resolved);
+            try {
+                Skin resolved = resolveSkinBlocking(clean);
+                if (resolved != null && resolved.value != null && !resolved.value.trim().isEmpty()) {
+                    skinByNick.put(clean, resolved);
+                    Bukkit.getScheduler().runTask(plugin, this::refreshAllViewers);
+                }
+            } finally {
+                loadingSkins.remove(clean);
             }
         });
+    }
+
+    private boolean ensureSkinReady(NpcDefinition npc) {
+        if (npc == null) {
+            return false;
+        }
+
+        String nick = normalize(npc.skinNick);
+        if (nick.isEmpty()) {
+            return true;
+        }
+
+        Skin skin = skinByNick.get(nick);
+        if (skin != null && skin.value != null && !skin.value.trim().isEmpty()) {
+            return true;
+        }
+
+        if (loadingSkins.add(nick)) {
+            preloadSkinAsync(nick);
+        }
+        return false;
     }
 
     private Skin resolveSkinBlocking(String nick) {
@@ -555,6 +600,15 @@ public final class NPCManager {
             s = s.substring(0, 16);
         }
         return s;
+    }
+
+    private UUID buildProfileUuid(NpcDefinition npc) {
+        String key = "kaoscore:npc:" + safeNpcPart(npc == null ? null : npc.id) + ":" + safeNpcPart(npc == null ? null : npc.skinNick);
+        return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String safeNpcPart(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
     private String cleanNick(String nick) {

@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.listeners.player;
 
+import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -22,7 +23,7 @@ public class DoubleJumpListener implements Listener {
 
         if (!player.hasPermission(FLY_PERMISSION) &&
                 (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE)) {
-            player.setAllowFlight(true);
+            player.setAllowFlight(!PracticeModeBlocker.isBlocked(player));
         }
     }
 
@@ -31,6 +32,13 @@ public class DoubleJumpListener implements Listener {
         Player player = event.getPlayer();
 
         if (player.hasPermission(FLY_PERMISSION) || player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+
+        if (PracticeModeBlocker.check(player, true)) {
+            event.setCancelled(true);
+            player.setAllowFlight(false);
+            player.setFlying(false);
             return;
         }
 
@@ -50,6 +58,13 @@ public class DoubleJumpListener implements Listener {
         Player player = event.getPlayer();
 
         if (player.hasPermission(FLY_PERMISSION) || player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+
+        if (PracticeModeBlocker.isBlocked(player)) {
+            if (player.getAllowFlight()) {
+                player.setAllowFlight(false);
+            }
             return;
         }
 

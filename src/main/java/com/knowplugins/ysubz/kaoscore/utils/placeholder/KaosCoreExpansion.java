@@ -125,10 +125,6 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
             return medalManager == null ? "" : safe(medalManager.getStaticNametagDisplay(player));
         }
 
-        if (params.equalsIgnoreCase("medal_animated")) {
-            return "false";
-        }
-
         if (params.equalsIgnoreCase("friend_count")) {
             return Managers.getFriendManager() == null ? "0" : String.valueOf(Managers.getFriendManager().getFriendCount(player.getUniqueId()));
         }

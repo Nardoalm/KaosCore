@@ -7,13 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerAddressRepository {
 
     private final KaosCore plugin;
     private final DatabaseManager databaseManager;
+    private final java.util.Set<String> knownNames = ConcurrentHashMap.newKeySet();
 
     public PlayerAddressRepository(KaosCore plugin, DatabaseManager databaseManager) {
         this.plugin = plugin;
@@ -25,6 +28,7 @@ public class PlayerAddressRepository {
             return;
         }
 
+        knownNames.add(normalizeName(name));
         long now = System.currentTimeMillis();
 
         try (Connection conn = databaseManager.getConnection();
@@ -41,10 +45,38 @@ public class PlayerAddressRepository {
         }
     }
 
+    public boolean hasSeenName(String name) {
+        String normalizedName = normalizeName(name);
+        if (normalizedName.isEmpty()) {
+            return false;
+        }
+
+        if (knownNames.contains(normalizedName)) {
+            return true;
+        }
+
+        String sql = "SELECT 1 FROM player_addresses WHERE LOWER(player_name) = ? LIMIT 1";
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, normalizedName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    knownNames.add(normalizedName);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Erro ao verificar histórico de nome do jogador no DB: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public CompletableFuture<List<String>> findAlts(String targetName, UUID targetUuid) {
         return CompletableFuture.supplyAsync(() -> {
             List<String> result = new ArrayList<>();
-            String normalizedName = targetName == null ? "" : targetName.trim().toLowerCase();
+            String normalizedName = normalizeName(targetName);
             String uuidValue = targetUuid == null ? "" : targetUuid.toString();
 
             if (normalizedName.isEmpty() && uuidValue.isEmpty()) {
@@ -82,5 +114,9 @@ public class PlayerAddressRepository {
 
             return result;
         });
+    }
+
+    private String normalizeName(String name) {
+        return name == null ? "" : name.trim().toLowerCase(Locale.ROOT);
     }
 }

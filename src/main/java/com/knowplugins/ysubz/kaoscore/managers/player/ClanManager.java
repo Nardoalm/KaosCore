@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,14 +71,14 @@ public class ClanManager {
     }
 
     public void loadClans() {
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
-        clans.clear();
-        playerClans.clear();
-        invites.clear();
         cleanupExpiredInvites();
+
+        Map<String, Clan> loadedClans = new HashMap<>();
+        Map<UUID, String> loadedPlayerClans = new HashMap<>();
 
         String selectClans = "SELECT * FROM clans";
         String selectMembers = "SELECT * FROM clan_members WHERE clan_name = ?";
@@ -87,41 +88,59 @@ public class ClanManager {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                String name = rs.getString("name");
-                String tag = rs.getString("tag");
-                String tagColor = rs.getString("tag_color");
-                UUID leader = UUID.fromString(rs.getString("leader"));
+                try {
+                    String name = rs.getString("name");
+                    String tag = rs.getString("tag");
+                    String tagColor = rs.getString("tag_color");
+                    UUID leader = UUID.fromString(rs.getString("leader"));
 
-                Clan clan = new Clan(name, tag, leader);
-                clan.setTagColor(tagColor == null || tagColor.trim().isEmpty() ? "§7" : tagColor);
-                clan.setCreationDate(rs.getLong("created"));
-                clan.setWins(rs.getInt("wins"));
-                clan.setLosses(rs.getInt("losses"));
-                clan.setElo(rs.getInt("elo"));
-                clan.getMembers().clear();
+                    Clan clan = new Clan(name, tag, leader);
+                    clan.setTagColor(tagColor == null || tagColor.trim().isEmpty() ? "§7" : tagColor);
+                    clan.setCreationDate(rs.getLong("created"));
+                    clan.setWins(rs.getInt("wins"));
+                    clan.setLosses(rs.getInt("losses"));
+                    clan.setElo(rs.getInt("elo"));
+                    clan.getMembers().clear();
 
-                try (PreparedStatement memberStmt = conn.prepareStatement(selectMembers)) {
-                    memberStmt.setString(1, name);
-                    try (ResultSet memberRs = memberStmt.executeQuery()) {
-                        while (memberRs.next()) {
-                            UUID uuid = UUID.fromString(memberRs.getString("player_uuid"));
-                            ClanRole role = ClanRole.getByName(memberRs.getString("role"));
-                            clan.getMembers().put(uuid, role);
-                            playerClans.put(uuid, name);
+                    try (PreparedStatement memberStmt = conn.prepareStatement(selectMembers)) {
+                        memberStmt.setString(1, name);
+                        try (ResultSet memberRs = memberStmt.executeQuery()) {
+                            while (memberRs.next()) {
+                                try {
+                                    UUID uuid = UUID.fromString(memberRs.getString("player_uuid"));
+                                    ClanRole role = ClanRole.getByName(memberRs.getString("role"));
+                                    clan.getMembers().put(uuid, role);
+                                    loadedPlayerClans.put(uuid, name);
+                                } catch (Exception memberException) {
+                                    if (plugin != null) {
+                                        plugin.getLogger().warning("[KaosCore] Membro inválido ignorado ao carregar clan " + name + ": " + memberException.getMessage());
+                                    }
+                                }
+                            }
                         }
                     }
-                }
 
-                if (!clan.getMembers().containsKey(leader)) {
-                    clan.getMembers().put(leader, ClanRole.LEADER);
-                    playerClans.put(leader, name);
-                }
+                    if (!clan.getMembers().containsKey(leader)) {
+                        clan.getMembers().put(leader, ClanRole.LEADER);
+                        loadedPlayerClans.put(leader, name);
+                    }
 
-                clans.put(name.toLowerCase(Locale.ROOT), clan);
+                    loadedClans.put(name.toLowerCase(Locale.ROOT), clan);
+                } catch (Exception clanException) {
+                    if (plugin != null) {
+                        plugin.getLogger().warning("[KaosCore] Clan inválido ignorado ao carregar dados: " + clanException.getMessage());
+                    }
+                }
             }
 
+            clans.clear();
+            clans.putAll(loadedClans);
+            playerClans.clear();
+            playerClans.putAll(loadedPlayerClans);
+            invites.clear();
+
             System.out.println("\u001B[32m[KaosCore] " + clans.size() + " clans carregados\u001B[0m");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("\u001B[31m[KaosCore] Erro ao carregar clans: " + e.getMessage() + "\u001B[0m");
         }
     }
@@ -132,7 +151,7 @@ public class ClanManager {
     }
 
     public void saveClans() {
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
@@ -142,39 +161,64 @@ public class ClanManager {
     }
 
     public synchronized void saveClan(Clan clan) {
-        if (clan == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (clan == null || !hasDatabase()) {
             return;
         }
 
         String clanSql = "INSERT INTO clans (name, tag, tag_color, leader, created, wins, losses, elo) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE tag = VALUES(tag), tag_color = VALUES(tag_color), leader = VALUES(leader), created = VALUES(created), wins = VALUES(wins), losses = VALUES(losses), elo = VALUES(elo)";
 
+        String clearMembersSql = "DELETE FROM clan_members WHERE clan_name = ?";
         String memberSql = "INSERT INTO clan_members (clan_name, player_uuid, player_name, role, joined) VALUES (?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE clan_name = VALUES(clan_name), role = VALUES(role), player_name = VALUES(player_name)";
 
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(clanSql);
+             PreparedStatement clearMembersStmt = conn.prepareStatement(clearMembersSql);
              PreparedStatement memberStmt = conn.prepareStatement(memberSql)) {
+            boolean originalAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
 
-            stmt.setString(1, clan.getName());
-            stmt.setString(2, clan.getTag());
-            stmt.setString(3, clan.getTagColor());
-            stmt.setString(4, clan.getLeader().toString());
-            stmt.setLong(5, clan.getCreationDate());
-            stmt.setInt(6, clan.getWins());
-            stmt.setInt(7, clan.getLosses());
-            stmt.setInt(8, clan.getElo());
-            stmt.executeUpdate();
+            try {
+                stmt.setString(1, clan.getName());
+                stmt.setString(2, clan.getTag());
+                stmt.setString(3, clan.getTagColor());
+                stmt.setString(4, clan.getLeader().toString());
+                stmt.setLong(5, clan.getCreationDate());
+                stmt.setInt(6, clan.getWins());
+                stmt.setInt(7, clan.getLosses());
+                stmt.setInt(8, clan.getElo());
+                stmt.executeUpdate();
 
-            for (Map.Entry<UUID, ClanRole> entry : clan.getMembers().entrySet()) {
-                memberStmt.setString(1, clan.getName());
-                memberStmt.setString(2, entry.getKey().toString());
-                memberStmt.setString(3, resolvePlayerName(entry.getKey()));
-                memberStmt.setString(4, entry.getValue().name());
-                memberStmt.setLong(5, System.currentTimeMillis());
-                memberStmt.addBatch();
+                clearMembersStmt.setString(1, clan.getName());
+                clearMembersStmt.executeUpdate();
+
+                for (Map.Entry<UUID, ClanRole> entry : clan.getMembers().entrySet()) {
+                    memberStmt.setString(1, clan.getName());
+                    memberStmt.setString(2, entry.getKey().toString());
+                    memberStmt.setString(3, resolvePlayerName(entry.getKey()));
+                    memberStmt.setString(4, entry.getValue().name());
+                    memberStmt.setLong(5, System.currentTimeMillis());
+                    memberStmt.addBatch();
+                }
+
+                if (!clan.getMembers().isEmpty()) {
+                    memberStmt.executeBatch();
+                }
+
+                conn.commit();
+            } catch (SQLException exception) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackException) {
+                    if (plugin != null) {
+                        plugin.getLogger().warning("[KaosCore] Falha ao desfazer salvamento do clan " + clan.getName() + ": " + rollbackException.getMessage());
+                    }
+                }
+                throw exception;
+            } finally {
+                conn.setAutoCommit(originalAutoCommit);
             }
-            memberStmt.executeBatch();
         } catch (SQLException e) {
             System.out.println("\u001B[31m[KaosCore] Erro ao salvar clan: " + e.getMessage() + "\u001B[0m");
         }
@@ -215,7 +259,7 @@ public class ClanManager {
 
         clans.remove(clan.getName().toLowerCase(Locale.ROOT));
 
-        if (Managers.getDatabaseManager() != null && Managers.getDatabaseManager().isConnected()) {
+        if (hasDatabase()) {
             try (Connection conn = Managers.getDatabaseManager().getConnection();
                  PreparedStatement deleteClanStmt = conn.prepareStatement("DELETE FROM clans WHERE name = ?");
                  PreparedStatement deleteMembersStmt = conn.prepareStatement("DELETE FROM clan_members WHERE clan_name = ?");
@@ -389,7 +433,7 @@ public class ClanManager {
 
     public void clearInvites(UUID playerId) {
         invites.remove(playerId);
-        if (playerId == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (playerId == null || !hasDatabase()) {
             return;
         }
 
@@ -466,6 +510,31 @@ public class ClanManager {
         return clans.values();
     }
 
+    public boolean isTagTaken(String tag, String excludedClanName) {
+        if (tag == null || tag.trim().isEmpty()) {
+            return false;
+        }
+
+        String normalizedTag = tag.trim();
+        String excluded = excludedClanName == null ? "" : excludedClanName.trim().toLowerCase(Locale.ROOT);
+
+        for (Clan clan : clans.values()) {
+            if (clan == null) {
+                continue;
+            }
+
+            if (!excluded.isEmpty() && clan.getName() != null && clan.getName().trim().toLowerCase(Locale.ROOT).equals(excluded)) {
+                continue;
+            }
+
+            if (clan.getTag() != null && clan.getTag().equalsIgnoreCase(normalizedTag)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private List<ClanInvite> loadInvites(UUID playerId, boolean forceReload) {
         if (playerId == null) {
             return new ArrayList<>();
@@ -487,7 +556,7 @@ public class ClanManager {
 
     private List<ClanInvite> loadInvitesFromDatabase(UUID playerId) {
         List<ClanInvite> result = new ArrayList<>();
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return result;
         }
 
@@ -532,7 +601,7 @@ public class ClanManager {
     }
 
     private void cleanupExpiredInvites() {
-        if (Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (!hasDatabase()) {
             return;
         }
 
@@ -546,7 +615,7 @@ public class ClanManager {
     }
 
     private void saveInvite(ClanInvite invite) {
-        if (invite == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (invite == null || !hasDatabase()) {
             return;
         }
 
@@ -565,7 +634,7 @@ public class ClanManager {
     }
 
     private void deleteInvite(ClanInvite invite) {
-        if (invite == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (invite == null || !hasDatabase()) {
             return;
         }
 
@@ -580,7 +649,7 @@ public class ClanManager {
     }
 
     private void deleteMemberRecord(UUID playerId) {
-        if (playerId == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (playerId == null || !hasDatabase()) {
             return;
         }
 
@@ -648,5 +717,9 @@ public class ClanManager {
         if (online != null && online.isOnline()) {
             plugin.getTagManager().refreshTag(online);
         }
+    }
+
+    private boolean hasDatabase() {
+        return Managers.getDatabaseManager() != null;
     }
 }

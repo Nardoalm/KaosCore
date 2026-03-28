@@ -19,7 +19,6 @@ import java.util.UUID;
 public class Managers {
 
     private final KaosCore plugin;
-    private static ScoreboardManager scoreboardManager;
     private static DatabaseManager databaseManager;
     private static WhitelistManager whitelistManager;
     private static DisguiseManager disguiseManager;
@@ -86,7 +85,7 @@ public class Managers {
         }
 
         autoBroadcastManager = new AutoBroadcastManager(plugin);
-        spawnLimitsManager = new SpawnLimitsManager(plugin);
+        // spawnLimitsManager = new SpawnLimitsManager(plugin);
 
         plugin.getLogger().info("Sistemas carregados com sucesso!");
     }

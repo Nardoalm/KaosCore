@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
 
-import com.knowplugins.ysubz.kaoscore.utils.welcomeMessages.WelcomeMessage;
+import com.knowplugins.ysubz.kaoscore.utils.welcome.WelcomeMessage;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

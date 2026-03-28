@@ -27,8 +27,6 @@ public class MedalManager {
     private final Map<String, Medal> medalsById;
     private final Map<String, Medal> medalsByName;
     private final Map<UUID, String> selectedMedals;
-    private final Map<String, Integer> animationIndexes;
-    private final Map<String, Integer> animationElapsedTicks;
     private final PlayerMedalRepository playerMedalRepository;
     private FileConfiguration medalsConfig;
 
@@ -37,8 +35,6 @@ public class MedalManager {
         this.medalsById = new LinkedHashMap<>();
         this.medalsByName = new ConcurrentHashMap<>();
         this.selectedMedals = new ConcurrentHashMap<>();
-        this.animationIndexes = new ConcurrentHashMap<>();
-        this.animationElapsedTicks = new ConcurrentHashMap<>();
         this.playerMedalRepository = new PlayerMedalRepository(plugin, Managers.getDatabaseManager());
         loadMedals();
         loadSelectedMedals();
@@ -57,8 +53,6 @@ public class MedalManager {
         this.medalsConfig = YamlConfiguration.loadConfiguration(file);
         this.medalsById.clear();
         this.medalsByName.clear();
-        this.animationIndexes.clear();
-        this.animationElapsedTicks.clear();
 
         ConfigurationSection section = medalsConfig.getConfigurationSection("medals");
         if (section == null) {
@@ -85,7 +79,6 @@ public class MedalManager {
 
             String name = value(medalSection.getString("name"), key);
             String permission = value(medalSection.getString("permission"), "");
-            int intervalTicks = Math.max(10, medalSection.getInt("interval", 10));
 
             List<String> chatFrames = translatedFrames(medalSection, "chat-frames", medalSection.getString("chat"));
             List<String> nametagFrames = translatedFrames(medalSection, "nametag-frames", medalSection.getString("nametag"));
@@ -97,7 +90,7 @@ public class MedalManager {
                 nametagFrames = new ArrayList<>(chatFrames);
             }
 
-            Medal medal = new Medal(id, name, permission, chatFrames, nametagFrames, intervalTicks);
+            Medal medal = new Medal(id, name, permission, chatFrames, nametagFrames);
             medalsById.put(id, medal);
             medalsByName.put(normalize(name), medal);
         }
@@ -206,18 +199,6 @@ public class MedalManager {
     public String getStaticNametagDisplay(Player player) {
         Medal medal = getMedal(player);
         return medal == null ? "" : medal.getStaticNametag();
-    }
-
-    public void advanceAnimations(int elapsedTicks) {
-        // Medalhas estaticas: sem animacao.
-    }
-
-    private int getAnimationIndex(Medal medal) {
-        if (medal == null) {
-            return 0;
-        }
-        Integer index = animationIndexes.get(medal.getId());
-        return index == null ? 0 : index;
     }
 
     private Medal resolveMedal(String medalNameOrId) {

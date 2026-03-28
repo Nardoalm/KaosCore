@@ -120,7 +120,6 @@ public final class AnvilInputMenu {
         } catch (Exception ignored) {
         }
 
-        // Fallback: sem titulo custom
         return new PacketPlayOutOpenWindow(windowId, type, title, 0);
     }
 

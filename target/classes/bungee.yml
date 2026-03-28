@@ -1,0 +1,5 @@
+name: KaosCore
+version: 7.4
+main: com.knowplugins.ysubz.kaoscore.bungee.BungeeKaosCore
+author: ysubz
+description: Versao BungeeCord do KaosCore para sistemas hibridos.

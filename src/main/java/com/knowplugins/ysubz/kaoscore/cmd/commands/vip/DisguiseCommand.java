@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
@@ -13,6 +14,7 @@ import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -119,6 +121,11 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
+        if (hasJoinedBefore(newNick)) {
+            player.sendMessage("§c§lDISGUISE ➔ §cEsse nick pertence a um jogador que já entrou no servidor.");
+            return;
+        }
+
         try {
             String previousEntry = player.getName();
             disguiseManager.recordOriginalName(player);
@@ -219,6 +226,20 @@ public class DisguiseCommand extends Commands {
 
             viewer.sendMessage(" §7- §f" + fakeNick + " §8-> §e" + originalName);
         }
+    }
+
+    private boolean hasJoinedBefore(String nick) {
+        if (nick == null || nick.trim().isEmpty()) {
+            return false;
+        }
+
+        PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
+        if (repository != null && repository.hasSeenName(nick)) {
+            return true;
+        }
+
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(nick);
+        return offlinePlayer != null && offlinePlayer.hasPlayedBefore();
     }
 }
 

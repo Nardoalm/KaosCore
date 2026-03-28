@@ -21,7 +21,7 @@ public class Listeners {
          } catch (Exception ignored) {
          }
          pm.registerEvents(new PermissionListener(), plugin);
-         pm.registerEvents(new ProtectionListener(), plugin);
+         // pm.registerEvents(new ProtectionListener(), plugin);
          pm.registerEvents(new WhitelistListener(), plugin);
          pm.registerEvents(new PlayerJoinListener(), plugin);
          pm.registerEvents(new EntityListener(), plugin);
@@ -31,18 +31,17 @@ public class Listeners {
          pm.registerEvents(new SkinMenuListener(), plugin);
          pm.registerEvents(new FriendMenuListener(), plugin);
          pm.registerEvents(new SitListener(), plugin);
-         pm.registerEvents(new WeatherListener(), plugin);
-         pm.registerEvents(new InteractListener(), plugin);
-         pm.registerEvents(new MenuClickListener(), plugin);
-         pm.registerEvents(new InventoryProtectListener(), plugin);
+         // pm.registerEvents(new WeatherListener(), plugin);
+         // pm.registerEvents(new InteractListener(), plugin);
+         // pm.registerEvents(new MenuClickListener(), plugin);
+         // pm.registerEvents(new InventoryProtectListener(), plugin);
          pm.registerEvents(new PlayerQuitListener(), plugin);
          pm.registerEvents(new StaffLogListener(plugin), plugin);
-         pm.registerEvents(new WorldProtectionListener(), plugin);
+         // pm.registerEvents(new WorldProtectionListener(), plugin);
          pm.registerEvents(new SoundListener(), plugin);
-         pm.registerEvents(new TimeListener(), plugin);
+         // pm.registerEvents(new TimeListener(), plugin);
          pm.registerEvents(new DoubleJumpListener(), plugin);
 
-         // ProtocolLib packet listener for fake NPC interaction.
          NPCInteractListener.register(plugin);
       } catch (Exception e) {
          e.printStackTrace();

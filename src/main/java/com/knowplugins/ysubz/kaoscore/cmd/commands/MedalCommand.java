@@ -33,10 +33,6 @@ public class MedalCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!player.hasPermission("kaoscore.medal.use")) {
-            player.sendMessage("§cVocê não tem permissão para usar medalhas.");
-            return;
-        }
 
         MedalManager medalManager = plugin == null ? null : plugin.getMedalManager();
         if (medalManager == null) {
@@ -71,7 +67,7 @@ public class MedalCommand extends Commands {
         TextComponent line = new TextComponent("§aSuas medalhas: ");
         for (int i = 0; i < availableMedals.size(); i++) {
             Medal medal = availableMedals.get(i);
-            TextComponent component = new TextComponent(medal.getChatFrame(0));
+                TextComponent component = new TextComponent(medal.getStaticChat());
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medalha " + medal.getId()));
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Clique para equipar §f" + medal.getStaticChat()).create()));
             line.addExtra(component);

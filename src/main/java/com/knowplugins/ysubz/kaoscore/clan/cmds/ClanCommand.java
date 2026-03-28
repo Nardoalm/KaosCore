@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 public class ClanCommand extends Commands {
 
-    private static final String BASE_PERMISSION = "kaoscore.clan.use";
-
     public ClanCommand(KaosCore plugin) {
         super("clan");
     }
@@ -625,6 +623,11 @@ public class ClanCommand extends Commands {
             return;
         }
 
+        if (Managers.getClanManager().isTagTaken(newTag, clan.getName())) {
+            player.sendMessage("§cEsta tag já está sendo usada por outro clan!");
+            return;
+        }
+
         clan.setTag(newTag);
         Managers.getClanManager().saveClan(clan);
         player.sendMessage("§aTag alterada para: " + clan.getFormattedTag());
@@ -741,19 +744,11 @@ public class ClanCommand extends Commands {
     }
 
     private boolean requirePermission(Player player, String subCommand) {
-        if (hasPermission(player, permissionFor(subCommand))) {
-            return true;
-        }
-        player.sendMessage("§cVocê não tem permissão para usar /clan " + subCommand + ".");
-        return false;
+        return true;
     }
 
     private boolean hasPermission(Player player, String permission) {
         return permission == null || permission.isEmpty() || player.hasPermission(permission);
-    }
-
-    private String permissionFor(String subCommand) {
-        return BASE_PERMISSION + "." + subCommand.toLowerCase(Locale.ROOT);
     }
 
     private Player resolvePlayer(String name) {

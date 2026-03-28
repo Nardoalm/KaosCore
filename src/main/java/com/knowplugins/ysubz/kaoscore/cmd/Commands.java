@@ -73,7 +73,7 @@ public abstract class Commands extends Command {
       new FlyCommand();
       new SetSpawnCommand();
       new UnbanCommand();
-      new BuildCommand();
+      // new BuildCommand();
       // new PvpCommand();
       new SetNpcCommand();
       new RemoveNpcCommand();

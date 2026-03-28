@@ -58,6 +58,25 @@ public class TagTeamManager {
             syncTask.cancel();
             syncTask = null;
         }
+
+        Set<Scoreboard> scoreboards = new HashSet<>(trackedBoards.values());
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = online.getScoreboard();
+            if (scoreboard != null) {
+                scoreboards.add(scoreboard);
+            }
+        }
+        if (Bukkit.getScoreboardManager() != null) {
+            Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            if (mainScoreboard != null) {
+                scoreboards.add(mainScoreboard);
+            }
+        }
+
+        for (Scoreboard scoreboard : scoreboards) {
+            clearManagedTeams(scoreboard);
+        }
+
         trackedBoards.clear();
         practiceHiddenPairs.clear();
     }
@@ -132,10 +151,12 @@ public class TagTeamManager {
             Scoreboard scoreboard = resolveScoreboard(viewer);
             if (scoreboard != null) {
                 removeEntries(scoreboard, entries);
+                cleanupEmptyTeams(scoreboard);
             }
             clearPracticeVisibility(viewer, player);
         }
 
+        trackedBoards.remove(player.getUniqueId());
         String playerId = player.getUniqueId().toString();
         practiceHiddenPairs.removeIf(pair -> pair.startsWith(playerId + ":") || pair.endsWith(":" + playerId));
     }
@@ -248,7 +269,7 @@ public class TagTeamManager {
             String prefix = trimTeamPart(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
             String suffix = trimTeamPart(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
-            String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor());
+            String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor()) + ":" + styleSignature(prefix, suffix);
             return new NametagStyle(teamKey, prefix, suffix, priority);
         }
 
@@ -290,12 +311,6 @@ public class TagTeamManager {
             }
         }
 
-        // Scoreboard teams are shared: include medal id + clan in the key so one player's state doesn't override others.
-        String key = tag.getId()
-                // + ":" + (medalId.isEmpty() ? "none" : medalId)
-                + ":" + (clanKey.isEmpty() ? "none" : clanKey.toLowerCase(Locale.ROOT));
-
-
         // Always end the scoreboard prefix with a real color/reset (from tag.color) so medal/tag formatting
         // doesn't leak into the player's name (e.g., bold staying enabled).
         String tailColor = lastResettingColor(tagColor);
@@ -312,7 +327,12 @@ public class TagTeamManager {
             prefix = trimTeamPart(tagPrefix);
         }
 
-        return new NametagStyle(key, prefix, trimTeamPart(tagSuffix + clanSuffix), tag.getPosition());
+        String suffix = trimTeamPart(tagSuffix + clanSuffix);
+        String key = tag.getId()
+                + ":" + (clanKey.isEmpty() ? "none" : clanKey.toLowerCase(Locale.ROOT))
+                + ":" + styleSignature(prefix, suffix);
+
+        return new NametagStyle(key, prefix, suffix, tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
@@ -477,6 +497,29 @@ public class TagTeamManager {
         }
     }
 
+    private void clearManagedTeams(Scoreboard scoreboard) {
+        if (scoreboard == null) {
+            return;
+        }
+
+        Set<Team> teams = new HashSet<>(scoreboard.getTeams());
+        for (Team team : teams) {
+            if (team == null) {
+                continue;
+            }
+
+            String name = team.getName();
+            if (name == null || !name.startsWith(TEAM_PREFIX)) {
+                continue;
+            }
+
+            try {
+                team.unregister();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     private String trimTeamPart(String value) {
         return trimTeamPart(value, 16);
     }
@@ -535,6 +578,10 @@ public class TagTeamManager {
 
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private String styleSignature(String prefix, String suffix) {
+        return Integer.toHexString((safe(prefix) + "|" + safe(suffix)).hashCode());
     }
 
     private String lastResettingColor(String text) {

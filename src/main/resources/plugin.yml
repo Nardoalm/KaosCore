@@ -1,14 +1,11 @@
 name: KaosCore
-version: 6.7
+version: 7.4
 main: com.knowplugins.ysubz.kaoscore.KaosCore
 api-version: 1.8
 author: ysubz
 description: Plugin de core com sistema completo.
 depend: [PlaceholderAPI, ProtocolLib]
 commands:
-  kaoscore:
-    description: Comando principal do KaosCore
-    usage: /kaoscore reload
   tag:
     description: Sistema de tags do KaosCore
     usage: /tag [nomeDaTag]

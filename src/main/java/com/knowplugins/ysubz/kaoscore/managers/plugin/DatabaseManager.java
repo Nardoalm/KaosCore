@@ -1,27 +1,28 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 public class DatabaseManager {
 
     private final KaosCore plugin;
-    private Properties props;
-    private String host;
-    private String database;
-    private String username;
-    private String password;
-    private int port;
-    private boolean connected;
-    private String jdbcUrl;
+    private final String host;
+    private final String database;
+    private final String username;
+    private final String password;
+    private final int port;
+    private final String jdbcUrl;
+
+    private volatile boolean connected;
+    private volatile HikariDataSource dataSource;
 
     public DatabaseManager(KaosCore plugin) {
         this.plugin = plugin;
@@ -30,11 +31,13 @@ public class DatabaseManager {
         this.database = plugin.getConfig().getString("database.mysql.database");
         this.username = plugin.getConfig().getString("database.mysql.user", plugin.getConfig().getString("database.mysql.username"));
         this.password = plugin.getConfig().getString("database.mysql.password");
-        this.jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&autoReconnect=true&characterEncoding=utf8";
+        this.jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database
+                + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&rewriteBatchedStatements=true";
     }
 
     public synchronized boolean connect() {
-        if (connected) {
+        if (dataSource != null && !dataSource.isClosed()) {
+            connected = true;
             return true;
         }
 
@@ -44,29 +47,44 @@ public class DatabaseManager {
             } catch (ClassNotFoundException ignored) {
             }
 
-            props = new Properties();
-            props.setProperty("user", username != null ? username : "");
-            props.setProperty("password", password != null ? password : "");
-            props.setProperty("autoReconnect", "true");
-            props.setProperty("characterEncoding", "utf8");
-            props.setProperty("useUnicode", "true");
+            HikariConfig config = new HikariConfig();
+            config.setPoolName("KaosCore-Hikari");
+            config.setJdbcUrl(jdbcUrl);
+            config.setUsername(username != null ? username : "");
+            config.setPassword(password != null ? password : "");
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            config.setMaximumPoolSize(Math.max(2, plugin.getConfig().getInt("database.mysql.pool.maximum-pool-size", 10)));
+            config.setMinimumIdle(Math.max(1, plugin.getConfig().getInt("database.mysql.pool.minimum-idle", 2)));
+            config.setConnectionTimeout(Math.max(2500L, plugin.getConfig().getLong("database.mysql.pool.connection-timeout-ms", 10000L)));
+            config.setIdleTimeout(Math.max(10000L, plugin.getConfig().getLong("database.mysql.pool.idle-timeout-ms", 600000L)));
+            config.setMaxLifetime(Math.max(30000L, plugin.getConfig().getLong("database.mysql.pool.max-lifetime-ms", 1800000L)));
+            config.setValidationTimeout(Math.max(1000L, plugin.getConfig().getLong("database.mysql.pool.validation-timeout-ms", 5000L)));
+            config.setLeakDetectionThreshold(Math.max(0L, plugin.getConfig().getLong("database.mysql.pool.leak-detection-threshold-ms", 0L)));
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            config.addDataSourceProperty("useServerPrepStmts", "true");
+            config.addDataSourceProperty("maintainTimeStats", "false");
 
-            try (Connection test = DriverManager.getConnection(jdbcUrl, props)) {
-                if (test != null && !test.isClosed()) {
-                    connected = true;
-                }
+            HikariDataSource hikari = new HikariDataSource(config);
+            try (Connection test = hikari.getConnection()) {
+                connected = test != null && !test.isClosed();
             }
 
-            if (connected) {
-                connected = createTables();
+            if (!connected) {
+                hikari.close();
+                return false;
             }
 
+            dataSource = hikari;
+            connected = createTables();
             if (connected) {
-                System.out.println("\u001B[32m[KaosCore] Conectado ao MySQL!\u001B[0m");
+                System.out.println("\u001B[32m[KaosCore] Conectado ao MySQL com HikariCP!\u001B[0m");
                 return true;
             }
         } catch (Exception e) {
             connected = false;
+            closeDataSource();
             System.out.println("\u001B[31m[KaosCore] Erro ao conectar ao MySQL: " + e + "\u001B[0m");
             e.printStackTrace();
         }
@@ -75,26 +93,30 @@ public class DatabaseManager {
     }
 
     public synchronized Connection getConnection() throws SQLException {
-        if (props == null) {
+        if (dataSource == null || dataSource.isClosed()) {
             connect();
         }
-        if (props == null) {
-            throw new SQLException("Database properties not initialized");
+        if (dataSource == null || dataSource.isClosed()) {
+            throw new SQLException("HikariDataSource not initialized");
         }
-        return DriverManager.getConnection(jdbcUrl, props);
+        return dataSource.getConnection();
     }
 
     public synchronized boolean isConnected() {
-        try (Connection conn = getConnection()) {
-            return conn != null && !conn.isClosed() && conn.isValid(2);
-        } catch (SQLException e) {
-            return false;
-        }
+        return connected && dataSource != null && !dataSource.isClosed();
     }
 
-    public void disconnect() {
+    public synchronized void disconnect() {
         connected = false;
-        System.out.println("\u001B[33m[KaosCore] Desconectado do MySQL\u001B[0m");
+        closeDataSource();
+        System.out.println("\u001B[33m[KaosCore] HikariCP encerrado\u001B[0m");
+    }
+
+    private synchronized void closeDataSource() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+        dataSource = null;
     }
 
     private boolean createTables() {

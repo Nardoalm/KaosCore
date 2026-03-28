@@ -62,6 +62,7 @@ public class SkinApplier {
     private void sendSelfRefreshPackets() {
         if (!(player instanceof CraftPlayer) || !player.isOnline()) return;
         if (player.isInsideVehicle()) player.leaveVehicle();
+        Location currentLocation = player.getLocation().clone();
 
         CraftPlayer craftPlayer = (CraftPlayer) player;
         EntityPlayer entityPlayer = craftPlayer.getHandle();
@@ -77,7 +78,6 @@ public class SkinApplier {
                 entityPlayer.playerInteractManager.getGameMode()
         ));
 
-        Location currentLocation = player.getLocation().clone();
         player.teleport(currentLocation);
     }
 

@@ -130,6 +130,9 @@ public class SkinCommand extends Commands {
                             if (Managers.getDatabaseManager() != null) {
                                 SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
                                 repo.saveAsync(player.getUniqueId(), cleanTarget, finalTextures.getValue(), finalTextures.getSignature());
+
+                                SkinCacheRepository cache = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                                cache.saveAsync(cleanTarget, finalTextures.getValue(), finalTextures.getSignature());
                             }
 
                             SkinApplier applier = new SkinApplier(player);
@@ -285,4 +288,3 @@ public class SkinCommand extends Commands {
         OriginalSkinManager.cache(player, profile);
     }
 }
-

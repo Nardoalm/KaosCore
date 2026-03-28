@@ -111,11 +111,6 @@ public final class SkinPoolManager {
             return;
         }
 
-        // If another system already set textures (e.g., stored /skin), don't override.
-        if (hasTextures(player)) {
-            return;
-        }
-
         String nick = player.getName();
         String normalized = normalizeNick(nick);
         long now = System.currentTimeMillis();
@@ -263,28 +258,6 @@ public final class SkinPoolManager {
             }
             return FetchResult.error();
         }
-    }
-
-    private boolean hasTextures(Player player) {
-        if (!(player instanceof CraftPlayer)) {
-            return false;
-        }
-
-        try {
-            GameProfile profile = ((CraftPlayer) player).getProfile();
-            if (profile == null) {
-                return false;
-            }
-
-            for (Property property : profile.getProperties().get("textures")) {
-                if (property != null && property.getValue() != null && !property.getValue().trim().isEmpty()) {
-                    return true;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-
-        return false;
     }
 
     private void applySkin(Player player, CachedSkin skin) {

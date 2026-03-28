@@ -106,6 +106,33 @@ public final class DisguiseApiService {
         });
     }
 
+    public static boolean applyDisguiseWithTextures(Player player, String nick, String skinName, String value, String signature) {
+        String previousEntry = player == null ? null : player.getName();
+        if (!applyNick(player, nick)) {
+            return false;
+        }
+
+        refreshTag(player, previousEntry);
+
+        if (value == null || value.trim().isEmpty()) {
+            deleteStoredSkin(player);
+            new SkinApplier(player).applySkinForOthers();
+            return true;
+        }
+
+        try {
+            GameProfile profile = ((CraftPlayer) player).getProfile();
+            profile.getProperties().removeAll("textures");
+            profile.getProperties().put("textures", new Property("textures", value, signature));
+            saveSkin(player, skinName, value, signature);
+            new SkinApplier(player).applySkinForOthers();
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean applyRandomDisguise(Player player) {
         DisguiseManager disguiseManager = Managers.getDisguiseManager();
         if (disguiseManager == null) {

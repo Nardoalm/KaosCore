@@ -40,7 +40,7 @@ public class WelcomeMessageManager {
 
     public WelcomeMessageManager(KaosCore plugin) {
         this.plugin = plugin;
-        this.messagesFile = plugin == null ? null : new File(plugin.getDataFolder(), "welcomeMessages.yml");
+        this.messagesFile = plugin == null ? null : new File(plugin.getDataFolder(), "welcome.yml");
         this.templates = new LinkedHashMap<>();
         this.selections = new ConcurrentHashMap<>();
         this.repository = new PlayerWelcomeMessageRepository(plugin, Managers.getDatabaseManager());
@@ -57,7 +57,7 @@ public class WelcomeMessageManager {
 
         if (messagesFile != null && !messagesFile.exists()) {
             try {
-                plugin.saveResource("welcomeMessages.yml", false);
+                plugin.saveResource("welcome.yml", false);
             } catch (Exception ignored) {
             }
         }
@@ -158,7 +158,6 @@ public class WelcomeMessageManager {
             } else {
                 lore.add("§eClique para selecionar");
             }
-            lore.add(LORE_ID_PREFIX + template.getId());
 
             meta.setLore(lore);
             item.setItemMeta(meta);

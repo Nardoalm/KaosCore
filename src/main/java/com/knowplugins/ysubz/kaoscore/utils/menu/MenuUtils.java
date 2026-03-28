@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.utils.menu;
 
+import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,6 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class MenuUtils {
 
     public static void openMenu(Player player) {
+        if (player == null || PracticeModeBlocker.check(player, true)) {
+            return;
+        }
+
         Inventory menu = Bukkit.createInventory(null, 27, "§8Menu de Opções");
 
         ItemStack botao = new ItemStack(Material.COMPASS);

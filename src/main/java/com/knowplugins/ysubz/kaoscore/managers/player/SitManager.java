@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
+import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -27,13 +27,11 @@ public class SitManager {
     public static final ThreadLocal<Boolean> SPAWNING_SEAT = ThreadLocal.withInitial(() -> false);
 
     private final KaosCore plugin;
-    private final KaosPracticeBridge practiceBridge;
     private final ConcurrentMap<UUID, ArmorStand> seatsByPlayer;
     private final ConcurrentMap<UUID, UUID> seatOwnersByStand;
 
     public SitManager(KaosCore plugin) {
         this.plugin = plugin;
-        this.practiceBridge = new KaosPracticeBridge();
         this.seatsByPlayer = new ConcurrentHashMap<>();
         this.seatOwnersByStand = new ConcurrentHashMap<>();
 
@@ -131,8 +129,9 @@ public class SitManager {
     }
 
     public boolean launch(Player carrier) {
-        if (!hasPermission(carrier) || !canUseMechanic(carrier)) return false;
+        if (!hasPermission(carrier)) return false;
         if (!(carrier.getPassenger() instanceof Player)) return false;
+        if (!canUseMechanic(carrier)) return false;
 
         Player launched = (Player) carrier.getPassenger();
         carrier.eject();
@@ -259,12 +258,7 @@ public class SitManager {
 
     private boolean canUseMechanic(Player player) {
         if (player == null || !player.isOnline() || player.isDead()) return false;
-        try {
-            if (practiceBridge != null && practiceBridge.isAvailable()) {
-                KaosPracticeBridge.PracticeState state = practiceBridge.getState(player);
-                if (state.isInMatch() || state.isSpectating() || practiceBridge.isQueueing(player)) return false;
-            }
-        } catch (Exception ignored) {}
+        if (PracticeModeBlocker.check(player, true)) return false;
         return true;
     }
 

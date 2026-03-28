@@ -21,6 +21,22 @@ features:
       - "&b&lFREEP"
       - "&f&lFREEP"
       - "&f&lFREEP"
+    lines:
+      - ""
+      - "&fRank: &7%kaoscore_prefix%"
+      - ""
+      - "&fOnline: &a{online}"
+      - "&fLobby: &a#1"
+      - ""
+      - "&afreepmc.com.br"
+
+  join-title:
+    enabled: true
+    title: "&b&lFREEP"
+    subtitle: "&eBem-vindo!"
+    fade-in: 20
+    stay: 10
+    fade-out: 20
 
   tablist:
     enabled: true
@@ -70,6 +86,21 @@ sit:
     enabled: false
     require-empty-hand: true
 
+practice-blocks:
+  message: "&cEsta funcao nao pode ser usada durante partidas do Practice."
+
+chat:
+  format: "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» {message}"
+  default-color: "&7"
+  vip-color: "&f"
+  mentions:
+    enabled: true
+    format: "&a@{nick}"
+    actionbar: "&a{nick} mencionou você!"
+    notify-sound: "NOTE_PLING"
+    notify-volume: 1.0
+    notify-pitch: 1.0
+
 divulgar:
   enabled: true
   permission: "kaoscore.member.divulgar"
@@ -107,6 +138,14 @@ database:
     database: "bancodedados"
     user: "root"
     password: "root"
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout-ms: 10000
+      idle-timeout-ms: 600000
+      max-lifetime-ms: 1800000
+      validation-timeout-ms: 5000
+      leak-detection-threshold-ms: 0
 
 npc-spawn:
   enabled: false

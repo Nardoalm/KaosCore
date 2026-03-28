@@ -1,8 +1,11 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -10,14 +13,15 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class ScoreboardManager {
 
-    private static final Map<UUID, Scoreboard> BOARDS = new HashMap<>();
-    private static int index = 0;
+    private static final Map<UUID, BoardState> BOARDS = new HashMap<>();
     private static final String[] DEFAULT_ANIMATION = {
             "§f§lF§b§lREEP",
             "§b§lF§f§lR§b§lEEP",
@@ -31,7 +35,15 @@ public class ScoreboardManager {
             "§f§lFREEP",
             "§f§lFREEP"
     };
+    private static final String[] LINE_ENTRIES = {
+            "§0", "§1", "§2", "§3", "§4",
+            "§5", "§6", "§7", "§8", "§9",
+            "§a", "§b", "§c", "§d", "§e"
+    };
+
+    private static int index = 0;
     private static String[] animation = DEFAULT_ANIMATION;
+    private static List<String> configuredLines = defaultLines(null);
     private static BukkitRunnable task;
 
     public static void setup() {
@@ -52,31 +64,17 @@ public class ScoreboardManager {
             return;
         }
 
-        // Load animation frames from config (optional).
-        java.util.List<String> frames = plugin.getConfig().getStringList("features.scoreboard.title-animation");
-        if (frames != null && !frames.isEmpty()) {
-            java.util.List<String> colored = new java.util.ArrayList<>();
-            for (String frame : frames) {
-                if (frame != null) {
-                    colored.add(org.bukkit.ChatColor.translateAlternateColorCodes('&', frame));
-                }
-            }
-            if (!colored.isEmpty()) {
-                animation = colored.toArray(new String[0]);
-            } else {
-                animation = DEFAULT_ANIMATION;
-            }
-        } else {
-            animation = DEFAULT_ANIMATION;
-        }
+        animation = loadAnimation(plugin.getConfig());
+        configuredLines = loadLines(plugin.getConfig());
 
         int period = Math.max(2, plugin.getConfig().getInt("features.scoreboard.update-ticks", 4));
-
         task = new BukkitRunnable() {
             @Override
             public void run() {
                 index++;
-                if (index >= animation.length) index = 0;
+                if (index >= animation.length) {
+                    index = 0;
+                }
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     update(player);
@@ -91,69 +89,155 @@ public class ScoreboardManager {
     }
 
     public static void update(Player player) {
-        Scoreboard sb = BOARDS.get(player.getUniqueId());
-        Objective obj;
-
-        if (sb == null || sb.getObjective("sidebar") == null || sb.getTeam("line0") == null) {
-            sb = Bukkit.getScoreboardManager().getNewScoreboard();
-            obj = sb.registerNewObjective("sidebar", "dummy");
-            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-            setupTeams(sb, obj);
-            BOARDS.put(player.getUniqueId(), sb);
-        } else {
-            obj = sb.getObjective("sidebar");
+        if (player == null) {
+            return;
         }
 
-        if (player.getScoreboard() != sb) {
-            player.setScoreboard(sb);
+        BoardState state = BOARDS.get(player.getUniqueId());
+        if (state == null || state.lineCount != configuredLines.size() || state.objective == null || state.scoreboard.getObjective("sidebar") == null) {
+            state = createBoard(configuredLines.size());
+            BOARDS.put(player.getUniqueId(), state);
         }
 
-        if (obj != null) {
-            obj.setDisplayName(animation[index]);
-            String rank = PlaceholderAPI.setPlaceholders(
-                    player,
-                    "%kaoscore_prefix%"
-            );
-            String onlinePlayers = "§a" + Bukkit.getOnlinePlayers().size();
-            KaosCore plugin = KaosCore.getInstance();
-            String bottom = plugin == null ? "§afreepmc.com.br" : org.bukkit.ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.scoreboard.bottom", "&afreepmc.com.br"));
-            String lobbyLine = plugin == null ? "§fLobby: §a#1" : org.bukkit.ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.scoreboard.lobby-line", "&fLobby: &a#1"));
-            updateLine(sb, "line5", "§fRank: §7", rank);
-            updateLine(sb, "line3", "§fOnline: ", onlinePlayers);
-            updateLine(sb, "line2", lobbyLine, "");
-            updateLine(sb, "line0", bottom, "");
+        if (player.getScoreboard() != state.scoreboard) {
+            player.setScoreboard(state.scoreboard);
         }
-    }
 
-    private static void setupTeams(Scoreboard sb, Objective obj) {
-        createTeamLine(sb, obj, "line6", "§1", 6);
-        createTeamLine(sb, obj, "line5", "§2", 5); // Espaço
-        createTeamLine(sb, obj, "line4", "§3", 4); // Rank
-        createTeamLine(sb, obj, "line3", "§4", 3); // Espaço
-        createTeamLine(sb, obj, "line2", "§5", 2); // Online
-        createTeamLine(sb, obj, "line1", "§6", 1); // Espaço
-        createTeamLine(sb, obj, "line0", "§0", 0); // Rodapé configurável
-    }
-
-    private static void createTeamLine(Scoreboard sb, Objective obj, String teamName, String entry, int score) {
-        Team t = sb.registerNewTeam(teamName);
-        t.addEntry(entry);
-        obj.getScore(entry).setScore(score);
-    }
-
-    private static void updateLine(Scoreboard sb, String teamName, String prefix, String suffix) {
-        Team t = sb.getTeam(teamName);
-        if (t == null) return;
-
-        if (prefix.length() > 16) prefix = prefix.substring(0, 16);
-        if (suffix.length() > 16) suffix = suffix.substring(0, 16);
-
-        if (!t.getPrefix().equals(prefix)) t.setPrefix(prefix);
-        if (!t.getSuffix().equals(suffix)) t.setSuffix(suffix);
+        state.objective.setDisplayName(animation[index]);
+        for (int i = 0; i < configuredLines.size(); i++) {
+            updateLine(state.scoreboard, "line" + i, renderLine(player, configuredLines.get(i)));
+        }
     }
 
     public static void remove(Player player) {
+        if (player == null) {
+            return;
+        }
         BOARDS.remove(player.getUniqueId());
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+    }
+
+    private static BoardState createBoard(int lineCount) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Objective objective = scoreboard.registerNewObjective("sidebar", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        for (int i = 0; i < lineCount; i++) {
+            Team team = scoreboard.registerNewTeam("line" + i);
+            String entry = LINE_ENTRIES[i];
+            team.addEntry(entry);
+            objective.getScore(entry).setScore(lineCount - i);
+        }
+
+        return new BoardState(scoreboard, objective, lineCount);
+    }
+
+    private static void updateLine(Scoreboard scoreboard, String teamName, String text) {
+        Team team = scoreboard.getTeam(teamName);
+        if (team == null) {
+            return;
+        }
+
+        String[] split = splitLine(text);
+        if (!team.getPrefix().equals(split[0])) {
+            team.setPrefix(split[0]);
+        }
+        if (!team.getSuffix().equals(split[1])) {
+            team.setSuffix(split[1]);
+        }
+    }
+
+    private static String renderLine(Player player, String raw) {
+        String line = raw == null ? "" : raw;
+        line = line.replace("{player}", PlaceholderManager.getDisplayName(player));
+        line = line.replace("{online}", String.valueOf(Bukkit.getOnlinePlayers().size()));
+        line = PlaceholderManager.replacePlaceholders(line, player);
+        line = PlaceholderAPI.setPlaceholders(player, line);
+        return colorize(line);
+    }
+
+    private static String[] splitLine(String text) {
+        String line = text == null ? "" : text;
+        String prefix = trimForScoreboard(line, 16);
+        String remaining = line.substring(Math.min(prefix.length(), line.length()));
+        String suffix = trimForScoreboard(ChatColor.getLastColors(prefix) + remaining, 16);
+        return new String[]{prefix, suffix};
+    }
+
+    private static String trimForScoreboard(String text, int maxLength) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
+
+        String trimmed = text.substring(0, maxLength);
+        if (trimmed.endsWith("§")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
+    private static String[] loadAnimation(FileConfiguration config) {
+        List<String> frames = config.getStringList("features.scoreboard.title-animation");
+        if (frames == null || frames.isEmpty()) {
+            return DEFAULT_ANIMATION;
+        }
+
+        List<String> colored = new ArrayList<>();
+        for (String frame : frames) {
+            if (frame != null && !frame.trim().isEmpty()) {
+                colored.add(colorize(frame));
+            }
+        }
+        return colored.isEmpty() ? DEFAULT_ANIMATION : colored.toArray(new String[0]);
+    }
+
+    private static List<String> loadLines(FileConfiguration config) {
+        List<String> lines = config.getStringList("features.scoreboard.lines");
+        if (lines == null || lines.isEmpty()) {
+            return defaultLines(config);
+        }
+
+        List<String> sanitized = new ArrayList<>();
+        for (String line : lines) {
+            sanitized.add(line == null ? "" : line);
+            if (sanitized.size() >= LINE_ENTRIES.length) {
+                break;
+            }
+        }
+
+        return sanitized.isEmpty() ? defaultLines(config) : sanitized;
+    }
+
+    private static List<String> defaultLines(FileConfiguration config) {
+        List<String> defaults = new ArrayList<>();
+        String lobbyLine = config == null ? "&fLobby: &a#1" : config.getString("features.scoreboard.lobby-line", "&fLobby: &a#1");
+        String bottom = config == null ? "&afreepmc.com.br" : config.getString("features.scoreboard.bottom", "&afreepmc.com.br");
+        defaults.add("");
+        defaults.add("&fRank: &7%kaoscore_prefix%");
+        defaults.add("");
+        defaults.add("&fOnline: &a{online}");
+        defaults.add(lobbyLine);
+        defaults.add("");
+        defaults.add(bottom);
+        return defaults;
+    }
+
+    private static String colorize(String text) {
+        return ChatColor.translateAlternateColorCodes('&', text == null ? "" : text);
+    }
+
+    private static final class BoardState {
+        private final Scoreboard scoreboard;
+        private final Objective objective;
+        private final int lineCount;
+
+        private BoardState(Scoreboard scoreboard, Objective objective, int lineCount) {
+            this.scoreboard = scoreboard;
+            this.objective = objective;
+            this.lineCount = lineCount;
+        }
     }
 }

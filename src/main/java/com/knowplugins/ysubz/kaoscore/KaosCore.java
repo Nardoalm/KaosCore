@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPIImpl;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.TagCommand;
 import com.knowplugins.ysubz.kaoscore.listeners.Listeners;
+import com.knowplugins.ysubz.kaoscore.listeners.proxy.ProxySyncListener;
 import com.knowplugins.ysubz.kaoscore.managers.player.ClanManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DiscordWebhookManager;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
@@ -13,7 +14,6 @@ import com.knowplugins.ysubz.kaoscore.managers.player.TagManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TagTeamManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.LicenseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.KaosCoreExpansion;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinPoolManager;
@@ -32,6 +32,7 @@ public class KaosCore extends JavaPlugin {
     private SkinPoolManager skinPoolManager;
     private PunishmentMessageManager punishmentMessageManager;
     private KaosCoreAPI api;
+    private ProxySyncListener proxySyncListener;
 
     public static KaosCore getInstance() {
         return instance;
@@ -86,7 +87,7 @@ public class KaosCore extends JavaPlugin {
         saveResource("webhooks.yml", false);
         saveResource("skins.yml", false);
         saveResource("whitelist.yml", false);
-        saveResource("welcomeMessages.yml", false);
+        saveResource("welcome.yml", false);
         saveResource("punish.yml", false);
         saveResource("permissions.yml", false);
         saveResource("npcs.yml", false);
@@ -123,6 +124,8 @@ public class KaosCore extends JavaPlugin {
 
         Listeners.setupListeners(this);
         Commands.setupCommands(this);
+        proxySyncListener = new ProxySyncListener(this);
+        proxySyncListener.register();
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new KaosCoreExpansion(this).register();
@@ -147,7 +150,7 @@ public class KaosCore extends JavaPlugin {
         saveResource("webhooks.yml", false);
         saveResource("skins.yml", false);
         saveResource("whitelist.yml", false);
-        saveResource("welcomeMessages.yml", false);
+        saveResource("welcome.yml", false);
         saveResource("punish.yml", false);
         saveResource("permissions.yml", false);
         saveResource("npcs.yml", false);
@@ -222,6 +225,9 @@ public class KaosCore extends JavaPlugin {
             if (sitManager != null) sitManager.cleanupAll();
 
             Bukkit.getServicesManager().unregisterAll(this);
+            if (proxySyncListener != null) {
+                proxySyncListener.unregister();
+            }
 
             DatabaseManager db = Managers.getDatabaseManager();
             if (db != null) db.disconnect();
