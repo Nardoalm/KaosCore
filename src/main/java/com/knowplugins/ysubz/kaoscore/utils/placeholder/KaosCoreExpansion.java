@@ -135,10 +135,7 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
 
         if (params.equalsIgnoreCase("clan_tag")) {
             if (clan == null) return "";
-            String color = safe(clan.getTagColor());
-            String cTag = safe(clan.getTag());
-            if (cTag.isEmpty()) return "";
-            return color + "[" + cTag + "]";
+            return safe(clan.getFormattedTag());
         }
 
         if (params.equalsIgnoreCase("clan_name")) {

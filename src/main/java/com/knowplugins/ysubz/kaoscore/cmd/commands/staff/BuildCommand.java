@@ -16,7 +16,7 @@ public class BuildCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO -> §cApenas jogadores podem usar este comando.");
+            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem usar este comando.");
             return;
         }
 

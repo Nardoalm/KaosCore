@@ -201,6 +201,9 @@ public class TagTeamManager {
             updateVisibility(viewer, target, viewerState, targetState);
             applyTag(scoreboard, target, collectEntries(target), targetState);
         }
+
+        KaosPracticeBridge.PracticeState selfState = practiceStates.get(viewer.getUniqueId());
+        applyTag(scoreboard, viewer, collectEntries(viewer), selfState);
     }
 
     private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries, KaosPracticeBridge.PracticeState practiceState) {
@@ -225,16 +228,47 @@ public class TagTeamManager {
             return;
         }
 
-        if (!style.getPrefix().equals(team.getPrefix())) {
-            team.setPrefix(style.getPrefix());
-        }
+        try {
+            String newPrefix = style.getPrefix();
+            if (!newPrefix.equals(team.getPrefix())) {
+                team.setPrefix(newPrefix);
+            }
 
-        if (!style.getSuffix().equals(team.getSuffix())) {
-            team.setSuffix(style.getSuffix());
-        }
+            String newSuffix = style.getSuffix();
+            if (!newSuffix.equals(team.getSuffix())) {
+                team.setSuffix(newSuffix);
+            }
 
-        if (!team.getEntries().contains(currentEntry)) {
-            team.addEntry(currentEntry);
+            for (Team otherTeam : scoreboard.getTeams()) {
+                if (otherTeam != null && otherTeam != team && otherTeam.getName() != null && otherTeam.getName().startsWith(TEAM_PREFIX)) {
+                    try {
+                        if (otherTeam.hasEntry(currentEntry)) {
+                            otherTeam.removeEntry(currentEntry);
+                        }
+                    } catch (IllegalStateException ignored) {
+                    }
+                }
+            }
+
+            if (!team.hasEntry(currentEntry)) {
+                team.addEntry(currentEntry);
+            }
+
+            if (player.getUniqueId().equals(Bukkit.getPlayer(currentEntry) != null ? Bukkit.getPlayer(currentEntry).getUniqueId() : null)) {
+                player.setPlayerListName(null);
+                String coloredName = newPrefix + currentEntry + newSuffix;
+                if (coloredName.length() > 16) {
+                    coloredName = newPrefix + currentEntry;
+                    if (coloredName.length() > 16) {
+                        coloredName = currentEntry;
+                    }
+                }
+                player.setPlayerListName(coloredName);
+            }
+
+        } catch (IllegalStateException ignored) {
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error applying tag to " + player.getName() + ": " + e.getMessage());
         }
     }
 
@@ -244,15 +278,18 @@ public class TagTeamManager {
         }
 
         String teamName = buildTeamName(style);
-        Team team = scoreboard.getTeam(teamName);
-        if (team != null) {
-            return team;
-        }
 
         try {
+            Team team = scoreboard.getTeam(teamName);
+            if (team != null) {
+                return team;
+            }
             return scoreboard.registerNewTeam(teamName);
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException e) {
             return scoreboard.getTeam(teamName);
+        } catch (IllegalStateException e) {
+            plugin.getLogger().warning("Failed to create team " + teamName + ": " + e.getMessage());
+            return null;
         }
     }
 
@@ -278,23 +315,19 @@ public class TagTeamManager {
             return null;
         }
 
-        // Medal medal = medalManager == null ? null : medalManager.getMedal(player);
-        // String medalId = medal == null ? "" : safe(medal.getId());
-        // String medalPrefix = medal == null ? "" : safe(medal.getStaticNametag());
-
-        // Clan should always appear (except while disguised). User requested it as suffix, not prefix.
         Clan clan = null;
         ClanManager clanManager = Managers.getClanManager();
         if (clanManager != null && !DisguiseManager.isDisguised(player)) {
             clan = clanManager.getClan(player);
         }
+
         String clanKey = clan == null ? "" : safe(clan.getName());
         String clanTagValue = "";
         String clanSuffix = "";
         if (clan != null) {
             clanTagValue = safe(clan.getTag());
             if (!clanTagValue.isEmpty()) {
-                clanSuffix = " " + safe(clan.getTagColor()) + "[" + clanTagValue + "]";
+                clanSuffix = " " + clan.getNametagFormattedTag();
             }
         }
 
@@ -302,7 +335,6 @@ public class TagTeamManager {
         String tagColor = resolveText(player, tag.getColor());
         String tagSuffix = resolveText(player, tag.getSuffix());
 
-        // Avoid duplicating the clan tag if the tag suffix already contains it via placeholders/config.
         if (!clanTagValue.isEmpty() && !clanSuffix.isEmpty()) {
             String strippedSuffix = ChatColor.stripColor(safe(tagSuffix));
             String token = "[" + clanTagValue + "]";
@@ -311,8 +343,6 @@ public class TagTeamManager {
             }
         }
 
-        // Always end the scoreboard prefix with a real color/reset (from tag.color) so medal/tag formatting
-        // doesn't leak into the player's name (e.g., bold staying enabled).
         String tailColor = lastResettingColor(tagColor);
         if (tailColor.isEmpty()) {
             tailColor = lastResettingColor(tagPrefix);
@@ -346,8 +376,18 @@ public class TagTeamManager {
             }
 
             for (String entry : entries) {
-                if (!safe(entry).isEmpty() && team.getEntries().contains(entry)) {
-                    team.removeEntry(entry);
+                if (safe(entry).isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    if (team.hasEntry(entry)) {
+                        team.removeEntry(entry);
+                    }
+                } catch (IllegalStateException ignored) {
+                    // Player não está no time ou já foi removido - ignorar
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Error removing entry " + entry + " from team " + team.getName() + ": " + e.getMessage());
                 }
             }
         }
@@ -487,12 +527,15 @@ public class TagTeamManager {
                 continue;
             }
 
-            Set<String> entries = team.getEntries();
-            if (entries == null || entries.isEmpty()) {
-                try {
+            try {
+                Set<String> entries = team.getEntries();
+                if (entries == null || entries.isEmpty()) {
                     team.unregister();
-                } catch (Exception ignored) {
                 }
+            } catch (IllegalStateException ignored) {
+                // Team já foi desregistrado
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error cleaning up team " + name + ": " + e.getMessage());
             }
         }
     }
@@ -515,7 +558,10 @@ public class TagTeamManager {
 
             try {
                 team.unregister();
-            } catch (Exception ignored) {
+            } catch (IllegalStateException ignored) {
+                // Team já foi desregistrado
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error clearing team " + name + ": " + e.getMessage());
             }
         }
     }
@@ -533,15 +579,12 @@ public class TagTeamManager {
         int length = safeValue.length();
         int end = Math.min(length, maxLen);
 
-        // Never return a string that ends with a dangling color char (it would combine with the first
-        // char of the player's name and produce e.g. "§l").
         while (end > 0) {
             char last = safeValue.charAt(end - 1);
             if (last == ChatColor.COLOR_CHAR) {
                 end--;
                 continue;
             }
-            // Avoid cutting in the middle of a surrogate pair (custom font icons, etc).
             if (end < length && Character.isHighSurrogate(last)) {
                 end--;
                 continue;
@@ -634,4 +677,3 @@ public class TagTeamManager {
         }
     }
 }
-

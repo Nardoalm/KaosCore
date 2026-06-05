@@ -7,69 +7,68 @@ features:
   scoreboard:
     enabled: true
     update-ticks: 4
-    bottom: "&afreepmc.com.br"
+    # Rodapé unificado para combinar com o novo IP
+    bottom: "&brosty.com.br"
     lobby-line: "&fLobby: &a#1"
     title-animation:
-      - "&f&lF&b&lREEP"
-      - "&b&lF&f&lR&b&lEEP"
-      - "&b&lFR&f&lE&b&lEP"
-      - "&b&lFRE&f&lE&b&lP"
-      - "&b&lFREE&f&lP"
-      - "&f&lFREEP"
-      - "&f&lFREEP"
-      - "&b&lFREEP"
-      - "&b&lFREEP"
-      - "&f&lFREEP"
-      - "&f&lFREEP"
+      - "&f&lR&b&lOSTY"
+      - "&b&lR&f&lO&b&lSTY"
+      - "&b&lRO&f&lS&b&lTY"
+      - "&b&lROS&f&lT&b&lY"
+      - "&b&lROST&f&lY"
+      - "&f&lROSTY"
+      - "&f&lROSTY"
+      - "&b&lROSTY"
+      - "&b&lROSTY"
+      - "&f&lROSTY"
+      - "&f&lROSTY"
     lines:
+      - "&7&m        &m               "
       - ""
-      - "&fRank: &7%kaoscore_prefix%"
-      - ""
-      - "&fOnline: &a{online}"
+      - "&fRank: %kaoscore_prefix%"
       - "&fLobby: &a#1"
       - ""
-      - "&afreepmc.com.br"
+      - "&fJogadores: &a{online}"
+      - ""
+      - "&7&m        &m               "
+      - "&brosty.com.br"
 
   join-title:
     enabled: true
-    title: "&b&lFREEP"
-    subtitle: "&eBem-vindo!"
+    title: "&b&lROSTY"
+    subtitle: "&fSeja bem-vindo ao nosso servidor!"
     fade-in: 20
-    stay: 10
+    stay: 40
     fade-out: 20
 
   tablist:
     enabled: true
     header:
       - ""
-      - "&b&lFREEP"
+      - "&b&lROSTY NETWORK"
+      - "&7Atualmente em: &fLobby #1"
       - ""
     footer:
       - ""
-      - "&eWebsite: &bfreepmc.com.br"
-      - "&eDiscord: &bdc.freepmc.com.br"
+      - "&fLoja: &brosty.com.br"
+      - "&fDiscord: &bdiscord.rosty.com.br"
       - ""
 
   welcome-messages:
     enabled: true
 
   protections:
-    # Protecoes que sao comuns em lobby, mas podem atrapalhar servidores de PvP.
     spawn:
       enabled: true
       cancel-damage: true
       cancel-hunger: true
       cancel-combust: true
-
-    # true = PvP liberado / false = bloqueia dano entre jogadores
     pvp:
-      enabled: true
-
+      enabled: false # Em lobby, o ideal é manter desativado por padrão
     world:
       enabled: true
       cancel-block-break: true
       cancel-block-place: true
-
     entities:
       cancel-spawn: true
       clear-drops: true
@@ -79,27 +78,43 @@ sit:
   carry:
     require-empty-hand: true
   ride:
-    # Tempo (em ticks) que bloqueia o "descer" logo após subir em um jogador.
-    # Isso evita que o player desça instantaneamente por estar segurando SHIFT.
-    dismount-lock-ticks: 10
+    dismount-lock-ticks: 15
   right-click:
     enabled: false
     require-empty-hand: true
 
 practice-blocks:
-  message: "&cEsta funcao nao pode ser usada durante partidas do Practice."
+  message: "&b&lROSTY &8➔ &cVocê não pode usar comandos durante o Practice."
+  commands:
+    - "fly"
+    - "voar"
+    - "f"
+    - "sit"
+    - "disguise"
+    - "skin"
+    - "dinnerbone"
+    - "troll"
+    - "tag"
+    - "clan"
+    - "cc"
+    - "friend"
+    - "friends"
+    - "welcomemessage"
+    - "wm"
+    - "disclose"
 
 chat:
-  format: "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» {message}"
+  # Formato mais elegante com separadores modernos
+  format: "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» &f{message}"
   default-color: "&7"
   vip-color: "&f"
   mentions:
     enabled: true
-    format: "&a@{nick}"
-    actionbar: "&a{nick} mencionou você!"
+    format: "&b@{nick}&f"
+    actionbar: "&b&l! &fO jogador &b{nick} &fmencionou você!"
     notify-sound: "NOTE_PLING"
     notify-volume: 1.0
-    notify-pitch: 1.0
+    notify-pitch: 1.2
 
 divulgar:
   enabled: true
@@ -107,28 +122,26 @@ divulgar:
   bypass-permission: "kaoscore.staff.divulgar"
   cooldown-seconds: 60
   broadcast:
-    - ""
-    - "&6&lDIVULGAR &8➔ &e{player} &7divulgou:"
-    - " &b{link}"
-    - ""
+    - "&b&lSOCIAL &8➔ %kaoscore_tag_prefix%{player} &7está online em: &f{link}"
 
 autobroadcast:
   enabled: true
   interval-seconds: 300
   random: true
   messages:
-    - "&eDica: &7Use &f/welcomemessage &7para escolher sua mensagem de entrada."
-    - "&eDiscord: &bdc.freepmc.com.br"
+    - "&b&lDICA &8➔ &fAdquira vantagens exclusivas em nossa loja: &brosty.com.br"
+    - "&b&lSOCIAL &8➔ &fEntre em nosso Discord oficial: &bdiscord.rosty.com.br"
+    - "&b&lDICA &8➔ &fUse &b/wm &fpara customizar sua mensagem de entrada!"
 
 spawn-limits:
-  enabled: false
+  enabled: true
   only-spawn-world: true
   bypass-permission: "kaoscore.spawnlimits.bypass"
   check-interval-ticks: 10
-  void-level-y: -10
-  max-distance-from-spawn: 250.0
-  message-void: "&cVocê caiu no void e voltou ao spawn."
-  message-radius: "&cVocê foi muito longe do spawn e voltou."
+  void-level-y: -20
+  max-distance-from-spawn: 200.0
+  message-void: "&b&lROSTY &8➔ &fVocê caiu no limbo e foi trazido de volta."
+  message-radius: "&b&lROSTY &8➔ &fVocê se afastou demais e foi trazido de volta."
   sound: "ENDERMAN_TELEPORT"
 
 database:
@@ -150,9 +163,9 @@ database:
 npc-spawn:
   enabled: false
   world: world
-  x: 10.5
+  x: 0.5
   y: 64.0
-  z: 10.5
-  yaw: 90.0
+  z: 0.5
+  yaw: 0.0
   pitch: 0.0
-  skin-nick: 'Heeph'
+  skin-nick: 'Notch'

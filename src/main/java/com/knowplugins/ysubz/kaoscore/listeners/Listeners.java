@@ -16,15 +16,15 @@ public class Listeners {
    public static void setupListeners(KaosCore plugin) {
       try {
          PluginManager pm = Bukkit.getPluginManager();
-         try {
+         /* try {
             WorldProtectionListener.setPvp(plugin.getConfig().getBoolean("features.protections.pvp.enabled", true));
          } catch (Exception ignored) {
-         }
+         } */
          pm.registerEvents(new PermissionListener(), plugin);
          // pm.registerEvents(new ProtectionListener(), plugin);
          pm.registerEvents(new WhitelistListener(), plugin);
          pm.registerEvents(new PlayerJoinListener(), plugin);
-         pm.registerEvents(new EntityListener(), plugin);
+         // pm.registerEvents(new EntityListener(), plugin);
          pm.registerEvents(new ChatListener(), plugin);
          pm.registerEvents(new WelcomeMessageMenuListener(), plugin);
          pm.registerEvents(new AnvilInputListener(), plugin);
@@ -37,6 +37,7 @@ public class Listeners {
          // pm.registerEvents(new InventoryProtectListener(), plugin);
          pm.registerEvents(new PlayerQuitListener(), plugin);
          pm.registerEvents(new StaffLogListener(plugin), plugin);
+         pm.registerEvents(new PracticeCommandBlockListener(), plugin);
          // pm.registerEvents(new WorldProtectionListener(), plugin);
          pm.registerEvents(new SoundListener(), plugin);
          // pm.registerEvents(new TimeListener(), plugin);

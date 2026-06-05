@@ -165,40 +165,6 @@ public class PlayerJoinListener implements Listener {
          scheduleJoinSkinRefresh(plugin, player);
       }
 
-      Bukkit.getScheduler().runTaskLater(plugin, () -> {
-         if (plugin.getConfig().contains("spawn.location")) {
-            try {
-               String raw = plugin.getConfig().getString("spawn.location");
-               String[] parts = raw.split(";");
-
-               if (parts.length >= 6) {
-                  World world = Bukkit.getWorld(parts[0]);
-
-                  if (world != null) {
-                     double x = Double.parseDouble(parts[1]);
-                     double y = Double.parseDouble(parts[2]);
-                     double z = Double.parseDouble(parts[3]);
-                     float yaw = Float.parseFloat(parts[4]);
-                     float pitch = Float.parseFloat(parts[5]);
-
-                     Location loc = new Location(world, x, y, z, yaw, pitch);
-                     player.teleport(loc);
-                     if (player.hasPermission("kaoscore.vip.fly")) {
-                        Location newLocation = player.getLocation().clone().add(0, 4, 0);
-                        player.teleport(newLocation);
-                        player.setAllowFlight(true);
-                        player.setFlying(true);
-                     }
-                  } else {
-                     Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cMundo do spawn não encontrado!");
-                  }
-               }
-            } catch (Exception e) {
-               Bukkit.getConsoleSender().sendMessage("§c§lSPAWN ➔ §cErro ao teleportar jogador para o spawn: Configuração inválida.");
-            }
-         }
-      }, 4L);
-
       WelcomeMessage.sendWelcomeMessage(player);
    }
 

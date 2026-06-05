@@ -71,7 +71,7 @@ public class ChatListener implements Listener {
                         p.sendMessage(line);
                     }
                 } else {
-                    p.sendMessage("§c§lMUTE ➔ §cVocê está mutado.");
+                    p.sendMessage("§cVocê está mutado.");
                     p.sendMessage("§cMotivo: §7" + mute.getReason());
                     p.sendMessage("§cDuração: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
                 }
@@ -119,7 +119,7 @@ public class ChatListener implements Listener {
                 if (plugin != null) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (p.isOnline()) {
-                            p.kickPlayer("§cVocê foi expulso por §fSpam§c.");
+                            p.kickPlayer("§cVocê foi expulso por Spam.");
                         }
                     });
                 }

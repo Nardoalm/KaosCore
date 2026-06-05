@@ -1,12 +1,19 @@
 package com.knowplugins.ysubz.kaoscore.clan;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.UUID;
 
 public class Clan {
+
+    public static final String ANIMATED_TAG_COLOR = "wave";
+    private static final List<String> ANIMATED_TAG_PALETTE = Arrays.asList(
+            "§c", "§6", "§e", "§a", "§b", "§9", "§d", "§5", "§1"
+    );
 
     private String name;
     private String tag;
@@ -55,11 +62,25 @@ public class Clan {
     }
 
     public void setTagColor(String color) {
-        this.tagColor = color;
+        this.tagColor = color == null || color.trim().isEmpty() ? "§7" : color.trim();
     }
 
     public String getFormattedTag() {
+        if (isAnimatedTagColor()) {
+            return buildAnimatedTag();
+        }
         return tagColor + "[" + tag + "]";
+    }
+
+    public String getNametagFormattedTag() {
+        if (isAnimatedTagColor()) {
+            return "§f[" + getAnimatedPrimaryColor() + tag + "§f]";
+        }
+        return tagColor + "[" + tag + "]";
+    }
+
+    public boolean isAnimatedTagColor() {
+        return ANIMATED_TAG_COLOR.equalsIgnoreCase(tagColor == null ? "" : tagColor.trim());
     }
 
     public UUID getLeader() {
@@ -167,5 +188,29 @@ public class Clan {
 
     public boolean canInvite() {
         return members.size() < getMaxMembers();
+    }
+
+    private String buildAnimatedTag() {
+        String safeTag = tag == null ? "" : tag.toUpperCase(Locale.ROOT);
+        if (safeTag.isEmpty()) {
+            return "§f[]";
+        }
+
+        long offset = System.currentTimeMillis() / 150L;
+        StringBuilder builder = new StringBuilder("§f[");
+        for (int i = 0; i < safeTag.length(); i++) {
+            builder.append(resolveAnimatedColor(i + offset)).append(safeTag.charAt(i));
+        }
+        builder.append("§f]");
+        return builder.toString();
+    }
+
+    private String getAnimatedPrimaryColor() {
+        return resolveAnimatedColor(System.currentTimeMillis() / 150L);
+    }
+
+    private String resolveAnimatedColor(long index) {
+        int paletteIndex = (int) Math.floorMod(index, (long) ANIMATED_TAG_PALETTE.size());
+        return ANIMATED_TAG_PALETTE.get(paletteIndex);
     }
 }

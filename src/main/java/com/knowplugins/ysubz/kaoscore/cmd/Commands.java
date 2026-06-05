@@ -76,6 +76,7 @@ public abstract class Commands extends Command {
       // new BuildCommand();
       // new PvpCommand();
       new SetNpcCommand();
+      new TagCommand();
       new RemoveNpcCommand();
       // new MenuCommand();
       new DisguiseCommand();

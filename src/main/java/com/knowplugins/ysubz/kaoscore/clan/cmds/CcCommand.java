@@ -12,11 +12,16 @@ public class CcCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) return;
+
         Player p = (Player) sender;
+
         if (args.length == 0) { p.sendMessage("§cUso correto: /cc <mensagem>"); return; }
+
         if (!Managers.getClanManager().isInClan(p.getUniqueId())) { p.sendMessage("§cVocê não está em um clan."); return; }
+
         String msg = String.join(" ", args);
         Clan clan = Managers.getClanManager().getPlayerClan(p.getUniqueId());
+
         clan.getMembers().keySet().forEach(uuid -> {
             Player target = org.bukkit.Bukkit.getPlayer(uuid);
             if (target != null) {

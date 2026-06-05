@@ -1,5 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.commands.social;
 
+import com.knowplugins.ysubz.kaoscore.bungee.BaseBungeeCommand;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.Texts;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;

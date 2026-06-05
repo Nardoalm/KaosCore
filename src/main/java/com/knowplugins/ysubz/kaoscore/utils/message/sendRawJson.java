@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class sendRawJson {
     public static void sendDiscordLink(Player player, String link) {
-        String json = "{\"text\":\"§9§lDISCORD ➔ §eClique §6§lAQUI §epara entrar no nosso grupo!\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + link + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§bLink: " + link + "\"}}";
+        String json = "{\"text\":\"§b§lDISCORD ➔ §eClique §6§lAQUI §epara entrar no nosso discord!\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"" + link + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§bLink: " + link + "\"}}";
 
         IChatBaseComponent comp = IChatBaseComponent.ChatSerializer.a(json);
         PacketPlayOutChat packet = new PacketPlayOutChat(comp);

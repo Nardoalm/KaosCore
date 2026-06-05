@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class MenuUtils {
 
     public static void openMenu(Player player) {
-        if (player == null || PracticeModeBlocker.check(player, true)) {
+        if (player == null || PracticeModeBlocker.check(player, false)) {
             return;
         }
 

@@ -44,6 +44,7 @@ public class KaosPracticeBridge {
 
         boolean inMatch = invokeBoolean(api, "isInMatch", player);
         boolean spectating = invokeBoolean(api, "isSpectating", player);
+        boolean inEvent = invokeBoolean(api, "isInEvent", player); // Adicionado para consistência
         boolean overrideDefaultNametag = invokeBoolean(api, "shouldOverrideDefaultNametag", player);
         String matchId = invokeString(api, "getMatchId", player);
         String teamId = invokeString(api, "getTeamId", player);
@@ -56,16 +57,18 @@ public class KaosPracticeBridge {
         int priority = invokeContextInt(context, "getPriority");
 
         if (spectating) {
-            return new PracticeState(false, false, true, "", "§8", "", 9500, teamId, matchId);
+            // CORREÇÃO: Adicionado o parâmetro 'false' para inEvent (Total 10 parâmetros)
+            return new PracticeState(false, false, false, true, "", "§8", "", 9500, teamId, matchId);
         }
 
-        if (overrideDefaultNametag || inMatch) {
+        if (overrideDefaultNametag || inMatch || inEvent) {
             String resolvedColor = !nameColor.isEmpty() ? nameColor : teamColor;
             if (resolvedColor.isEmpty()) {
                 resolvedColor = fallbackMatchColor(teamId.isEmpty() ? player.getUniqueId().toString() : teamId);
             }
             int resolvedPriority = priority > 0 ? priority : 100;
-            return new PracticeState(true, inMatch, false, prefix, resolvedColor, suffix, resolvedPriority, teamId, matchId);
+            // CORREÇÃO: Adicionado o parâmetro inEvent (Total 10 parâmetros)
+            return new PracticeState(true, inMatch, inEvent, false, prefix, resolvedColor, suffix, resolvedPriority, teamId, matchId);
         }
 
         return PracticeState.empty();
@@ -180,6 +183,7 @@ public class KaosPracticeBridge {
     public static final class PracticeState {
         private final boolean overrideDefaultNametag;
         private final boolean inMatch;
+        private final boolean inEvent;
         private final boolean spectating;
         private final String prefix;
         private final String nameColor;
@@ -188,9 +192,10 @@ public class KaosPracticeBridge {
         private final String teamId;
         private final String matchId;
 
-        public PracticeState(boolean overrideDefaultNametag, boolean inMatch, boolean spectating, String prefix, String nameColor, String suffix, int priority, String teamId, String matchId) {
+        public PracticeState(boolean overrideDefaultNametag, boolean inMatch, boolean inEvent, boolean spectating, String prefix, String nameColor, String suffix, int priority, String teamId, String matchId) {
             this.overrideDefaultNametag = overrideDefaultNametag;
             this.inMatch = inMatch;
+            this.inEvent = inEvent;
             this.spectating = spectating;
             this.prefix = prefix == null ? "" : prefix;
             this.nameColor = nameColor == null ? "" : nameColor;
@@ -201,7 +206,8 @@ public class KaosPracticeBridge {
         }
 
         public static PracticeState empty() {
-            return new PracticeState(false, false, false, "", "", "", 0, "", "");
+            // CORREÇÃO: Adicionado o parâmetro false para inEvent (Total 10 parâmetros)
+            return new PracticeState(false, false, false, false, "", "", "", 0, "", "");
         }
 
         public boolean isOverrideDefaultNametag() {
@@ -210,6 +216,10 @@ public class KaosPracticeBridge {
 
         public boolean isInMatch() {
             return inMatch;
+        }
+
+        public boolean isInEvent() {
+            return inEvent;
         }
 
         public boolean isSpectating() {

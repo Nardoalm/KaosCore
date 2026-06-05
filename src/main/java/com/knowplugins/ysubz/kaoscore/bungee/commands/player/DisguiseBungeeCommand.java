@@ -1,5 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.commands.player;
 
+import com.knowplugins.ysubz.kaoscore.bungee.BaseBungeeCommand;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.Texts;
 import com.knowplugins.ysubz.kaoscore.integration.proxy.ProxySyncChannel;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import net.md_5.bungee.api.CommandSender;

@@ -30,24 +30,14 @@ public class WelcomeMessage {
             return;
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        String playerText = "§6⭐ " + player.getName();
 
-            String playerTag = "";
-            try {
-                playerTag = PlaceholderAPI.setPlaceholders(player, "%kaoscore_tag_prefix%");
-            } catch (Exception ignored) {
-            }
+        WelcomeMessageManager manager = Managers.getWelcomeMessageManager();
+        WelcomeMessageManager.Template template = manager == null ? null : manager.resolveSelected(player);
+        String raw = template == null ? "{player} §6entrou no lobby!" : template.getText();
+        String message = raw.contains("{player}") ? raw.replace("{player}", playerText) : (playerText + " " + raw);
 
-            String playerText = "§6⭐  " + playerTag + player.getName();
-
-            WelcomeMessageManager manager = Managers.getWelcomeMessageManager();
-            WelcomeMessageManager.Template template = manager == null ? null : manager.resolveSelected(player);
-            String raw = template == null ? "{player} §6entrou no lobby!" : template.getText();
-            String message = raw.contains("{player}") ? raw.replace("{player}", playerText) : (playerText + " " + raw);
-
-            player.getServer().broadcastMessage(message);
-
-        }, 10L);
+        player.getServer().broadcastMessage(message);
     }
 }
 

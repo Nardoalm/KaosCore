@@ -138,9 +138,6 @@ public class TeleportCommand extends Commands {
          }
 
          result += testResult;
-         if (!exact && !relative) {
-            result += 0.5D;
-         }
       }
 
       if (min != 0 || max != 0) {
@@ -157,7 +154,11 @@ public class TeleportCommand extends Commands {
    }
 
    private double getDouble(CommandSender sender, String input) {
-      return 0.0D;
+      try {
+         return Double.parseDouble(input);
+      } catch (NumberFormatException e) {
+         return -3.0000001E7D;
+      }
    }
 
    public List tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {

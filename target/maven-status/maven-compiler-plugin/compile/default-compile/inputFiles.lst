@@ -123,7 +123,6 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\PlayerJoinListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\MuteBungeeCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\social\CcBungeeCommand.java
-C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\KaosCoreCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\InventoryProtectListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\punishment\PunishmentTime.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\placeholder\KaosCoreExpansion.java
@@ -168,11 +167,13 @@ C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\KaosCoreReloadCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\utils\menu\FriendMenu.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\player\MedalManager.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\staff\KaosCoreCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\vip\DinnerboneCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\CommandList.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\EffectivePermissions.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\plugin\PlayerTagRepository.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\managers\permission\GroupGrant.java
+C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\listeners\player\PracticeCommandBlockListener.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\ClanRole.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\vip\FlyCommand.java
 C:\Users\LEO\IdeaProjects\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\cmd\commands\vip\SitCommand.java

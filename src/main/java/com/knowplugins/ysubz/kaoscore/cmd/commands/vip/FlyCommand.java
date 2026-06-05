@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
 
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -34,7 +35,7 @@ public class FlyCommand extends Commands {
             }
         } else {
             if (!(sender instanceof Player)) {
-                sender.sendMessage( "§c§lERRO -> §cApenas jogadores podem usar este comando.");
+                sender.sendMessage( "§c§lERRO ➔ §cApenas jogadores podem usar este comando.");
                 return;
             }
             target = (Player) sender;
@@ -49,6 +50,12 @@ public class FlyCommand extends Commands {
 
 
         boolean newStatus = !target.getAllowFlight();
+        if (PracticeModeBlocker.checkActiveMatch(target, true)) {
+            if (sender != target) {
+                sender.sendMessage("§c§lFLY ➔ §cEsse jogador está em partida do Practice.");
+            }
+            return;
+        }
 
         target.setAllowFlight(newStatus);
 

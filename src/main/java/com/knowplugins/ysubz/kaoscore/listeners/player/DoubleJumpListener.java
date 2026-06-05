@@ -35,7 +35,7 @@ public class DoubleJumpListener implements Listener {
             return;
         }
 
-        if (PracticeModeBlocker.check(player, true)) {
+        if (PracticeModeBlocker.check(player, false)) {
             event.setCancelled(true);
             player.setAllowFlight(false);
             player.setFlying(false);

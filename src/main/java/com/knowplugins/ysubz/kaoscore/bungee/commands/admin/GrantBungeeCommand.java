@@ -58,7 +58,7 @@ final class GrantBungeeCommand extends BaseBungeeCommand {
             reply(sender, "§a§lGRANT ➔ §aGrant aplicado em §f" + target.getName() + " §a(" + groupName + ").");
         } catch (Exception exception) {
             reply(sender, "§c§lGRANT ➔ §cErro ao aplicar grant.");
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao aplicar grant: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao aplicar grant: " + exception.getMessage());
         }
     }
 }

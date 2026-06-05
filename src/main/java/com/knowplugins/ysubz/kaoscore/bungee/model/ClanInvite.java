@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.model;
 
 import java.util.UUID;
 
@@ -42,5 +42,3 @@ public final class ClanInvite {
         return System.currentTimeMillis() - timestamp > EXPIRATION_MILLIS;
     }
 }
-
-

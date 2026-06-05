@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.model;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -142,5 +142,3 @@ public final class Clan {
         return members.size() < getMaxMembers();
     }
 }
-
-

@@ -1,5 +1,12 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.bootstrap;
 
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeePunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bungee.commands.BungeeCommands;
+import com.knowplugins.ysubz.kaoscore.bungee.listeners.BungeeConnectionListener;
+import com.knowplugins.ysubz.kaoscore.bungee.listeners.BungeeStaffCommandLogListener;
+import com.knowplugins.ysubz.kaoscore.bungee.repository.BungeePlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.bungee.services.*;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;

@@ -122,7 +122,7 @@ public final class BungeeDiscordWebhookManager {
             try {
                 postJson(webhook.url, GSON.toJson(payload));
             } catch (Exception exception) {
-                plugin.getLogger().warning("[KaosCoreBungee] Falha ao enviar webhook: " + exception.getMessage());
+                plugin.getLogger().warning("[KaosCore] Falha ao enviar webhook: " + exception.getMessage());
             }
         });
     }

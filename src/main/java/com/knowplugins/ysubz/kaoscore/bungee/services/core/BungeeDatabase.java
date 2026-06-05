@@ -65,7 +65,7 @@ public final class BungeeDatabase {
         } catch (Exception exception) {
             connected = false;
             disconnect();
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao conectar no MySQL: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao conectar no MySQL: " + exception.getMessage());
             return false;
         }
     }
@@ -122,7 +122,7 @@ public final class BungeeDatabase {
             ensureColumn(connection, "clans", "elo", "INT NOT NULL DEFAULT 1000");
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao criar tabelas: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao criar tabelas: " + exception.getMessage());
             return false;
         }
     }

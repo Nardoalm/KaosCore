@@ -51,7 +51,6 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        // /fake reset (ou /fake off): sempre permite remover se estiver disfarçado (evita ficar preso em fake).
         if (args.length >= 1 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("off"))) {
             if (!DisguiseManager.isDisguised(player)) {
                 player.sendMessage("§c§lDISGUISE ➔ §cVocê não está disfarçado.");
@@ -106,6 +105,7 @@ public class DisguiseCommand extends Commands {
 
         if (args.length == 0) {
             newNick = disguiseManager.getRandomNick();
+
             isRandom = true;
         } else {
             newNick = args[0];
@@ -171,6 +171,7 @@ public class DisguiseCommand extends Commands {
             }
 
             disguiseManager.addInDisguise(player, newNick);
+            disguiseManager.updateTabName(player);
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
             DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());

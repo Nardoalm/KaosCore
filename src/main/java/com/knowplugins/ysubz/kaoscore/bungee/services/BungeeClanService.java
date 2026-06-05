@@ -1,4 +1,12 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.services;
+
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.model.Clan;
+import com.knowplugins.ysubz.kaoscore.bungee.model.ClanInvite;
+import com.knowplugins.ysubz.kaoscore.bungee.model.ClanRole;
+import com.knowplugins.ysubz.kaoscore.bungee.repository.BungeePlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.bungee.util.Texts;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class BungeeClanService {
+public final class BungeeClanService {
 
     private final BungeeKaosCore plugin;
     private final BungeeDatabase database;
@@ -21,7 +29,7 @@ final class BungeeClanService {
     private final Map<UUID, String> playerClans = new ConcurrentHashMap<>();
     private final List<String> tagColors = new ArrayList<>();
 
-    BungeeClanService(BungeeKaosCore plugin, BungeeDatabase database, BungeePlayerAddressRepository addresses) {
+    public BungeeClanService(BungeeKaosCore plugin, BungeeDatabase database, BungeePlayerAddressRepository addresses) {
         this.plugin = plugin;
         this.database = database;
         this.addresses = addresses;
@@ -29,7 +37,7 @@ final class BungeeClanService {
         reload();
     }
 
-    void reload() {
+    public void reload() {
         cleanupExpiredInvites();
         Map<String, Clan> loadedClans = new HashMap<>();
         Map<UUID, String> loadedPlayerClans = new HashMap<>();
@@ -69,7 +77,7 @@ final class BungeeClanService {
                 loadedClans.put(Texts.normalize(name), clan);
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao carregar clans: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao carregar clans: " + exception.getMessage());
         }
 
         clans.clear();
@@ -78,11 +86,11 @@ final class BungeeClanService {
         playerClans.putAll(loadedPlayerClans);
     }
 
-    Collection<Clan> getAllClans() {
+    public Collection<Clan> getAllClans() {
         return new ArrayList<>(clans.values());
     }
 
-    Clan getClan(String nameOrTag) {
+    public Clan getClan(String nameOrTag) {
         if (nameOrTag == null) {
             return null;
         }
@@ -98,16 +106,16 @@ final class BungeeClanService {
         return null;
     }
 
-    Clan getPlayerClan(UUID playerId) {
+    public Clan getPlayerClan(UUID playerId) {
         String clanName = playerClans.get(playerId);
         return clanName == null ? null : clans.get(Texts.normalize(clanName));
     }
 
-    boolean isInClan(UUID playerId) {
+    public boolean isInClan(UUID playerId) {
         return playerId != null && playerClans.containsKey(playerId);
     }
 
-    boolean createClan(String name, String tag, UUID leaderId, String leaderName) {
+    public boolean createClan(String name, String tag, UUID leaderId, String leaderName) {
         reload();
         if (leaderId == null || Texts.normalize(name).isEmpty() || Texts.normalize(tag).isEmpty() || clans.containsKey(Texts.normalize(name)) || playerClans.containsKey(leaderId)) {
             return false;
@@ -124,7 +132,7 @@ final class BungeeClanService {
         return true;
     }
 
-    boolean deleteClan(String name, UUID deleterId) {
+    public boolean deleteClan(String name, UUID deleterId) {
         reload();
         Clan clan = getClan(name);
         if (clan == null || deleterId == null || !clan.isLeader(deleterId)) {
@@ -149,12 +157,12 @@ final class BungeeClanService {
             }
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao deletar clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao deletar clan: " + exception.getMessage());
             return false;
         }
     }
 
-    void saveClan(Clan clan) {
+    public void saveClan(Clan clan) {
         if (clan == null) {
             return;
         }
@@ -198,12 +206,12 @@ final class BungeeClanService {
                 connection.setAutoCommit(originalAutoCommit);
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao salvar clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao salvar clan: " + exception.getMessage());
         }
         reload();
     }
 
-    void addMember(Clan clan, UUID playerId, ClanRole role) {
+    public void addMember(Clan clan, UUID playerId, ClanRole role) {
         if (clan == null || playerId == null || role == null) {
             return;
         }
@@ -213,7 +221,7 @@ final class BungeeClanService {
         clearInvites(playerId);
     }
 
-    void removeMember(Clan clan, UUID playerId) {
+    public void removeMember(Clan clan, UUID playerId) {
         if (clan == null || playerId == null) {
             return;
         }
@@ -223,7 +231,7 @@ final class BungeeClanService {
         saveClan(clan);
     }
 
-    void promote(Clan clan, UUID playerId) {
+    public void promote(Clan clan, UUID playerId) {
         ClanRole current = clan == null ? null : clan.getRole(playerId);
         if (current == ClanRole.RECRUIT) {
             clan.getMembers().put(playerId, ClanRole.MEMBER);
@@ -234,7 +242,7 @@ final class BungeeClanService {
         }
     }
 
-    void demote(Clan clan, UUID playerId) {
+    public void demote(Clan clan, UUID playerId) {
         ClanRole current = clan == null ? null : clan.getRole(playerId);
         if (current == ClanRole.MOD) {
             clan.getMembers().put(playerId, ClanRole.MEMBER);
@@ -245,7 +253,7 @@ final class BungeeClanService {
         }
     }
 
-    void transfer(Clan clan, UUID newLeader) {
+    public void transfer(Clan clan, UUID newLeader) {
         if (clan == null || newLeader == null) {
             return;
         }
@@ -255,7 +263,7 @@ final class BungeeClanService {
         saveClan(clan);
     }
 
-    void sendInvite(Clan clan, UUID inviter, UUID target) {
+    public void sendInvite(Clan clan, UUID inviter, UUID target) {
         if (clan == null || inviter == null || target == null) {
             return;
         }
@@ -269,11 +277,11 @@ final class BungeeClanService {
             statement.setLong(4, invite.getTimestamp());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao salvar convite de clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao salvar convite de clan: " + exception.getMessage());
         }
     }
 
-    List<ClanInvite> getInvites(UUID playerId) {
+    public List<ClanInvite> getInvites(UUID playerId) {
         List<ClanInvite> result = new ArrayList<>();
         if (playerId == null) {
             return result;
@@ -295,12 +303,12 @@ final class BungeeClanService {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao carregar convites de clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao carregar convites de clan: " + exception.getMessage());
         }
         return result;
     }
 
-    boolean hasInvite(UUID playerId, String clanNameOrTag) {
+    public boolean hasInvite(UUID playerId, String clanNameOrTag) {
         for (ClanInvite invite : getInvites(playerId)) {
             if (matchesInvite(invite, clanNameOrTag)) {
                 return true;
@@ -309,7 +317,7 @@ final class BungeeClanService {
         return false;
     }
 
-    void removeInvite(UUID playerId, String clanNameOrTag) {
+    public void removeInvite(UUID playerId, String clanNameOrTag) {
         if (playerId == null || clanNameOrTag == null) {
             return;
         }
@@ -320,11 +328,11 @@ final class BungeeClanService {
             statement.setString(2, clan == null ? clanNameOrTag : clan.getName());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao remover convite de clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao remover convite de clan: " + exception.getMessage());
         }
     }
 
-    void clearInvites(UUID playerId) {
+    public void clearInvites(UUID playerId) {
         if (playerId == null) {
             return;
         }
@@ -333,22 +341,22 @@ final class BungeeClanService {
             statement.setString(1, playerId.toString());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao limpar convites de clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao limpar convites de clan: " + exception.getMessage());
         }
     }
 
-    void setTagColor(Clan clan, String color) {
+    public void setTagColor(Clan clan, String color) {
         if (clan != null) {
             clan.setTagColor(color);
             saveClan(clan);
         }
     }
 
-    List<String> getTagColors() {
+    public List<String> getTagColors() {
         return Collections.unmodifiableList(tagColors);
     }
 
-    boolean isTagTaken(String tag, String excludedClanName) {
+    public boolean isTagTaken(String tag, String excludedClanName) {
         if (tag == null || tag.trim().isEmpty()) {
             return false;
         }
@@ -381,7 +389,7 @@ final class BungeeClanService {
             statement.setString(1, playerId.toString());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao remover membro de clan: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao remover membro de clan: " + exception.getMessage());
         }
     }
 
@@ -391,17 +399,19 @@ final class BungeeClanService {
             statement.setLong(1, System.currentTimeMillis() - ClanInvite.EXPIRATION_MILLIS);
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCoreBungee] Falha ao limpar convites expirados: " + exception.getMessage());
+            plugin.getLogger().warning("[KaosCore] Falha ao limpar convites expirados: " + exception.getMessage());
         }
     }
 
     private void loadTagColors() {
         Collections.addAll(tagColors,
-                "§0Preto", "§1Azul Escuro", "§2Verde Escuro", "§3Azul Turquesa",
+                "§0Preto", "§1Azul Escuro", "§2Verde Escuro", "§3Ciano",
                 "§4Vermelho Escuro", "§5Roxo", "§6Dourado", "§7Cinza",
                 "§8Cinza Escuro", "§9Azul", "§aVerde", "§bAzul Claro",
                 "§cVermelho", "§dRosa", "§eAmarelo", "§fBranco");
     }
+    
+    public BungeeKaosCore getPlugin() {
+        return plugin;
+    }
 }
-
-

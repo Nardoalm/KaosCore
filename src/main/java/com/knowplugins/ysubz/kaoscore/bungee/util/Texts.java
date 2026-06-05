@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.util;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -73,5 +73,3 @@ public final class Texts {
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + safe(name)).getBytes(StandardCharsets.UTF_8));
     }
 }
-
-

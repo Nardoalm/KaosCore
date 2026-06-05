@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.model;
 
 public enum ClanRole {
     LEADER("§4§lLIDER", 100),
@@ -31,5 +31,3 @@ public enum ClanRole {
         return MEMBER;
     }
 }
-
-

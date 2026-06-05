@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -16,23 +17,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TagCommand implements CommandExecutor {
+public class TagCommand extends Commands {
 
-    private final KaosCore plugin;
+    private final KaosCore plugin = KaosCore.getInstance();
 
-    public TagCommand(KaosCore plugin) {
-        this.plugin = plugin;
+    public TagCommand() {
+        super("tag", "tags", "prefix");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
         if (plugin == null || plugin.getTagManager() == null) {
-            return true;
+            return;
         }
 
         if (args != null && args.length > 0) {
@@ -40,22 +41,22 @@ public class TagCommand implements CommandExecutor {
             if (selected == null) {
                 player.sendMessage("§cTag não encontrada.");
                 sendAvailableTags(player);
-                return true;
+                return;
             }
 
             if (!plugin.getTagManager().canUse(player, selected)) {
                 player.sendMessage("§cVocê não possui permissão para usar essa tag.");
                 sendAvailableTags(player);
-                return true;
+                return;
             }
 
             plugin.getTagManager().setTag(player, selected.getId());
             player.sendMessage("§aTag alterada para: " + format(selected.getColor()) + selected.getName());
-            return true;
+            return;
         }
 
         sendAvailableTags(player);
-        return true;
+        return;
     }
 
     private void sendAvailableTags(Player player) {

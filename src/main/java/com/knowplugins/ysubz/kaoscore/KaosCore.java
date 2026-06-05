@@ -131,10 +131,6 @@ public class KaosCore extends JavaPlugin {
             new KaosCoreExpansion(this).register();
         }
 
-        if (getCommand("tag") != null) {
-            getCommand("tag").setExecutor(new TagCommand(this));
-        }
-
         if (Managers.getDisguiseManager() != null) {
             Managers.getDisguiseManager().loadNicksFile(this);
         }

@@ -593,7 +593,7 @@ public class ClanCommand extends Commands {
         }
 
         Managers.getClanManager().setTagColor(clan, selected.colorCode);
-        player.sendMessage("§aCor da tag alterada para: " + selected.colorCode + selected.name);
+        player.sendMessage("§aCor da tag alterada para: " + selected.preview());
     }
 
     private void cmdEditTag(Player player, String[] args) {
@@ -771,6 +771,11 @@ public class ClanCommand extends Commands {
 
     private List<TagColorOption> getAvailableTagColors(Player player) {
         List<TagColorOption> colors = new ArrayList<>();
+        TagColorOption animated = TagColorOption.animated();
+        if (hasPermission(player, animated.permission)) {
+            colors.add(animated);
+        }
+
         for (String raw : Managers.getClanManager().getTagColors()) {
             TagColorOption option = parseTagColor(raw);
             if (option != null && hasPermission(player, option.permission)) {
@@ -788,6 +793,13 @@ public class ClanCommand extends Commands {
 
         String[] parts = raw.split("\\|", 2);
         String value = parts[0].trim().replace('&', '§');
+        if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(value)) {
+            String permission = parts.length > 1 && !parts[1].trim().isEmpty()
+                    ? parts[1].trim()
+                    : "kaoscore.clan.cortag.animada";
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animada", "animada", "animada", permission);
+        }
+
         if (value.length() < 3 || value.charAt(0) != '§') {
             return null;
         }
@@ -830,6 +842,17 @@ public class ClanCommand extends Commands {
 
         private boolean matches(String input) {
             return normalizedName.equalsIgnoreCase(input) || token.equalsIgnoreCase(input.replace(' ', '_'));
+        }
+
+        private String preview() {
+            if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(colorCode)) {
+                return "§f[§cW§6A§eV§aE§f]";
+            }
+            return colorCode + name;
+        }
+
+        private static TagColorOption animated() {
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animada", "animada", "animada", "kaoscore.clan.cortag.animada");
         }
     }
 }

@@ -301,7 +301,7 @@ public final class NPCManager {
             return false;
         }
 
-        if (PracticeModeBlocker.check(viewer, true)) {
+        if (PracticeModeBlocker.check(viewer, false)) {
             return true;
         }
 
