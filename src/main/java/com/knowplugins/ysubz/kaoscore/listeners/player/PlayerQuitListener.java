@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.ScoreboardManager;
@@ -19,6 +20,10 @@ public class PlayerQuitListener implements Listener {
         }
 
         KaosCore plugin = KaosCore.getInstance();
+        AccountController accounts = plugin == null ? null : plugin.getAccountController();
+        if (accounts != null) {
+            accounts.markOffline(player);
+        }
         if (plugin != null && plugin.getTagManager() != null) {
             plugin.getTagManager().removeTagEntries(player);
         }

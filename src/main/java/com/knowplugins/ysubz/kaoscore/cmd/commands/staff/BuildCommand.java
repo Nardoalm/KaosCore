@@ -16,14 +16,14 @@ public class BuildCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lERRO ➔ §cApenas jogadores podem usar este comando.");
+            sender.sendMessage("§c§lERROR ➔ §cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("kaoscore.admin")) {
-            player.sendMessage( "§c§lBUILD ➔ §cVocê não tem permissão para usar esse comando.");
+            player.sendMessage("§c§lBUILD ➔ §cYou do not have permission to use this command.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
@@ -32,13 +32,13 @@ public class BuildCommand extends Commands {
         if (BuildManager.isBuilder(player)) {
             BuildManager.removeBuilder(player);
             player.setGameMode(GameMode.SURVIVAL);
-            player.sendMessage("§a§lBUILD ➔ §aModo construtor desativado.");
+            player.sendMessage("§a§lBUILD ➔ §aBuild mode disabled.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
         } else {
             BuildManager.addBuilder(player);
             player.setGameMode(GameMode.CREATIVE);
-            player.sendMessage("§a§lBUILD ➔ §aModo construtor ativado.");
+            player.sendMessage("§a§lBUILD ➔ §aBuild mode enabled.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
         }

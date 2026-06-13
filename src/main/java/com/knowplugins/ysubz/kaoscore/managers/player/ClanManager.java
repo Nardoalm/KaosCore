@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.account.Account;
 import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.clan.ClanInvite;
 import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
@@ -678,6 +679,13 @@ public class ClanManager {
     private String resolvePlayerName(UUID playerId) {
         if (playerId == null) {
             return "Desconhecido";
+        }
+
+        if (plugin != null && plugin.getAccountController() != null) {
+            Account account = plugin.getAccountController().get(playerId);
+            if (account != null && account.getName() != null && !account.getName().trim().isEmpty()) {
+                return account.getName();
+            }
         }
 
         Player online = Bukkit.getPlayer(playerId);

@@ -28,19 +28,19 @@ public final class GrantCommand extends Commands {
         }
 
         if (!hasPerm(sender)) {
-            sender.sendMessage("§c§lGRANT ➔ §cVocê não possui permissão para executar este comando.");
+            sender.sendMessage("§c§lGRANT ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PermissionManager permissions = Managers.getPermissionManager();
         if (permissions == null) {
-            sender.sendMessage("§c§lGRANT ➔ §cSistema de permissões indisponível.");
+            sender.sendMessage("§c§lGRANT ➔ §cPermission system unavailable.");
             return;
         }
 
         if (args == null || args.length < 2) {
-            sender.sendMessage("§e§lGRANT ➔ §eUso: /grant <jogador> <grupo> [duração] [motivo]");
+            sender.sendMessage("§e§lGRANT ➔ §eUsage: /grant <player> <group> [duration] [reason]");
             return;
         }
 
@@ -48,7 +48,7 @@ public final class GrantCommand extends Commands {
         String groupName = args[1];
 
         if (permissions.getGroup(groupName) == null) {
-            sender.sendMessage("§c§lGRANT ➔ §cGrupo não encontrado: §f" + groupName);
+            sender.sendMessage("§c§lGRANT ➔ §cGroup not found: §f" + groupName);
             return;
         }
 
@@ -73,7 +73,7 @@ public final class GrantCommand extends Commands {
             }
         }
 
-        String reason = ModerationCommandUtil.buildReason(args, reasonIndex, "Sem motivo informado");
+        String reason = ModerationCommandUtil.buildReason(args, reasonIndex, "No reason provided");
         UUID giverUuid = ModerationCommandUtil.getSenderUuid(sender);
         String giverName = ModerationCommandUtil.getSenderName(sender);
 
@@ -84,14 +84,14 @@ public final class GrantCommand extends Commands {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                permissions.grant(finalUuid, finalResolvedName, groupName, giverUuid, giverName, finalDurationMs, reason);
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage("§a§lGRANT ➔ §aGrant aplicado em §f" + finalResolvedName + " §a(" + groupName + ").");
+                    permissions.grant(finalUuid, finalResolvedName, groupName, giverUuid, giverName, finalDurationMs, reason);
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage("§a§lGRANT ➔ §aGrant applied to §f" + finalResolvedName + " §a(" + groupName + ").");
                     ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
                 });
             } catch (Exception e) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage("§c§lGRANT ➔ §cErro ao aplicar grant.");
+                    sender.sendMessage("§c§lGRANT ➔ §cError applying the grant.");
                     ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
                 });
                 e.printStackTrace();
@@ -106,4 +106,3 @@ public final class GrantCommand extends Commands {
         return sender.hasPermission(PERMISSION);
     }
 }
-

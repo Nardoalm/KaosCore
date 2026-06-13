@@ -7,12 +7,12 @@ import net.md_5.bungee.api.connection.Server;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
-final class BungeeSyncMessenger {
+public final class BungeeSyncMessenger {
 
     private BungeeSyncMessenger() {
     }
 
-    static boolean send(ProxiedPlayer player, String action, String... payload) {
+    public static boolean send(ProxiedPlayer player, String action, String... payload) {
         if (player == null || player.getUniqueId() == null) {
             return false;
         }

@@ -22,20 +22,20 @@ public class HistoryCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.history")) {
-            sender.sendMessage("§c§lHISTORY ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lHISTORY ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lHISTORY ➔ §cUso correto: /history <jogador> [limite]");
+            sender.sendMessage("§c§lHISTORY ➔ §cUsage: /history <player> [limit]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lHISTORY ➔ §cSistema de punições indisponível.");
+            sender.sendMessage("§c§lHISTORY ➔ §cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -46,7 +46,7 @@ public class HistoryCommand extends Commands {
             try {
                 limit = Math.max(1, Math.min(50, Integer.parseInt(args[1])));
             } catch (NumberFormatException ignored) {
-                sender.sendMessage("§c§lHISTORY ➔ §cLimite inválido.");
+                sender.sendMessage("§c§lHISTORY ➔ §cInvalid limit.");
                 ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
                 return;
             }
@@ -57,12 +57,12 @@ public class HistoryCommand extends Commands {
 
     private void sendHistory(CommandSender sender, String targetName, List<PunishmentEntry> history) {
         if (history == null || history.isEmpty()) {
-            sender.sendMessage("§e§lHISTORY ➔ §eNenhuma punição encontrada para §f" + targetName + "§e.");
+            sender.sendMessage("§e§lHISTORY ➔ §eNo punishments found for §f" + targetName + "§e.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        sender.sendMessage("§6§lHISTORY ➔ §eHistórico de punições de §f" + targetName + "§e:");
+        sender.sendMessage("§6§lHISTORY ➔ §ePunishment history for §f" + targetName + "§e:");
         for (PunishmentEntry entry : history) {
             sender.sendMessage(formatEntry(entry));
         }
@@ -76,18 +76,17 @@ public class HistoryCommand extends Commands {
 
         String type = entry.getType().name();
         String date = PunishmentTime.formatDate(entry.getCreatedAt());
-        String reason = entry.getReason() == null ? "Sem motivo informado" : entry.getReason();
+        String reason = entry.getReason() == null ? "No reason provided" : entry.getReason();
         String author = entry.getPunisherName() == null || entry.getPunisherName().trim().isEmpty() ? "CONSOLE" : entry.getPunisherName();
         String extra = "";
 
         if (entry.getType() == PunishmentType.BAN || entry.getType() == PunishmentType.MUTE) {
             extra = entry.isPermanent() ? " §8(perm)" : " §8(" + PunishmentTime.formatDate(entry.getExpiresAt()) + ")";
             if (!entry.isActive()) {
-                extra += " §7[removida]";
+                extra += " §7[removed]";
             }
         }
 
         return "§7- §f" + type + " §8| §7" + date + " §8| §7" + author + " §8| §f" + reason + extra;
     }
 }
-

@@ -17,20 +17,20 @@ public class WhitelistCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.whitelist")) {
-            sender.sendMessage("§c§lWHITELIST ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lWHITELIST ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         WhitelistManager whitelist = Managers.getWhitelistManager();
         if (whitelist == null) {
-            sender.sendMessage("§c§lWHITELIST ➔ §cSistema indisponível.");
+            sender.sendMessage("§c§lWHITELIST ➔ §cSystem unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length == 0) {
-            sender.sendMessage("§e§lWHITELIST ➔ §eUse: /whitelist on|off|add <nick>|remove <nick>|reload");
+            sender.sendMessage("§e§lWHITELIST ➔ §eUsage: /whitelist on|off|add <name>|remove <name>|reload");
             return;
         }
 
@@ -39,43 +39,42 @@ public class WhitelistCommand extends Commands {
             case "on":
             case "enable":
                 whitelist.setEnabled(true);
-                sender.sendMessage("§a§lWHITELIST ➔ §aWhitelist ativada.");
+                sender.sendMessage("§a§lWHITELIST ➔ §aWhitelist enabled.");
                 return;
             case "off":
             case "disable":
                 whitelist.setEnabled(false);
-                sender.sendMessage("§c§lWHITELIST ➔ §cWhitelist desativada.");
+                sender.sendMessage("§c§lWHITELIST ➔ §cWhitelist disabled.");
                 return;
             case "reload":
                 whitelist.load();
-                sender.sendMessage("§a§lWHITELIST ➔ §aConfig recarregada.");
+                sender.sendMessage("§a§lWHITELIST ➔ §aConfiguration reloaded.");
                 return;
             case "add":
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lWHITELIST ➔ §cUso: /whitelist add <nick>");
+                    sender.sendMessage("§c§lWHITELIST ➔ §cUsage: /whitelist add <name>");
                     return;
                 }
                 Player online = Bukkit.getPlayerExact(args[1]);
                 boolean added = online != null ? whitelist.add(online) : whitelist.addName(args[1]);
                 sender.sendMessage(added
-                        ? "§a§lWHITELIST ➔ §aAdicionado: §f" + args[1]
-                        : "§e§lWHITELIST ➔ §eJá estava na whitelist: §f" + args[1]);
+                        ? "§a§lWHITELIST ➔ §aAdded: §f" + args[1]
+                        : "§e§lWHITELIST ➔ §eAlready whitelisted: §f" + args[1]);
                 return;
             case "remove":
             case "del":
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lWHITELIST ➔ §cUso: /whitelist remove <nick>");
+                    sender.sendMessage("§c§lWHITELIST ➔ §cUsage: /whitelist remove <name>");
                     return;
                 }
                 boolean removed = whitelist.removeName(args[1]);
                 sender.sendMessage(removed
-                        ? "§a§lWHITELIST ➔ §aRemovido: §f" + args[1]
-                        : "§e§lWHITELIST ➔ §eNao estava na whitelist: §f" + args[1]);
+                        ? "§a§lWHITELIST ➔ §aRemoved: §f" + args[1]
+                        : "§e§lWHITELIST ➔ §eNot in whitelist: §f" + args[1]);
                 return;
             default:
-                sender.sendMessage("§e§lWHITELIST ➔ §eUse: /whitelist on|off|add <nick>|remove <nick>|reload");
+                sender.sendMessage("§e§lWHITELIST ➔ §eUsage: /whitelist on|off|add <name>|remove <name>|reload");
         }
     }
 }
-
 

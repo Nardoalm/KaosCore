@@ -32,14 +32,14 @@ public final class ReportCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lREPORT ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§c§lREPORT ➔ §cOnly players can use this command.");
             return;
         }
 
         Player reporter = (Player) sender;
 
         if (args == null || args.length < 2) {
-            reporter.sendMessage("§c§lREPORT ➔ §cUso: /report <jogador> <motivo>");
+            reporter.sendMessage("§c§lREPORT ➔ §cUsage: /report <player> <reason>");
             reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -47,7 +47,7 @@ public final class ReportCommand extends Commands {
         long now = System.currentTimeMillis();
         Long last = lastReportAt.get(reporter.getUniqueId());
         if (last != null && (now - last) < COOLDOWN_MS) {
-            reporter.sendMessage("§c§lREPORT ➔ §cAguarde um pouco para enviar outro report.");
+            reporter.sendMessage("§c§lREPORT ➔ §cPlease wait a moment before sending another report.");
             reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -58,20 +58,20 @@ public final class ReportCommand extends Commands {
         }
 
         if (target == null || !target.isOnline()) {
-            reporter.sendMessage("§c§lREPORT ➔ §cJogador não encontrado: §f" + args[0]);
+            reporter.sendMessage("§c§lREPORT ➔ §cPlayer not found: §f" + args[0]);
             reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (target.equals(reporter)) {
-            reporter.sendMessage("§c§lREPORT ➔ §cVocê não pode reportar você mesmo.");
+            reporter.sendMessage("§c§lREPORT ➔ §cYou cannot report yourself.");
             reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         String reason = join(args, 1).trim();
         if (reason.isEmpty()) {
-            reporter.sendMessage("§c§lREPORT ➔ §cInforme um motivo.");
+            reporter.sendMessage("§c§lREPORT ➔ §cEnter a reason.");
             reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -80,13 +80,13 @@ public final class ReportCommand extends Commands {
         String reporterColor = getTagColor(reporter);
 
         String base = "§8➥ " + targetColor + target.getName()
-                + " §7foi reportado por " + reporterColor + reporter.getName()
-                + " §7com o motivo: §f" + reason + " ";
+                + " §7was reported by " + reporterColor + reporter.getName()
+                + " §7for: §f" + reason + " ";
 
         TextComponent message = new TextComponent(base);
         TextComponent go = new TextComponent("§a§l[IR COM GO]");
         go.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/go " + target.getName()));
-        go.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para ir ate " + target.getName()).create()));
+        go.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to go to " + target.getName()).create()));
         message.addExtra(go);
 
         int sent = 0;
@@ -104,8 +104,8 @@ public final class ReportCommand extends Commands {
         lastReportAt.put(reporter.getUniqueId(), now);
 
         reporter.sendMessage(sent > 0
-                ? "§a§lREPORT ➔ §aSeu report foi enviado para a staff."
-                : "§e§lREPORT ➔ §eNenhum staff online no momento. Seu report foi registrado.");
+                ? "§a§lREPORT ➔ §aYour report was sent to staff."
+                : "§e§lREPORT ➔ §eNo staff are online right now. Your report was recorded.");
         reporter.playSound(reporter.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
@@ -134,4 +134,3 @@ public final class ReportCommand extends Commands {
         return ChatColor.translateAlternateColorCodes('&', tag.getColor() == null ? "" : tag.getColor());
     }
 }
-

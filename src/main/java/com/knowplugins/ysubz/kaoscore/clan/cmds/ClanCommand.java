@@ -38,7 +38,7 @@ public class ClanCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cApenas jogadores podem usar este comando!");
+            sender.sendMessage("§cOnly players can use this command!");
             return;
         }
 
@@ -166,23 +166,23 @@ public class ClanCommand extends Commands {
     }
 
     private void sendHelp(Player player) {
-        player.sendMessage("§eUso do §6/clan§e:");
-        sendHelpLine(player, "criar", " §e• §6/clan criar <nome> <tag>");
+        player.sendMessage("§eUsage of §6/clan§e:");
+        sendHelpLine(player, "criar", " §e• §6/clan criar <name> <tag>");
         sendHelpLine(player, "deletar", " §e• §6/clan deletar");
         sendHelpLine(player, "sair", " §e• §6/clan sair");
-        sendHelpLine(player, "convidar", " §e• §6/clan convidar <jogador>");
+        sendHelpLine(player, "convidar", " §e• §6/clan convidar <player>");
         sendHelpLine(player, "convites", " §e• §6/clan convites");
-        sendHelpLine(player, "aceitar", " §e• §6/clan aceitar <nome|tag>");
-        sendHelpLine(player, "recusar", " §e• §6/clan recusar <nome|tag>");
-        sendHelpLine(player, "expulsar", " §e• §6/clan expulsar <jogador>");
-        sendHelpLine(player, "promover", " §e• §6/clan promover <jogador>");
-        sendHelpLine(player, "demover", " §e• §6/clan demover <jogador>");
-        sendHelpLine(player, "transferir", " §e• §6/clan transferir <jogador>");
-        sendHelpLine(player, "cortag", " §e• §6/clan cortag <cor>");
-        sendHelpLine(player, "editar", " §e• §6/clan editar <nova_tag>");
-        sendHelpLine(player, "ver", " §e• §6/clan ver <nome|tag>");
-        sendHelpLine(player, "membros", " §e• §6/clan membros <nome|tag>");
-        sendHelpLine(player, "listar", " §e• §6/clan listar [pagina]");
+        sendHelpLine(player, "aceitar", " §e• §6/clan aceitar <name|tag>");
+        sendHelpLine(player, "recusar", " §e• §6/clan recusar <name|tag>");
+        sendHelpLine(player, "expulsar", " §e• §6/clan expulsar <player>");
+        sendHelpLine(player, "promover", " §e• §6/clan promover <player>");
+        sendHelpLine(player, "demover", " §e• §6/clan demover <player>");
+        sendHelpLine(player, "transferir", " §e• §6/clan transferir <player>");
+        sendHelpLine(player, "cortag", " §e• §6/clan cortag <color>");
+        sendHelpLine(player, "editar", " §e• §6/clan editar <new_tag>");
+        sendHelpLine(player, "ver", " §e• §6/clan ver <name|tag>");
+        sendHelpLine(player, "membros", " §e• §6/clan membros <name|tag>");
+        sendHelpLine(player, "listar", " §e• §6/clan listar [page]");
         sendHelpLine(player, "chat", " §e• §6/clan chat");
         player.sendMessage("");
     }
@@ -193,7 +193,7 @@ public class ClanCommand extends Commands {
         }
 
         if (args.length < 3) {
-            player.sendMessage("§cUse: /clan criar <nome> <tag>");
+            player.sendMessage("§cUsage: /clan criar <name> <tag>");
             return;
         }
 
@@ -201,21 +201,21 @@ public class ClanCommand extends Commands {
         String tag = args[2].toUpperCase(Locale.ROOT);
 
         if (tag.length() > 8) {
-            player.sendMessage("§cA tag deve ter no máximo 8 caracteres!");
+            player.sendMessage("§cThe tag can be at most 8 characters long!");
             return;
         }
 
         if (Managers.getClanManager().isInClan(player.getUniqueId())) {
-            player.sendMessage("§cVocê já está em um clan!");
+            player.sendMessage("§cYou are already in a clan!");
             return;
         }
 
         if (Managers.getClanManager().createClan(nome, tag, player)) {
-            player.sendMessage("§aClan §f" + nome + " §a[" + tag + "] §acriado com sucesso!");
+            player.sendMessage("§aClan §f" + nome + " §a[" + tag + "] §acreated successfully!");
             return;
         }
 
-        player.sendMessage("§cNome ou tag já utilizado(a), ou valor inválido!");
+        player.sendMessage("§cName or tag already in use, or invalid value!");
     }
 
     private void cmdDelete(Player player) {
@@ -225,17 +225,17 @@ public class ClanCommand extends Commands {
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode deletar o clan!");
+            player.sendMessage("§cOnly the leader can delete the clan!");
             return;
         }
 
         if (Managers.getClanManager().deleteClan(clan.getName(), player)) {
-            player.sendMessage("§cClan deletado com sucesso!");
+            player.sendMessage("§cClan deleted successfully!");
         }
     }
 
@@ -246,17 +246,17 @@ public class ClanCommand extends Commands {
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cVocê é o líder, não pode sair! Use /clan transferir primeiro.");
+            player.sendMessage("§cYou are the leader and cannot leave! Use /clan transferir first.");
             return;
         }
 
         Managers.getClanManager().removeMember(clan, player.getUniqueId());
-        player.sendMessage("§aVocê saiu do clan!");
+        player.sendMessage("§aYou left the clan!");
     }
 
     private void cmdInvite(Player player, String[] args) {
@@ -265,39 +265,39 @@ public class ClanCommand extends Commands {
         }
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan convidar <jogador>");
+            player.sendMessage("§cUsage: /clan convidar <player>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isMod(player.getUniqueId())) {
-            player.sendMessage("§cVocê não tem permissão do clan para convidar!");
+            player.sendMessage("§cYou do not have clan permission to invite!");
             return;
         }
 
         if (!clan.canInvite()) {
-            player.sendMessage("§cSeu clan já atingiu o limite de membros!");
+            player.sendMessage("§cYour clan has reached the member limit!");
             return;
         }
 
         Player target = resolvePlayer(args[1]);
         if (target == null) {
-            player.sendMessage("§cJogador não encontrado!");
+            player.sendMessage("§cPlayer not found!");
             return;
         }
 
         if (target.getUniqueId().equals(player.getUniqueId())) {
-            player.sendMessage("§cVocê não pode convidar a si mesmo!");
+            player.sendMessage("§cYou cannot invite yourself!");
             return;
         }
 
         if (Managers.getClanManager().isInClan(target.getUniqueId())) {
-            player.sendMessage("§cJogador já está em um clan!");
+            player.sendMessage("§cThat player is already in a clan!");
             return;
         }
 
@@ -306,7 +306,7 @@ public class ClanCommand extends Commands {
                 target,
                 "%kaoscore_tag_color%"
         );
-        player.sendMessage("§aConvite enviado para §f" + targetColorPrefix + target.getDisplayName());
+        player.sendMessage("§aInvite sent to §f" + targetColorPrefix + target.getDisplayName());
         Managers.getClanManager().sendInviteNotification(target, clan, player.getUniqueId());
     }
 
@@ -323,35 +323,35 @@ public class ClanCommand extends Commands {
         }
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan aceitar <nome|tag>");
+            player.sendMessage("§cUsage: /clan aceitar <name|tag>");
             return;
         }
 
         if (Managers.getClanManager().isInClan(player.getUniqueId())) {
-            player.sendMessage("§cVocê já está em um clan!");
+            player.sendMessage("§cYou are already in a clan!");
             return;
         }
 
         String clanIdentifier = joinArgs(args, 1);
         if (!Managers.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
-            player.sendMessage("§cVocê não tem convite para este clan!");
+            player.sendMessage("§cYou do not have an invite for this clan!");
             return;
         }
 
         Clan clan = Managers.getClanManager().getClan(clanIdentifier);
         if (clan == null) {
             Managers.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
-            player.sendMessage("§cEste clan não existe mais. O convite foi removido.");
+            player.sendMessage("§cThis clan no longer exists. The invite was removed.");
             return;
         }
 
         Managers.getClanManager().addMember(clan, player.getUniqueId(), ClanRole.RECRUIT);
-        player.sendMessage("§aVocê entrou no clan §f" + clan.getName() + " §a" + clan.getFormattedTag());
+        player.sendMessage("§aYou joined the clan §f" + clan.getName() + " §a" + clan.getFormattedTag());
 
         for (UUID memberId : clan.getMembers().keySet()) {
             Player member = Bukkit.getPlayer(memberId);
             if (member != null && member.isOnline()) {
-                member.sendMessage("§a" + player.getDisplayName() + " entrou no clan!");
+                member.sendMessage("§a" + player.getDisplayName() + " joined the clan!");
             }
         }
     }
@@ -362,18 +362,18 @@ public class ClanCommand extends Commands {
         }
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan recusar <nome|tag>");
+            player.sendMessage("§cUsage: /clan recusar <name|tag>");
             return;
         }
 
         String clanIdentifier = joinArgs(args, 1);
         if (!Managers.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
-            player.sendMessage("§cVocê não tem convite para este clan!");
+            player.sendMessage("§cYou do not have an invite for this clan!");
             return;
         }
 
         Managers.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
-        player.sendMessage("§cConvite recusado.");
+        player.sendMessage("§cInvite declined.");
     }
 
     private void cmdKick(Player player, String[] args) {
@@ -382,42 +382,42 @@ public class ClanCommand extends Commands {
         }
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan expulsar <jogador>");
+            player.sendMessage("§cUsage: /clan expulsar <player>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isMod(player.getUniqueId())) {
-            player.sendMessage("§cVocê não tem permissão do clan para expulsar!");
+            player.sendMessage("§cYou do not have clan permission to kick members!");
             return;
         }
 
         Player target = resolvePlayer(args[1]);
         if (target == null) {
-            player.sendMessage("§cJogador não encontrado!");
+            player.sendMessage("§cPlayer not found!");
             return;
         }
 
         if (!clan.isMember(target.getUniqueId())) {
-            player.sendMessage("§cJogador não está no clan!");
+            player.sendMessage("§cThat player is not in the clan!");
             return;
         }
 
         ClanRole targetRole = clan.getRole(target.getUniqueId());
         ClanRole actorRole = clan.getRole(player.getUniqueId());
         if (actorRole == null || !actorRole.canKick(targetRole)) {
-            player.sendMessage("§cVocê não pode expulsar este jogador!");
+            player.sendMessage("§cYou cannot kick this player!");
             return;
         }
 
         Managers.getClanManager().removeMember(clan, target.getUniqueId());
-        player.sendMessage("§c" + target.getDisplayName() + " foi expulso do clan!");
-        target.sendMessage("§cVocê foi expulso do clan §f" + clan.getName());
+        player.sendMessage("§c" + target.getDisplayName() + " was kicked from the clan!");
+        target.sendMessage("§cYou were kicked from the clan §f" + clan.getName());
     }
 
     private void cmdPromote(Player player, String[] args) {
@@ -856,4 +856,3 @@ public class ClanCommand extends Commands {
         }
     }
 }
-

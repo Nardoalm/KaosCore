@@ -23,20 +23,20 @@ public class CbanCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cUso correto: /CHEATBAN <jogador>");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cUsage: /cheatban <player>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.banir")) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cSistema de punições indisponível.");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -50,7 +50,7 @@ public class CbanCommand extends Commands {
         }
 
         if (sender instanceof Player && target.getUuid() != null && target.getUuid().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não pode se banir!");
+            sender.sendMessage("§c§lCHEATBAN ➔ §cYou cannot ban yourself!");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -69,16 +69,15 @@ public class CbanCommand extends Commands {
 
         Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
 
-        sender.sendMessage(ChatColor.GREEN + "§a§lCHEATBAN ➔ §a" + target.getName() + " foi banido por 30 dias com sucesso!");
+        sender.sendMessage(ChatColor.GREEN + "§a§lCHEATBAN ➔ §a" + target.getName() + " was banned for 30 days successfully!");
         ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
         onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
         onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage("§c§lBANIMENTO ➔ §c" + target.getName() + " §cfoi banido por uso de trapaças.");
+            p.sendMessage("§c§lCHEATBAN ➔ §c" + target.getName() + " §cwas banned for cheating.");
             p.playSound(p.getLocation(), Sound.ARROW_HIT, 1.0f, 1.0f);
         }
     }
 }
-

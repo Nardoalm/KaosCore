@@ -1,35 +1,69 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public abstract class BaseBungeeCommand extends Command {
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
-    protected final BungeeKaosCore plugin;
+final class GrantBungeeCommand extends BaseBungeeCommand {
 
-    protected BaseBungeeCommand(BungeeKaosCore plugin, String name, String... aliases) {
-        super(name, "", aliases);
-        this.plugin = plugin;
+    GrantBungeeCommand(BungeeKaosCore plugin) {
+        super(plugin, "grant", "atribuir", "setar", "conceder");
     }
 
-    protected ProxiedPlayer playerOnly(CommandSender sender) {
-        if (!(sender instanceof ProxiedPlayer)) {
-            Texts.send(sender, "§cApenas jogadores podem usar este comando.");
-            return null;
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (!require(sender, "kaoscore.staff.permissions", "§c§lGRANT ➔ §cVocê não possui permissão para executar este comando.")) {
+            return;
         }
-        return (ProxiedPlayer) sender;
-    }
-
-    protected boolean require(CommandSender sender, String permission, String message) {
-        if (plugin.getPermissions().hasPermission(sender, permission)) {
-            return true;
+        if (args.length < 2) {
+            reply(sender, "§e§lGRANT ➔ §eUso: /grant <jogador> <grupo> [duração] [motivo]");
+            return;
         }
-        Texts.send(sender, message);
-        return false;
-    }
 
-    protected void reply(CommandSender sender, String message) {
-        Texts.send(sender, message);
+        TargetResult target = BungeeCommandUtil.resolveTarget(plugin, args[0]);
+        if (target.getName().isEmpty()) {
+            reply(sender, "§c§lGRANT ➔ §cJogador inválido.");
+            return;
+        }
+
+        String groupName = args[1];
+        if (plugin.getPermissions().getGroup(groupName) == null) {
+            reply(sender, "§c§lGRANT ➔ §cGrupo não encontrado: §f" + groupName);
+            return;
+        }
+
+        UUID uuid = target.getUuid();
+        if (uuid == null) {
+            uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + target.getName()).getBytes(StandardCharsets.UTF_8));
+        }
+
+        long durationMs = 0L;
+        int reasonIndex = 2;
+        if (args.length >= 3) {
+            long parsed = PunishmentTime.parseDuration(args[2]);
+            if (parsed != Long.MIN_VALUE) {
+                durationMs = parsed;
+                reasonIndex = 3;
+            }
+        }
+
+        String reason = Texts.join(args, reasonIndex);
+        if (reason.isEmpty()) {
+            reason = "Sem motivo informado";
+        }
+
+        try {
+            plugin.getPermissions().grant(uuid, target.getName(), groupName, BungeeCommandUtil.senderUuid(sender), BungeeCommandUtil.senderName(sender), durationMs, reason);
+            reply(sender, "§a§lGRANT ➔ §aGrant aplicado em §f" + target.getName() + " §a(" + groupName + ").");
+            if (target.getPlayer() != null) {
+                Texts.send(target.getPlayer(), "§aVocê recebeu o grupo §f" + groupName + "§a.");
+            }
+        } catch (Exception exception) {
+            reply(sender, "§c§lGRANT ➔ §cErro ao aplicar grant.");
+            plugin.getLogger().severe("Falha ao aplicar grant: " + exception.getMessage());
+        }
     }
 }

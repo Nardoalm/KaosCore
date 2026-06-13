@@ -145,6 +145,7 @@ spawn-limits:
   sound: "ENDERMAN_TELEPORT"
 
 database:
+  type: "mysql" # mysql or mongodb
   mysql:
     host: "localhost"
     port: 3306
@@ -159,6 +160,9 @@ database:
       max-lifetime-ms: 1800000
       validation-timeout-ms: 5000
       leak-detection-threshold-ms: 0
+  mongodb:
+    uri: "mongodb://localhost:27017"
+    database: "kaoscore"
 
 npc-spawn:
   enabled: false

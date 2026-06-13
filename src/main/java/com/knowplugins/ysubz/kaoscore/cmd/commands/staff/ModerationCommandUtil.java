@@ -88,15 +88,15 @@ final class ModerationCommandUtil {
             return messages.buildBanScreen(entry);
         }
 
-        String expires = entry == null || entry.isPermanent() ? "Permanente" : PunishmentTime.formatDate(entry.getExpiresAt());
-        String title = entry != null && entry.isPermanent() ? "Você foi banido permanentemente." : "Você foi banido temporariamente.";
-        String reason = entry == null || entry.getReason() == null ? "Sem motivo informado" : entry.getReason();
+        String expires = entry == null || entry.isPermanent() ? "Permanent" : PunishmentTime.formatDate(entry.getExpiresAt());
+        String title = entry != null && entry.isPermanent() ? "You have been permanently banned." : "You have been temporarily banned.";
+        String reason = entry == null || entry.getReason() == null ? "No reason provided" : entry.getReason();
 
         return "§c" + title + "\n\n" +
-                "§cMotivo: §7" + reason + "\n" +
-                "§cExpira em: §7" + expires + "\n" +
-                "§eAdquira seu unban em: §bwww.freepmc.com.br\n" +
-                "§cBanido injustamente? Contate-nos via\n" +
+                "§cReason: §7" + reason + "\n" +
+                "§cExpires in: §7" + expires + "\n" +
+                "§eBuy your unban at: §bwww.freepmc.com.br\n" +
+                "§cBanned unfairly? Contact us via\n" +
                 "§9discord.gg/freepmc";
     }
 
@@ -107,9 +107,9 @@ final class ModerationCommandUtil {
             return messages.buildKickScreen(reason, punisherName);
         }
 
-        return "§cVocê foi expulso do servidor.\n\n" +
-                "§cMotivo: §7" + safe(reason) + "\n" +
-                "§cResponsável: §7" + safe(punisherName);
+        return "§cYou have been kicked from the server.\n\n" +
+                "§cReason: §7" + safe(reason) + "\n" +
+                "§cStaff: §7" + safe(punisherName);
     }
 
     static String buildMuteNotice(PunishmentEntry entry) {
@@ -119,9 +119,9 @@ final class ModerationCommandUtil {
             return messages.buildMuteNotice(entry);
         }
 
-        return "§c§lMUTE ➔ §cVocê foi mutado.\n" +
-                "§cMotivo: §7" + (entry == null ? "Sem motivo informado" : safe(entry.getReason())) + "\n" +
-                "§cDuração: §7" + (entry == null ? "Desconhecida" : PunishmentTime.formatRemaining(entry.getExpiresAt()));
+        return "§c§lMUTE ➔ §cYou have been muted.\n" +
+                "§cReason: §7" + (entry == null ? "No reason provided" : safe(entry.getReason())) + "\n" +
+                "§cDuration: §7" + (entry == null ? "Unknown" : PunishmentTime.formatRemaining(entry.getExpiresAt()));
     }
 
     private static String safe(String value) {

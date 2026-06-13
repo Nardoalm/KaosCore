@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.account.AccountController;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,6 +21,12 @@ public final class PermissionListener implements Listener {
             return;
         }
         manager.preloadUser(event.getUniqueId(), event.getName());
+
+        if (com.knowplugins.ysubz.kaoscore.KaosCore.getInstance() != null
+                && com.knowplugins.ysubz.kaoscore.KaosCore.getInstance().getAccountController() != null) {
+            AccountController accounts = com.knowplugins.ysubz.kaoscore.KaosCore.getInstance().getAccountController();
+            accounts.trackLogin(event.getUniqueId(), event.getName(), null);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -53,4 +60,3 @@ public final class PermissionListener implements Listener {
         }
     }
 }
-

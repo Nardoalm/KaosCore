@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore;
 
 import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPI;
 import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPIImpl;
+import com.knowplugins.ysubz.kaoscore.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.TagCommand;
 import com.knowplugins.ysubz.kaoscore.listeners.Listeners;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class KaosCore extends JavaPlugin {
 
     private static KaosCore instance;
+    private AccountController accountController;
     private Managers managers;
     private TagManager tagManager;
     private MedalManager medalManager;
@@ -42,6 +44,7 @@ public class KaosCore extends JavaPlugin {
     public MedalManager getMedalManager() { return medalManager; }
     public ClanManager getClanManager() { return Managers.getClanManager(); }
     public TagTeamManager getTagTeamManager() { return tagTeamManager; }
+    public AccountController getAccountController() { return accountController; }
     public DiscordWebhookManager getWebhookManager() { return webhookManager; }
     public SkinPoolManager getSkinPoolManager() { return skinPoolManager; }
     public PunishmentMessageManager getPunishmentMessageManager() { return punishmentMessageManager; }
@@ -50,6 +53,7 @@ public class KaosCore extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        accountController = new AccountController(this);
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
@@ -135,7 +139,7 @@ public class KaosCore extends JavaPlugin {
             Managers.getDisguiseManager().loadNicksFile(this);
         }
 
-        getLogger().info("Todos os sistemas foram carregados!");
+        getLogger().info("All systems have been loaded.");
     }
 
     public synchronized void reloadSystems() {
@@ -198,7 +202,7 @@ public class KaosCore extends JavaPlugin {
             Managers.getDisguiseManager().loadNicksFile(this);
         }
 
-        getLogger().info("Configuracoes recarregadas com sucesso!");
+        getLogger().info("Configuration reloaded successfully.");
     }
 
     @Override
@@ -229,10 +233,14 @@ public class KaosCore extends JavaPlugin {
             if (db != null) db.disconnect();
         } catch (Exception ignored) {}
 
+        if (accountController != null) {
+            accountController.clear();
+        }
+
         if (Managers.getSitManager() != null) {
             Managers.getSitManager().cleanupAll();
         }
 
-        Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cO plugin foi desativado.");
+        Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cThe plugin has been disabled.");
     }
 }

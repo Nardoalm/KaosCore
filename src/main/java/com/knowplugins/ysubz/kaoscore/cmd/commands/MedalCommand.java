@@ -28,7 +28,7 @@ public class MedalCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cApenas jogadores podem usar este comando!");
+            sender.sendMessage("§cOnly players can use this command!");
             return;
         }
 
@@ -36,40 +36,40 @@ public class MedalCommand extends Commands {
 
         MedalManager medalManager = plugin == null ? null : plugin.getMedalManager();
         if (medalManager == null) {
-            player.sendMessage("§cSistema de medalhas indisponível.");
+            player.sendMessage("§cMedal system unavailable.");
             return;
         }
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("limpar") || args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("none")) {
                 medalManager.clearMedal(player);
-                player.sendMessage("§aSua medalha foi removida.");
+                player.sendMessage("§aYour medal was removed.");
                 return;
             }
 
             Medal selected = medalManager.getMedalByNameOrId(args[0]);
             if (selected == null || !medalManager.canUse(player, selected)) {
-                player.sendMessage("§cMedalha não encontrada ou sem permissão.");
+                player.sendMessage("§cMedal not found or you do not have permission.");
                 return;
             }
 
             medalManager.setMedal(player, selected.getId());
-            player.sendMessage("§aMedalha alterada para: §f" + selected.getName());
+            player.sendMessage("§aMedal changed to: §f" + selected.getName());
             return;
         }
 
         List<Medal> availableMedals = medalManager.getAvailableMedals(player);
         if (availableMedals.isEmpty()) {
-            player.sendMessage("§cVocê não possui medalhas.");
+            player.sendMessage("§cYou do not have any medals.");
             return;
         }
 
-        TextComponent line = new TextComponent("§aSuas medalhas: ");
+        TextComponent line = new TextComponent("§aYour medals: ");
         for (int i = 0; i < availableMedals.size(); i++) {
             Medal medal = availableMedals.get(i);
                 TextComponent component = new TextComponent(medal.getStaticChat());
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medalha " + medal.getId()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Clique para equipar §f" + medal.getStaticChat()).create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Click to equip §f" + medal.getStaticChat()).create()));
             line.addExtra(component);
             if (i < availableMedals.size() - 1) {
                 line.addExtra(new TextComponent("§f, "));
@@ -99,4 +99,3 @@ public class MedalCommand extends Commands {
                 .collect(Collectors.toList());
     }
 }
-

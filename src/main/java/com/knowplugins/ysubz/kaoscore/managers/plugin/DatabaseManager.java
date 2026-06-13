@@ -1,9 +1,14 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
+import org.bson.Document;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -13,29 +18,47 @@ import java.sql.Statement;
 
 public class DatabaseManager {
 
+    public enum DatabaseType {
+        MYSQL,
+        MONGODB
+    }
+
     private final KaosCore plugin;
+    private final DatabaseType databaseType;
     private final String host;
     private final String database;
     private final String username;
     private final String password;
     private final int port;
     private final String jdbcUrl;
+    private final String mongoUri;
+    private final String mongoDatabaseName;
 
     private volatile boolean connected;
     private volatile HikariDataSource dataSource;
+    private volatile MongoClient mongoClient;
+    private volatile MongoDatabase mongoDatabase;
 
     public DatabaseManager(KaosCore plugin) {
         this.plugin = plugin;
+        String configuredType = plugin.getConfig().getString("database.type", "mysql");
+        this.databaseType = "mongodb".equalsIgnoreCase(configuredType) ? DatabaseType.MONGODB : DatabaseType.MYSQL;
         this.host = plugin.getConfig().getString("database.mysql.host");
         this.port = plugin.getConfig().getInt("database.mysql.port");
         this.database = plugin.getConfig().getString("database.mysql.database");
         this.username = plugin.getConfig().getString("database.mysql.user", plugin.getConfig().getString("database.mysql.username"));
         this.password = plugin.getConfig().getString("database.mysql.password");
+        this.mongoUri = plugin.getConfig().getString("database.mongodb.uri", "mongodb://localhost:27017");
+        this.mongoDatabaseName = plugin.getConfig().getString("database.mongodb.database", "kaoscore");
         this.jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + database
                 + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&rewriteBatchedStatements=true";
     }
 
     public synchronized boolean connect() {
+        if (databaseType == DatabaseType.MONGODB) {
+            return connectMongo();
+        }
+
         if (dataSource != null && !dataSource.isClosed()) {
             connected = true;
             return true;
@@ -79,20 +102,44 @@ public class DatabaseManager {
             dataSource = hikari;
             connected = createTables();
             if (connected) {
-                System.out.println("\u001B[32m[KaosCore] Conectado ao MySQL com HikariCP!\u001B[0m");
+            System.out.println("\u001B[32m[KaosCore] Connected to MySQL with HikariCP!\u001B[0m");
                 return true;
             }
         } catch (Exception e) {
             connected = false;
             closeDataSource();
-            System.out.println("\u001B[31m[KaosCore] Erro ao conectar ao MySQL: " + e + "\u001B[0m");
+            System.out.println("\u001B[31m[KaosCore] Error connecting to MySQL: " + e + "\u001B[0m");
             e.printStackTrace();
         }
 
         return false;
     }
 
+    private synchronized boolean connectMongo() {
+        if (mongoClient != null && mongoDatabase != null) {
+            connected = true;
+            return true;
+        }
+
+        try {
+            mongoClient = MongoClients.create(mongoUri);
+            mongoDatabase = mongoClient.getDatabase(mongoDatabaseName);
+            ensureMongoCollections();
+            connected = true;
+            plugin.getLogger().info("[KaosCore] Connected to MongoDB.");
+            return true;
+        } catch (Exception e) {
+            connected = false;
+            closeMongo();
+            plugin.getLogger().severe("[KaosCore] Failed to connect to MongoDB: " + e.getMessage());
+            return false;
+        }
+    }
+
     public synchronized Connection getConnection() throws SQLException {
+        if (databaseType == DatabaseType.MONGODB) {
+            throw new SQLException("MongoDB mode does not expose a SQL connection");
+        }
         if (dataSource == null || dataSource.isClosed()) {
             connect();
         }
@@ -103,13 +150,29 @@ public class DatabaseManager {
     }
 
     public synchronized boolean isConnected() {
+        if (databaseType == DatabaseType.MONGODB) {
+            return connected && mongoClient != null && mongoDatabase != null;
+        }
         return connected && dataSource != null && !dataSource.isClosed();
     }
 
     public synchronized void disconnect() {
         connected = false;
+        closeMongo();
         closeDataSource();
-        System.out.println("\u001B[33m[KaosCore] HikariCP encerrado\u001B[0m");
+        System.out.println("\u001B[33m[KaosCore] HikariCP shut down\u001B[0m");
+    }
+
+    public boolean isMongo() {
+        return databaseType == DatabaseType.MONGODB;
+    }
+
+    public MongoDatabase getMongoDatabase() {
+        return mongoDatabase;
+    }
+
+    public MongoCollection<Document> getMongoCollection(String name) {
+        return mongoDatabase == null || name == null ? null : mongoDatabase.getCollection(name);
     }
 
     private synchronized void closeDataSource() {
@@ -119,7 +182,20 @@ public class DatabaseManager {
         dataSource = null;
     }
 
+    private synchronized void closeMongo() {
+        if (mongoClient != null) {
+            mongoClient.close();
+        }
+        mongoClient = null;
+        mongoDatabase = null;
+    }
+
     private boolean createTables() {
+        if (databaseType == DatabaseType.MONGODB) {
+            ensureMongoCollections();
+            return true;
+        }
+
         String clansTable = "CREATE TABLE IF NOT EXISTS clans (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "name VARCHAR(32) NOT NULL UNIQUE," +
@@ -329,10 +405,10 @@ public class DatabaseManager {
             ensureColumn(conn, "clans", "losses", "INT NOT NULL DEFAULT 0");
             ensureColumn(conn, "clans", "elo", "INT NOT NULL DEFAULT 1000");
 
-            Bukkit.getConsoleSender().sendMessage("§a[KaosCore] §a§lSUCESSO -> §aTabelas criadas com sucesso!");
+            Bukkit.getConsoleSender().sendMessage("§a[KaosCore] §a§lSUCCESS -> §aTables created successfully!");
             return true;
         } catch (SQLException e) {
-            Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §c§lERRO -> §cErro ao criar as tabelas: " + e.getMessage());
+            Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §c§lERROR -> §cError creating tables: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -349,5 +425,31 @@ public class DatabaseManager {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition);
         }
+    }
+
+    private void ensureMongoCollections() {
+        if (mongoDatabase == null) {
+            return;
+        }
+
+        mongoDatabase.getCollection("clans");
+        mongoDatabase.getCollection("clan_members");
+        mongoDatabase.getCollection("clan_invites");
+        mongoDatabase.getCollection("friends");
+        mongoDatabase.getCollection("friend_requests");
+        mongoDatabase.getCollection("vanishes");
+        mongoDatabase.getCollection("disguises");
+        mongoDatabase.getCollection("skins");
+        mongoDatabase.getCollection("player_tags");
+        mongoDatabase.getCollection("player_medals");
+        mongoDatabase.getCollection("player_welcome_messages");
+        mongoDatabase.getCollection("punishments");
+        mongoDatabase.getCollection("player_addresses");
+        mongoDatabase.getCollection("kaoscore_groups");
+        mongoDatabase.getCollection("kaoscore_group_permissions");
+        mongoDatabase.getCollection("kaoscore_group_inherits");
+        mongoDatabase.getCollection("kaoscore_user_permissions");
+        mongoDatabase.getCollection("kaoscore_user_grants");
+        mongoDatabase.getCollection("kaoscore_skin_cache");
     }
 }

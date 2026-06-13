@@ -17,13 +17,13 @@ public class KickCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.kickar")) {
-            sender.sendMessage("§c§lKICK ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lKICK ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lKICK ➔ §cUso correto: /kick <jogador> [motivo]");
+            sender.sendMessage("§c§lKICK ➔ §cUsage: /kick <player> [reason]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -31,18 +31,18 @@ public class KickCommand extends Commands {
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         Player player = target.getPlayer();
         if (player == null || !player.isOnline()) {
-            sender.sendMessage("§c§lKICK ➔ §cEsse jogador não está online.");
+            sender.sendMessage("§c§lKICK ➔ §cThat player is not online.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (sender instanceof Player && player.getUniqueId().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lKICK ➔ §cVocê não pode se expulsar.");
+            sender.sendMessage("§c§lKICK ➔ §cYou cannot kick yourself.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        String reason = ModerationCommandUtil.buildReason(args, 1, "Sem motivo informado");
+        String reason = ModerationCommandUtil.buildReason(args, 1, "No reason provided");
         String senderName = ModerationCommandUtil.getSenderName(sender);
         java.util.UUID senderUuid = ModerationCommandUtil.getSenderUuid(sender);
 
@@ -54,12 +54,11 @@ public class KickCommand extends Commands {
             webhookManager.logKick(target.getName(), target.getUuid(), senderName, senderUuid, reason);
         }
 
-        sender.sendMessage("§a§lKICK ➔ §a" + target.getName() + " foi expulso do servidor.");
+        sender.sendMessage("§a§lKICK ➔ §a" + target.getName() + " was kicked from the server.");
         ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendMessage("§e§lKICK ➔ §e" + target.getName() + " §efoi expulso. Motivo: §7" + reason);
+            online.sendMessage("§e§lKICK ➔ §e" + target.getName() + " §ewas kicked. Reason: §7" + reason);
         }
     }
 }
-

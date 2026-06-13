@@ -39,19 +39,19 @@ public class TagCommand extends Commands {
         if (args != null && args.length > 0) {
             Tag selected = plugin.getTagManager().getTagByNameOrId(args[0]);
             if (selected == null) {
-                player.sendMessage("§cTag não encontrada.");
+                player.sendMessage("§cTag not found.");
                 sendAvailableTags(player);
                 return;
             }
 
             if (!plugin.getTagManager().canUse(player, selected)) {
-                player.sendMessage("§cVocê não possui permissão para usar essa tag.");
+                player.sendMessage("§cYou do not have permission to use this tag.");
                 sendAvailableTags(player);
                 return;
             }
 
             plugin.getTagManager().setTag(player, selected.getId());
-            player.sendMessage("§aTag alterada para: " + format(selected.getColor()) + selected.getName());
+            player.sendMessage("§aTag changed to: " + format(selected.getColor()) + selected.getName());
             return;
         }
 
@@ -68,7 +68,7 @@ public class TagCommand extends Commands {
             }
         }
 
-        TextComponent line = new TextComponent("§aSuas tags: ");
+        TextComponent line = new TextComponent("§aYour tags: ");
 
         for (int i = 0; i < availableTags.size(); i++) {
             Tag tag = availableTags.get(i);
@@ -79,7 +79,7 @@ public class TagCommand extends Commands {
             String displayName = format(tag.getColor()) + tag.getName();
             TextComponent component = new TextComponent(displayName);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tag " + tag.getName()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar " + displayName).create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to equip " + displayName).create()));
             line.addExtra(component);
 
             if (i < availableTags.size() - 1) {
@@ -90,7 +90,7 @@ public class TagCommand extends Commands {
         if (line.getExtra() != null && !line.getExtra().isEmpty()) {
             player.spigot().sendMessage(line);
         } else {
-            player.sendMessage("§cNenhuma tag disponível.");
+            player.sendMessage("§cNo tags available.");
         }
     }
 

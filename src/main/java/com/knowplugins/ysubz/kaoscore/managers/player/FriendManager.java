@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.account.Account;
 import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
@@ -81,36 +82,41 @@ public class FriendManager {
     }
 
     public RequestResult createRequest(Player requester, Player target) {
+        return createRequest(requester == null ? null : new Account(requester.getUniqueId(), requester.getName()),
+                target == null ? null : new Account(target.getUniqueId(), target.getName()));
+    }
+
+    public RequestResult createRequest(Account requester, Account target) {
         if (requester == null || target == null) {
             return RequestResult.INVALID;
         }
-        if (requester.getUniqueId().equals(target.getUniqueId())) {
+        if (requester.getId().equals(target.getId())) {
             return RequestResult.SELF;
         }
-        if (areFriends(requester.getUniqueId(), target.getUniqueId())) {
+        if (areFriends(requester.getId(), target.getId())) {
             return RequestResult.ALREADY_FRIENDS;
         }
-        if (!canAddMoreFriends(requester.getUniqueId()) || !canAddMoreFriends(target.getUniqueId())) {
+        if (!canAddMoreFriends(requester.getId()) || !canAddMoreFriends(target.getId())) {
             return RequestResult.LIMIT_REACHED;
         }
-        if (hasPendingRequest(requester.getUniqueId(), target.getUniqueId())) {
+        if (hasPendingRequest(requester.getId(), target.getId())) {
             return RequestResult.ALREADY_REQUESTED;
         }
-        if (hasPendingRequest(target.getUniqueId(), requester.getUniqueId())) {
-            return acceptRequest(requester.getUniqueId(), target.getUniqueId())
+        if (hasPendingRequest(target.getId(), requester.getId())) {
+            return acceptRequest(requester.getId(), target.getId())
                     ? RequestResult.AUTO_ACCEPTED
                     : RequestResult.LIMIT_REACHED;
         }
 
         FriendRequest request = new FriendRequest(
-                requester.getUniqueId(),
-                PlaceholderManager.getDisplayName(requester),
-                target.getUniqueId()
+                requester.getId(),
+                requester.getName(),
+                target.getId()
         );
 
-        List<FriendRequest> targetRequests = loadRequests(target.getUniqueId(), false);
+        List<FriendRequest> targetRequests = loadRequests(target.getId(), false);
         targetRequests.add(request);
-        requests.put(target.getUniqueId(), targetRequests);
+        requests.put(target.getId(), targetRequests);
         saveRequest(request);
         return RequestResult.SENT;
     }
@@ -352,6 +358,13 @@ public class FriendManager {
     public String getFriendAccountName(UUID friendId) {
         if (friendId == null) {
             return "Desconhecido";
+        }
+
+        if (plugin != null && plugin.getAccountController() != null) {
+            Account account = plugin.getAccountController().get(friendId);
+            if (account != null && account.getName() != null && !account.getName().trim().isEmpty()) {
+                return account.getName();
+            }
         }
 
         Player online = Bukkit.getPlayer(friendId);
@@ -624,4 +637,3 @@ public class FriendManager {
         return Managers.getDatabaseManager() != null;
     }
 }
-

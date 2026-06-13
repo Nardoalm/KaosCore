@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,17 +14,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-final class BungeePermissionRepository {
+public final class BungeePermissionRepository {
 
     private final BungeeKaosCore plugin;
     private final BungeeDatabase database;
 
-    BungeePermissionRepository(BungeeKaosCore plugin, BungeeDatabase database) {
+    public BungeePermissionRepository(BungeeKaosCore plugin, BungeeDatabase database) {
         this.plugin = plugin;
         this.database = database;
     }
 
-    Map<String, PermissionGroup> loadGroups() {
+    public Map<String, PermissionGroup> loadGroups() {
         Map<String, PermissionGroup> groups = new HashMap<>();
         try (Connection connection = database.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT name, priority, prefix, suffix, is_default FROM kaoscore_groups")) {
@@ -63,7 +64,7 @@ final class BungeePermissionRepository {
         return groups;
     }
 
-    void createGroup(String name, boolean isDefault) throws Exception {
+    public void createGroup(String name, boolean isDefault) throws Exception {
         String groupName = Texts.normalize(name);
         if (groupName.isEmpty()) {
             return;
@@ -85,7 +86,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean deleteGroup(String name) {
+    public boolean deleteGroup(String name) {
         String groupName = Texts.normalize(name);
         if (groupName.isEmpty()) {
             return false;
@@ -110,7 +111,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean setGroupMeta(String name, Integer priority, String prefix, String suffix, Boolean isDefault) {
+    public boolean setGroupMeta(String name, Integer priority, String prefix, String suffix, Boolean isDefault) {
         String groupName = Texts.normalize(name);
         if (groupName.isEmpty()) {
             return false;
@@ -157,7 +158,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean setGroupPermission(String groupName, String permission, boolean value) {
+    public boolean setGroupPermission(String groupName, String permission, boolean value) {
         String g = Texts.normalize(groupName);
         String p = Texts.normalize(permission);
         if (g.isEmpty() || p.isEmpty()) {
@@ -175,7 +176,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean removeGroupPermission(String groupName, String permission) {
+    public boolean removeGroupPermission(String groupName, String permission) {
         String g = Texts.normalize(groupName);
         String p = Texts.normalize(permission);
         if (g.isEmpty() || p.isEmpty()) {
@@ -192,7 +193,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean addInherit(String groupName, String inheritGroup) {
+    public boolean addInherit(String groupName, String inheritGroup) {
         String g = Texts.normalize(groupName);
         String i = Texts.normalize(inheritGroup);
         if (g.isEmpty() || i.isEmpty() || g.equals(i)) {
@@ -209,7 +210,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean removeInherit(String groupName, String inheritGroup) {
+    public boolean removeInherit(String groupName, String inheritGroup) {
         String g = Texts.normalize(groupName);
         String i = Texts.normalize(inheritGroup);
         if (g.isEmpty() || i.isEmpty()) {
@@ -226,7 +227,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean clearDefaultGroups() {
+    public boolean clearDefaultGroups() {
         try (Connection connection = database.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate("UPDATE kaoscore_groups SET is_default = 0");
@@ -237,7 +238,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean replaceGroupPermissions(String groupName, Map<String, Boolean> permissions) {
+    public boolean replaceGroupPermissions(String groupName, Map<String, Boolean> permissions) {
         String g = Texts.normalize(groupName);
         if (g.isEmpty()) {
             return false;
@@ -271,7 +272,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean replaceGroupInherits(String groupName, Set<String> inherits) {
+    public boolean replaceGroupInherits(String groupName, Set<String> inherits) {
         String g = Texts.normalize(groupName);
         if (g.isEmpty()) {
             return false;
@@ -304,7 +305,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    PermissionUserData loadUser(UUID uuid, String name) {
+    public PermissionUserData loadUser(UUID uuid, String name) {
         if (uuid == null) {
             return new PermissionUserData(null, safeName(name), Collections.<GroupGrant>emptyList(), Collections.<UserPermissionNode>emptyList(), System.currentTimeMillis());
         }
@@ -362,7 +363,7 @@ final class BungeePermissionRepository {
         return new PermissionUserData(uuid, safeName(name), grants, nodes, now);
     }
 
-    void grant(UUID uuid, String playerName, String groupName, UUID giverUuid, String giverName, long durationMs, String reason) throws Exception {
+    public void grant(UUID uuid, String playerName, String groupName, UUID giverUuid, String giverName, long durationMs, String reason) throws Exception {
         long now = System.currentTimeMillis();
         Long expiresAt = durationMs > 0L ? now + durationMs : null;
         try (Connection connection = database.getConnection();
@@ -387,7 +388,7 @@ final class BungeePermissionRepository {
         }
     }
 
-    boolean ungrant(UUID uuid, String groupName, UUID removerUuid, String removerName, String removedReason) {
+    public boolean ungrant(UUID uuid, String groupName, UUID removerUuid, String removerName, String removedReason) {
         try (Connection connection = database.getConnection();
              PreparedStatement statement = connection.prepareStatement("UPDATE kaoscore_user_grants SET active = 0, removed_at = ?, removed_by_uuid = ?, removed_by_name = ?, removed_reason = ? WHERE active = 1 AND uuid = ? AND group_name = ?")) {
             statement.setLong(1, System.currentTimeMillis());
@@ -412,5 +413,3 @@ final class BungeePermissionRepository {
         return safe.length() > 16 ? safe.substring(0, 16) : safe;
     }
 }
-
-

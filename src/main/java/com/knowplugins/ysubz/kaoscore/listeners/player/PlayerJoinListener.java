@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
@@ -43,6 +44,14 @@ public class PlayerJoinListener implements Listener {
    public void onPlayerJoin(PlayerJoinEvent event) {
       Player player = event.getPlayer();
       KaosCore plugin = KaosCore.getInstance();
+      AccountController accounts = plugin == null ? null : plugin.getAccountController();
+      if (accounts != null) {
+         String ip = null;
+         if (player.getAddress() != null && player.getAddress().getAddress() != null) {
+            ip = player.getAddress().getAddress().getHostAddress();
+         }
+         accounts.trackLogin(player.getUniqueId(), player.getName(), ip);
+      }
 
       // player.setGameMode(GameMode.SURVIVAL);
       // player.setLevel(2026);
@@ -198,19 +207,19 @@ public class PlayerJoinListener implements Listener {
       if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
          BanEntry ban = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getName());
          if (ban != null) {
-            String reason = ban.getReason() == null ? "Sem motivo informado" : ban.getReason();
+            String reason = ban.getReason() == null ? "No reason provided" : ban.getReason();
             Date expires = ban.getExpiration();
-            String duration = expires == null ? "Permanente" : PunishmentTime.formatDate(expires.getTime());
+            String duration = expires == null ? "Permanent" : PunishmentTime.formatDate(expires.getTime());
 
             KaosCore plugin = KaosCore.getInstance();
             PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
             String banMessage = messages != null
                     ? messages.buildBanScreen(expires == null, reason, duration)
-                    : ("§cVocê foi banido.\n\n" +
-                    "  §cMotivo: §7" + reason + "\n" +
-                    "  §cExpira em: §7" + duration + "\n" +
-                    "  §eAdquira seu unban em: §bstore.alleypvp.us\n" +
-                    "  §cBanido injustamente? Contate-nos via\n" +
+                    : ("§cYou have been banned.\n\n" +
+                    "  §cReason: §7" + reason + "\n" +
+                    "  §cExpires in: §7" + duration + "\n" +
+                    "  §eBuy your unban at: §bstore.alleypvp.us\n" +
+                    "  §cBanned unfairly? Contact us via\n" +
                     "  §9§ndiscord.gg/freep");
 
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
@@ -295,16 +304,16 @@ public class PlayerJoinListener implements Listener {
          return messages.buildBanScreen(entry);
       }
 
-      String expires = entry == null || entry.isPermanent() ? "Permanente" : PunishmentTime.formatDate(entry.getExpiresAt());
-      String reason = entry == null || entry.getReason() == null ? "Sem motivo informado" : entry.getReason();
-      String title = entry != null && entry.isPermanent() ? "Você foi banido permanentemente." : "Você foi banido temporariamente.";
+      String expires = entry == null || entry.isPermanent() ? "Permanent" : PunishmentTime.formatDate(entry.getExpiresAt());
+      String reason = entry == null || entry.getReason() == null ? "No reason provided" : entry.getReason();
+      String title = entry != null && entry.isPermanent() ? "You have been permanently banned." : "You have been temporarily banned.";
 
       String message =
               "§c" + title + "\n\n" +
-                      "  §cMotivo: §7" + reason + "\n" +
-                      "  §cExpira em: §7" + expires + "\n" +
-                      "  §eAdquira seu unban em: §bwww.freepmc.com.br\n" +
-                      "  §cBanido injustamente? Contate-nos via\n" +
+                      "  §cReason: §7" + reason + "\n" +
+                      "  §cExpires in: §7" + expires + "\n" +
+                      "  §eBuy your unban at: §bwww.freepmc.com.br\n" +
+                      "  §cBanned unfairly? Contact us via\n" +
                       "  §9§ndiscord.gg/freepmc";
 
       return message;
@@ -351,4 +360,3 @@ public class PlayerJoinListener implements Listener {
               && (skinData.value == null || skinData.value.trim().isEmpty());
    }
 }
-

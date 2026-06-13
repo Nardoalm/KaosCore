@@ -1,7 +1,13 @@
 package com.knowplugins.ysubz.kaoscore.bungee.commands.social;
 
 import com.knowplugins.ysubz.kaoscore.bungee.BaseBungeeCommand;
-import com.knowplugins.ysubz.kaoscore.bungee.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeCommandUtil;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeSyncMessenger;
+import com.knowplugins.ysubz.kaoscore.bungee.TargetResult;
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.model.Clan;
+import com.knowplugins.ysubz.kaoscore.bungee.model.ClanInvite;
+import com.knowplugins.ysubz.kaoscore.bungee.model.ClanRole;
 import com.knowplugins.ysubz.kaoscore.bungee.Texts;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;

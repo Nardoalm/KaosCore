@@ -16,26 +16,26 @@ public final class RemoveNpcCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lNPC ➔ §cApenas jogadores podem usar esse comando.");
+            sender.sendMessage("§c§lNPC ➔ §cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
         if (!player.hasPermission("kaoscore.admin.setnpc")) {
-            player.sendMessage("§c§lNPC ➔ §cVocê não tem permissão para usar esse comando.");
+            player.sendMessage("§c§lNPC ➔ §cYou do not have permission to use this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
-            player.sendMessage("§c§lNPC ➔ §cUso: /removenpc <id>");
+            player.sendMessage("§c§lNPC ➔ §cUsage: /removenpc <id>");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         NPCManager manager = Managers.getNpcManager();
-        if (manager == null) {
-            player.sendMessage("§c§lNPC ➔ §cSistema de NPC desativado.");
+        if (manager == null || !manager.isEnabled()) {
+            player.sendMessage("§c§lNPC ➔ §cNPCs are disabled in npcs.yml.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -43,13 +43,12 @@ public final class RemoveNpcCommand extends Commands {
         String id = args[0];
         boolean ok = manager.removeNpc(id);
         if (!ok) {
-            player.sendMessage("§c§lNPC ➔ §cNPC não encontrado: §f" + id);
+            player.sendMessage("§c§lNPC ➔ §cNPC not found: §f" + id);
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
-        player.sendMessage("§a§lNPC ➔ §aNPC removido: §f" + id);
+        player.sendMessage("§a§lNPC ➔ §aNPC removed: §f" + id);
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
     }
 }
-

@@ -18,27 +18,27 @@ public final class SetNpcCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lNPC ➔ §cApenas jogadores podem usar esse comando.");
+            sender.sendMessage("§c§lNPC ➔ §cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
         if (!player.hasPermission("kaoscore.admin.setnpc")) {
-            player.sendMessage("§c§lNPC ➔ §cVocê não tem permissão para usar esse comando.");
+            player.sendMessage("§c§lNPC ➔ §cYou do not have permission to use this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
-            player.sendMessage("§c§lNPC ➔ §cUso: /setnpc <id> [skinNick]");
+            player.sendMessage("§c§lNPC ➔ §cUsage: /setnpc <id> [skinNick]");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         KaosCore plugin = KaosCore.getInstance();
         NPCManager manager = Managers.getNpcManager();
-        if (plugin == null || manager == null) {
-            player.sendMessage("§c§lNPC ➔ §cSistema de NPC desativado. Ative em config.yml: npc-spawn.enabled: true");
+        if (plugin == null || manager == null || !manager.isEnabled()) {
+            player.sendMessage("§c§lNPC ➔ §cNPCs are disabled in npcs.yml.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -49,13 +49,12 @@ public final class SetNpcCommand extends Commands {
 
         boolean ok = manager.upsertNpc(id, loc, skinNick);
         if (!ok) {
-            player.sendMessage("§c§lNPC ➔ §cNão foi possível salvar o NPC.");
+            player.sendMessage("§c§lNPC ➔ §cUnable to save the NPC.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
-        player.sendMessage("§a§lNPC ➔ §aNPC '" + id + "' salvo em §fnpcs.yml§a.");
+        player.sendMessage("§a§lNPC ➔ §aNPC '" + id + "' saved in §fnpcs.yml§a.");
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
     }
 }
-

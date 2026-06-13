@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.knowplugins.ysubz.kaoscore.integration.proxy.ProxySyncChannel;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

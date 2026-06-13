@@ -1,12 +1,19 @@
 package com.knowplugins.ysubz.kaoscore.bungee.bootstrap;
 
 import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeeDiscordWebhookManager;
 import com.knowplugins.ysubz.kaoscore.bungee.BungeePunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bungee.BungeePunishmentService;
 import com.knowplugins.ysubz.kaoscore.bungee.commands.BungeeCommands;
 import com.knowplugins.ysubz.kaoscore.bungee.listeners.BungeeConnectionListener;
 import com.knowplugins.ysubz.kaoscore.bungee.listeners.BungeeStaffCommandLogListener;
 import com.knowplugins.ysubz.kaoscore.bungee.repository.BungeePlayerAddressRepository;
-import com.knowplugins.ysubz.kaoscore.bungee.services.*;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeClanService;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeDisguiseService;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeFriendService;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeePermissionService;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeSkinService;
+import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeWhitelistService;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -19,7 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-public final class BungeeKaosCore extends Plugin {
+public class BungeeKaosCore extends Plugin {
 
     private Configuration config;
     private Configuration permissionsConfig;

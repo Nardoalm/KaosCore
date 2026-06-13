@@ -18,17 +18,17 @@ public class GoCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lGO ➔ §cApenas jogadores podem usar este comando.");
+            sender.sendMessage("§c§lGO ➔ §cOnly players can use this command.");
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.go")){
-            sender.sendMessage("§c§lGO ➔ §cVocê não tem permissão para usar este comando.");
+            sender.sendMessage("§c§lGO ➔ §cYou do not have permission to use this command.");
             return;
         }
 
         if(args.length != 1) {
-            sender.sendMessage("§cUso correto: /go <player>");
+            sender.sendMessage("§cUsage: /go <player>");
             return;
         }
 
@@ -37,7 +37,7 @@ public class GoCommand extends Commands {
             target = DisguiseManager.getOnlinePlayerByName(args[0]);
         }
         if (target == null) {
-            sender.sendMessage("§c§lGO ➔ §cJogador não encontrado.");
+            sender.sendMessage("§c§lGO ➔ §cPlayer not found.");
             return;
         }
 
@@ -48,6 +48,6 @@ public class GoCommand extends Commands {
         staff.teleport(target.getLocation());
 
         String tagColor = PlaceholderAPI.setPlaceholders(target, "%kaoscore_tag_color%");
-        sender.sendMessage("§a§lGO ➔ §aVocê foi teleportado silenciosamente para " + tagColor + target.getName() + ".");
+        sender.sendMessage("§a§lGO ➔ §aYou were silently teleported to " + tagColor + target.getName() + ".");
     }
 }

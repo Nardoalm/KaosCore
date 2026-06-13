@@ -17,27 +17,27 @@ public class WelcomeMessageCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lWELCOME ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§c§lWELCOME ➔ §cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
         KaosCore plugin = KaosCore.getInstance();
         if (plugin == null || !plugin.getConfig().getBoolean("features.welcome-messages.enabled", true)) {
-            player.sendMessage("§c§lWELCOME ➔ §cSistema de mensagens de entrada está desativado.");
+            player.sendMessage("§c§lWELCOME ➔ §cWelcome messages are disabled.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (!player.hasPermission("kaoscore.member.welcomeMessage")) {
-            player.sendMessage("§c§lWELCOME ➔ §cVocê não possui permissão para usar este comando.");
+            player.sendMessage("§c§lWELCOME ➔ §cYou do not have permission to use this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         WelcomeMessageManager manager = Managers.getWelcomeMessageManager();
         if (manager == null) {
-            player.sendMessage("§c§lWELCOME ➔ §cSistema indisponível.");
+            player.sendMessage("§c§lWELCOME ➔ §cSystem unavailable.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -46,4 +46,3 @@ public class WelcomeMessageCommand extends Commands {
         player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
     }
 }
-

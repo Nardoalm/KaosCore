@@ -66,11 +66,7 @@ public class Managers {
         }
         VanishManager.setupManager();
 
-        if (plugin.getConfig().getBoolean("npc-spawn.enabled", false)) {
-            npcManager = new NPCManager(plugin, databaseManager);
-        } else {
-            npcManager = null;
-        }
+        npcManager = new NPCManager(plugin, databaseManager);
 
 
         if (databaseManager != null && databaseManager.isConnected()) {
@@ -87,7 +83,7 @@ public class Managers {
         autoBroadcastManager = new AutoBroadcastManager(plugin);
         // spawnLimitsManager = new SpawnLimitsManager(plugin);
 
-        plugin.getLogger().info("Sistemas carregados com sucesso!");
+        plugin.getLogger().info("Systems loaded successfully.");
     }
 
     public void reloadAll() {
@@ -133,14 +129,12 @@ public class Managers {
         ScoreboardManager.reload();
         VanishManager.setupManager();
 
-        if (npcManager != null) {
-            npcManager.shutdown();
-            npcManager = null;
-        }
-        if (plugin.getConfig().getBoolean("npc-spawn.enabled", false)) {
+        if (npcManager == null) {
             npcManager = new NPCManager(plugin, databaseManager);
-            npcManager.refreshAllViewers();
+        } else {
+            npcManager.reload();
         }
+        npcManager.refreshAllViewers();
 
         if (autoBroadcastManager == null) {
             autoBroadcastManager = new AutoBroadcastManager(plugin);
@@ -154,7 +148,7 @@ public class Managers {
             spawnLimitsManager.reload();
         }
 
-        plugin.getLogger().info("Managers recarregados com sucesso!");
+        plugin.getLogger().info("Managers reloaded successfully.");
     }
 
     public static DisguiseManager getDisguiseManager() {

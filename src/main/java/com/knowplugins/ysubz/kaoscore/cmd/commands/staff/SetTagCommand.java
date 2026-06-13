@@ -27,20 +27,20 @@ public final class SetTagCommand extends Commands {
         }
 
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage("§c§lSETTAG ➔ §cVocê não tem permissão para usar esse comando.");
+            sender.sendMessage("§c§lSETTAG ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args == null || args.length < 2) {
-            sender.sendMessage("§c§lSETTAG ➔ §cUso: /settag <jogador> <tag|off>");
+            sender.sendMessage("§c§lSETTAG ➔ §cUsage: /settag <player> <tag|off>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         KaosCore plugin = KaosCore.getInstance();
         if (plugin == null || plugin.getTagManager() == null) {
-            sender.sendMessage("§c§lSETTAG ➔ §cSistema de tags indisponível.");
+            sender.sendMessage("§c§lSETTAG ➔ §cTag system unavailable.");
             return;
         }
 
@@ -66,38 +66,37 @@ public final class SetTagCommand extends Commands {
         String tagArg = args[1];
         if (tagArg.equalsIgnoreCase("off") || tagArg.equalsIgnoreCase("none") || tagArg.equalsIgnoreCase("reset")) {
             plugin.getTagManager().clearTag(targetUuid);
-            sender.sendMessage("§a§lSETTAG ➔ §aTag removida de §f" + resolvedName + "§a.");
+            sender.sendMessage("§a§lSETTAG ➔ §aTag removed from §f" + resolvedName + "§a.");
             if (target != null && target.isOnline()) {
-                target.sendMessage("§aSua tag foi removida por §f" + sender.getName() + "§a.");
+                target.sendMessage("§aYour tag was removed by §f" + sender.getName() + "§a.");
             }
             return;
         }
 
         Tag tag = plugin.getTagManager().getTagByNameOrId(tagArg);
         if (tag == null) {
-            sender.sendMessage("§c§lSETTAG ➔ §cTag não encontrada.");
+            sender.sendMessage("§c§lSETTAG ➔ §cTag not found.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (target != null && target.isOnline() && !plugin.getTagManager().canUse(target, tag)) {
-            sender.sendMessage("§c§lSETTAG ➔ §cEsse jogador não possui permissão para usar essa tag.");
+            sender.sendMessage("§c§lSETTAG ➔ §cThat player does not have permission to use this tag.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         boolean ok = plugin.getTagManager().setTag(targetUuid, tag.getId());
         if (!ok) {
-            sender.sendMessage("§c§lSETTAG ➔ §cNão foi possível setar a tag.");
+            sender.sendMessage("§c§lSETTAG ➔ §cUnable to set the tag.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        sender.sendMessage("§a§lSETTAG ➔ §aTag de §f" + resolvedName + " §aatualizada para: §f" + tag.getName() + "§a.");
+        sender.sendMessage("§a§lSETTAG ➔ §aTag for §f" + resolvedName + " §awas updated to: §f" + tag.getName() + "§a.");
         if (target != null && target.isOnline()) {
-            target.sendMessage("§aSua tag foi definida para §f" + tag.getName() + " §apor §f" + sender.getName() + "§a.");
+            target.sendMessage("§aYour tag was set to §f" + tag.getName() + " §aby §f" + sender.getName() + "§a.");
         }
         ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
     }
 }
-

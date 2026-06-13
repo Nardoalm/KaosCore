@@ -11,14 +11,14 @@ public class CommandList extends Commands {
 
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lCOMANDOS ➔ §cApenas jogadores podem utilizar este comando.");
+         sender.sendMessage("§c§lCOMMANDS ➔ §cOnly players can use this command.");
       } else {
          Player player = (Player)sender;
          if (!player.hasPermission("kaoscore.staff.commandlist")) {
             player.sendMessage("§e§lDEV ➔ §eNardoDev.");
          } else {
             sender.sendMessage("");
-            sender.sendMessage("§7Lista de comandos da utils:");
+            sender.sendMessage("§7Utility command list:");
             sender.sendMessage("");
             sender.sendMessage("§e/aviso");
             sender.sendMessage("§e/divulgar");
@@ -40,4 +40,3 @@ public class CommandList extends Commands {
 
    }
 }
-

@@ -57,6 +57,7 @@ public final class NPCManager {
     private final File file;
     private final Object fileLock = new Object();
     private final SkinCacheRepository skinCacheRepository;
+    private volatile boolean enabled;
 
     private final ConcurrentMap<String, NpcDefinition> npcsById = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Skin> skinByNick = new ConcurrentHashMap<>();
@@ -74,6 +75,7 @@ public final class NPCManager {
 
     public void reload() {
         npcsById.clear();
+        enabled = false;
 
         if (plugin == null || file == null) {
             return;
@@ -87,6 +89,10 @@ public final class NPCManager {
         }
 
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        enabled = cfg.getBoolean("enabled", true);
+        if (!enabled) {
+            return;
+        }
         ConfigurationSection root = cfg.getConfigurationSection("npcs");
         if (root == null) {
             return;
@@ -139,6 +145,10 @@ public final class NPCManager {
         return new LinkedHashSet<>(npcsById.keySet());
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public boolean upsertNpc(String id, Location loc, String skinNick) {
         String key = normalize(id);
         if (plugin == null || file == null || key.isEmpty() || loc == null || loc.getWorld() == null) {
@@ -169,7 +179,7 @@ public final class NPCManager {
             try {
                 cfg.save(file);
             } catch (Exception e) {
-                plugin.getLogger().warning("[KaosCore] Erro ao salvar npcs.yml: " + e.getMessage());
+                plugin.getLogger().warning("[KaosCore] Error saving npcs.yml: " + e.getMessage());
                 return false;
             }
         }
@@ -197,7 +207,7 @@ public final class NPCManager {
             try {
                 cfg.save(file);
             } catch (Exception e) {
-                plugin.getLogger().warning("[KaosCore] Erro ao salvar npcs.yml: " + e.getMessage());
+                plugin.getLogger().warning("[KaosCore] Error saving npcs.yml: " + e.getMessage());
                 return false;
             }
         }
@@ -208,7 +218,7 @@ public final class NPCManager {
     }
 
     public void refreshAllViewers() {
-        if (plugin == null) {
+        if (plugin == null || !enabled) {
             return;
         }
 
@@ -226,7 +236,7 @@ public final class NPCManager {
     }
 
     public void spawnAll(Player viewer) {
-        if (viewer == null || plugin == null || !viewer.isOnline()) {
+        if (!enabled || viewer == null || plugin == null || !viewer.isOnline()) {
             return;
         }
         for (NpcDefinition npc : npcsById.values()) {
@@ -289,7 +299,7 @@ public final class NPCManager {
     }
 
     public boolean isNpcEntity(Player viewer, int entityId) {
-        if (viewer == null) {
+        if (!enabled || viewer == null) {
             return false;
         }
         Map<Integer, String> map = npcByEntityIdByViewer.get(viewer.getUniqueId());
@@ -297,7 +307,7 @@ public final class NPCManager {
     }
 
     public boolean handleInteract(Player viewer, int entityId) {
-        if (viewer == null || !viewer.isOnline()) {
+        if (!enabled || viewer == null || !viewer.isOnline()) {
             return false;
         }
 

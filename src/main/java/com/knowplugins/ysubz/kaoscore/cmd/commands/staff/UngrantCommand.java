@@ -27,25 +27,25 @@ public final class UngrantCommand extends Commands {
         }
 
         if (!hasPerm(sender)) {
-            sender.sendMessage("§c§lUNGRANT ➔ §cVocê não possui permissão para executar este comando.");
+            sender.sendMessage("§c§lUNGRANT ➔ §cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PermissionManager permissions = Managers.getPermissionManager();
         if (permissions == null) {
-            sender.sendMessage("§c§lUNGRANT ➔ §cSistema de permissões indisponível.");
+            sender.sendMessage("§c§lUNGRANT ➔ §cPermission system unavailable.");
             return;
         }
 
         if (args == null || args.length < 2) {
-            sender.sendMessage("§e§lUNGRANT ➔ §eUso: /ungrant <jogador> <grupo> [motivo]");
+            sender.sendMessage("§e§lUNGRANT ➔ §eUsage: /ungrant <player> <group> [reason]");
             return;
         }
 
         String targetName = args[0];
         String groupName = args[1];
-        String reason = ModerationCommandUtil.buildReason(args, 2, "Sem motivo informado");
+        String reason = ModerationCommandUtil.buildReason(args, 2, "No reason provided");
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(targetName);
         UUID uuid = target.getUuid();
@@ -69,8 +69,8 @@ public final class UngrantCommand extends Commands {
             boolean ok = permissions.ungrant(finalUuid, finalResolvedName, groupName, removerUuid, removerName, reason);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 sender.sendMessage(ok
-                        ? "§a§lUNGRANT ➔ §aGrant removido de §f" + finalResolvedName + " §a(" + groupName + ")."
-                        : "§c§lUNGRANT ➔ §cNenhum grant ativo encontrado para remover.");
+                        ? "§a§lUNGRANT ➔ §aGrant removed from §f" + finalResolvedName + " §a(" + groupName + ")."
+                        : "§c§lUNGRANT ➔ §cNo active grant found to remove.");
                 ModerationCommandUtil.play(sender, ok ? Sound.LEVEL_UP : Sound.VILLAGER_NO);
             });
         });
@@ -83,4 +83,3 @@ public final class UngrantCommand extends Commands {
         return sender.hasPermission(PERMISSION);
     }
 }
-
