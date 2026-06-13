@@ -1,5 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.commands;
 
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.util.Texts;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -9,7 +11,7 @@ public abstract class BaseBungeeCommand extends Command {
     protected final BungeeKaosCore plugin;
 
     protected BaseBungeeCommand(BungeeKaosCore plugin, String name, String... aliases) {
-        super(name, null, aliases);
+        super(name, "", aliases);
         this.plugin = plugin;
     }
 
@@ -22,7 +24,7 @@ public abstract class BaseBungeeCommand extends Command {
     }
 
     protected boolean require(CommandSender sender, String permission, String message) {
-        if (plugin.getPermissions().hasPermission(sender, permission)) {
+        if (plugin.getPermissions(). (sender, permission)) {
             return true;
         }
         Texts.send(sender, message);
@@ -33,5 +35,3 @@ public abstract class BaseBungeeCommand extends Command {
         Texts.send(sender, message);
     }
 }
-
-

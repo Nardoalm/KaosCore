@@ -13,7 +13,7 @@ import java.util.Locale;
 
 public class KaosPracticeBridge {
 
-    private static final String API_CLASS_NAME = "com.kaosmc.practice.api.KaosPracticeAPI";
+    private static final String API_CLASS_NAME = "us.alleypvp.practice.api.AlleyPracticeAPI";
     private static final List<String> MATCH_COLOR_POOL = Arrays.asList(
             "§c", "§9", "§a", "§e", "§b", "§d", "§6", "§5", "§3", "§2", "§1", "§4"
     );

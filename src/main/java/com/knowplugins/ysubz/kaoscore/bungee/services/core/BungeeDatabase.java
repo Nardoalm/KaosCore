@@ -1,5 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.services.core;
 
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.md_5.bungee.config.Configuration;

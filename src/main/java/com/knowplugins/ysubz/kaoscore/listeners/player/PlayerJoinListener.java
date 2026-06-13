@@ -209,7 +209,7 @@ public class PlayerJoinListener implements Listener {
                     : ("§cVocê foi banido.\n\n" +
                     "  §cMotivo: §7" + reason + "\n" +
                     "  §cExpira em: §7" + duration + "\n" +
-                    "  §eAdquira seu unban em: §bwww.kaosmc.com\n" +
+                    "  §eAdquira seu unban em: §bstore.alleypvp.us\n" +
                     "  §cBanido injustamente? Contate-nos via\n" +
                     "  §9§ndiscord.gg/freep");
 

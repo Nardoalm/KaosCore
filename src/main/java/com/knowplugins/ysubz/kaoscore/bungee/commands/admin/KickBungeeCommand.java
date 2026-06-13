@@ -1,17 +1,15 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.commands.admin;
 
+import com.knowplugins.ysubz.kaoscore.bungee.BaseBungeeCommand;
+import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 final class KickBungeeCommand extends BaseBungeeCommand {
 
-    KickBungeeCommand(BungeeKaosCore plugin) {
+    public KickBungeeCommand(BungeeKaosCore plugin) {
         super(plugin, "kick", "expulsar");
     }
 
