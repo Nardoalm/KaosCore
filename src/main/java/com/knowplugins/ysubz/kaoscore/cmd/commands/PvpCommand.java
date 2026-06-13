@@ -14,7 +14,7 @@ public class PvpCommand extends Commands {
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission("nardocore.admin.pvp")) {
+        if (!sender.hasPermission("kaoscore.admin.pvp")) {
             sender.sendMessage("§c§lPVP ➔ §cVocê não tem permissao para usar este comando.");
             if (sender instanceof Player) {
                 Player p = (Player) sender;

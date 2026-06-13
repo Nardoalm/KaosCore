@@ -1,0 +1,13 @@
+enabled: false
+
+# Message shown when whitelist is ON and the player isn't allowed.
+kick-message:
+  - "&cServidor em whitelist."
+  - "&7Volte mais tarde."
+
+# Allowed player names (case-insensitive).
+players: []
+
+# Allowed UUIDs (added automatically when you use /whitelist add <nick> and the player is online).
+uuids: []
+

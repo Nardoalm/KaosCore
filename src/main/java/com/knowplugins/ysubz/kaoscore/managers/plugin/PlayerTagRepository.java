@@ -62,4 +62,21 @@ public class PlayerTagRepository {
             }
         });
     }
+
+    public void deleteAsync(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM player_tags WHERE uuid = ?")) {
+                ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao remover tag selecionada no DB: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
 }

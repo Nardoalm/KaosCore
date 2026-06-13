@@ -1,8 +1,8 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;

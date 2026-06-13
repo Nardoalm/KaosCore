@@ -1,0 +1,29 @@
+# KaosCore - Discord Webhooks
+# Deixe "url" vazio para desativar o envio.
+
+staff:
+  enabled: false
+  url: ""
+  username: "KaosCore - Staff Log"
+  avatar-url: ""
+  # Loga comandos de staff/admin via webhook.
+  log-commands: true
+  # Lista de comandos (sem "/") que serao logados quando usados.
+  commands:
+    - ban
+    - warn
+    - kick
+    - unban
+    - unmute
+    - vanish
+    - setspawn
+
+punishments:
+  enabled: false
+  url: ""
+  username: "KaosCore - Punições"
+  avatar-url: ""
+  # Se true, loga punicoes expiradas automaticamente.
+  log-expired: false
+  # Se true, loga a remocao quando uma punicao e substituida por outra.
+  log-replaced: false

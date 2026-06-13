@@ -1,4 +1,148 @@
-licenca: "COLOQUE_SUA_CHAVE_AQUI" # Gere no discord.
+license: "COLOQUE_SUA_CHAVE_AQUI" # Gere no discord.
+
+features:
+  nametag:
+    enabled: true
+
+  scoreboard:
+    enabled: true
+    update-ticks: 4
+    # Rodapé unificado para combinar com o novo IP
+    bottom: "&brosty.com.br"
+    lobby-line: "&fLobby: &a#1"
+    title-animation:
+      - "&f&lR&b&lOSTY"
+      - "&b&lR&f&lO&b&lSTY"
+      - "&b&lRO&f&lS&b&lTY"
+      - "&b&lROS&f&lT&b&lY"
+      - "&b&lROST&f&lY"
+      - "&f&lROSTY"
+      - "&f&lROSTY"
+      - "&b&lROSTY"
+      - "&b&lROSTY"
+      - "&f&lROSTY"
+      - "&f&lROSTY"
+    lines:
+      - "&7&m        &m               "
+      - ""
+      - "&fRank: %kaoscore_prefix%"
+      - "&fLobby: &a#1"
+      - ""
+      - "&fJogadores: &a{online}"
+      - ""
+      - "&7&m        &m               "
+      - "&brosty.com.br"
+
+  join-title:
+    enabled: true
+    title: "&b&lROSTY"
+    subtitle: "&fSeja bem-vindo ao nosso servidor!"
+    fade-in: 20
+    stay: 40
+    fade-out: 20
+
+  tablist:
+    enabled: true
+    header:
+      - ""
+      - "&b&lROSTY NETWORK"
+      - "&7Atualmente em: &fLobby #1"
+      - ""
+    footer:
+      - ""
+      - "&fLoja: &brosty.com.br"
+      - "&fDiscord: &bdiscord.rosty.com.br"
+      - ""
+
+  welcome-messages:
+    enabled: true
+
+  protections:
+    spawn:
+      enabled: true
+      cancel-damage: true
+      cancel-hunger: true
+      cancel-combust: true
+    pvp:
+      enabled: false # Em lobby, o ideal é manter desativado por padrão
+    world:
+      enabled: true
+      cancel-block-break: true
+      cancel-block-place: true
+    entities:
+      cancel-spawn: true
+      clear-drops: true
+
+sit:
+  enabled: true
+  carry:
+    require-empty-hand: true
+  ride:
+    dismount-lock-ticks: 15
+  right-click:
+    enabled: false
+    require-empty-hand: true
+
+practice-blocks:
+  message: "&b&lROSTY &8➔ &cVocê não pode usar comandos durante o Practice."
+  commands:
+    - "fly"
+    - "voar"
+    - "f"
+    - "sit"
+    - "disguise"
+    - "skin"
+    - "dinnerbone"
+    - "troll"
+    - "tag"
+    - "clan"
+    - "cc"
+    - "friend"
+    - "friends"
+    - "welcomemessage"
+    - "wm"
+    - "disclose"
+
+chat:
+  # Formato mais elegante com separadores modernos
+  format: "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» &f{message}"
+  default-color: "&7"
+  vip-color: "&f"
+  mentions:
+    enabled: true
+    format: "&b@{nick}&f"
+    actionbar: "&b&l! &fO jogador &b{nick} &fmencionou você!"
+    notify-sound: "NOTE_PLING"
+    notify-volume: 1.0
+    notify-pitch: 1.2
+
+divulgar:
+  enabled: true
+  permission: "kaoscore.member.divulgar"
+  bypass-permission: "kaoscore.staff.divulgar"
+  cooldown-seconds: 60
+  broadcast:
+    - "&b&lSOCIAL &8➔ %kaoscore_tag_prefix%{player} &7está online em: &f{link}"
+
+autobroadcast:
+  enabled: true
+  interval-seconds: 300
+  random: true
+  messages:
+    - "&b&lDICA &8➔ &fAdquira vantagens exclusivas em nossa loja: &brosty.com.br"
+    - "&b&lSOCIAL &8➔ &fEntre em nosso Discord oficial: &bdiscord.rosty.com.br"
+    - "&b&lDICA &8➔ &fUse &b/wm &fpara customizar sua mensagem de entrada!"
+
+spawn-limits:
+  enabled: true
+  only-spawn-world: true
+  bypass-permission: "kaoscore.spawnlimits.bypass"
+  check-interval-ticks: 10
+  void-level-y: -20
+  max-distance-from-spawn: 200.0
+  message-void: "&b&lROSTY &8➔ &fVocê caiu no limbo e foi trazido de volta."
+  message-radius: "&b&lROSTY &8➔ &fVocê se afastou demais e foi trazido de volta."
+  sound: "ENDERMAN_TELEPORT"
 
 database:
   mysql:
@@ -7,12 +151,21 @@ database:
     database: "bancodedados"
     user: "root"
     password: "root"
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout-ms: 10000
+      idle-timeout-ms: 600000
+      max-lifetime-ms: 1800000
+      validation-timeout-ms: 5000
+      leak-detection-threshold-ms: 0
 
 npc-spawn:
+  enabled: false
   world: world
-  x: 10.5
+  x: 0.5
   y: 64.0
-  z: 10.5
-  yaw: 90.0
+  z: 0.5
+  yaw: 0.0
   pitch: 0.0
-  skin-nick: 'Heeph'
+  skin-nick: 'Notch'

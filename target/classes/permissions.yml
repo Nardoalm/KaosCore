@@ -1,0 +1,12 @@
+sync:
+  enabled: true
+
+groups:
+  membro:
+    default: true
+    priority: 0
+    prefix: ""
+    suffix: ""
+    inherits: []
+    permissions: []
+

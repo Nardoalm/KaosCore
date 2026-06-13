@@ -2,8 +2,8 @@ package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.MedalManager;
-import com.knowplugins.ysubz.kaoscore.medal.Medal;
+import com.knowplugins.ysubz.kaoscore.managers.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.utils.medal.Medal;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -21,7 +21,7 @@ public class MedalCommand extends Commands {
     private final KaosCore plugin;
 
     public MedalCommand(KaosCore plugin) {
-        super("medalha", "medal", "medals");
+        super("medalha", "medal", "medals", "medalhas");
         this.plugin = plugin;
     }
 
@@ -33,10 +33,6 @@ public class MedalCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!player.hasPermission("nardocore.medal.use")) {
-            player.sendMessage("§cVocê não tem permissão para usar medalhas.");
-            return;
-        }
 
         MedalManager medalManager = plugin == null ? null : plugin.getMedalManager();
         if (medalManager == null) {
@@ -64,24 +60,22 @@ public class MedalCommand extends Commands {
 
         List<Medal> availableMedals = medalManager.getAvailableMedals(player);
         if (availableMedals.isEmpty()) {
-            player.sendMessage("§cVocê não possui medalhas disponíveis.");
+            player.sendMessage("§cVocê não possui medalhas.");
             return;
         }
 
-        player.sendMessage("§6Medalhas disponíveis: §7(clique para equipar)");
-        TextComponent line = new TextComponent("");
+        TextComponent line = new TextComponent("§aSuas medalhas: ");
         for (int i = 0; i < availableMedals.size(); i++) {
             Medal medal = availableMedals.get(i);
-            TextComponent component = new TextComponent(medal.getChatFrame(0) + "§f" + medal.getName());
+                TextComponent component = new TextComponent(medal.getStaticChat());
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medalha " + medal.getId()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Clique para equipar §f" + medal.getName()).create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Clique para equipar §f" + medal.getStaticChat()).create()));
             line.addExtra(component);
             if (i < availableMedals.size() - 1) {
-                line.addExtra(new TextComponent("§7, "));
+                line.addExtra(new TextComponent("§f, "));
             }
         }
         player.spigot().sendMessage(line);
-        player.sendMessage("§7Use §f/medalha limpar §7para remover a medalha atual.");
     }
 
     @Override
@@ -91,7 +85,7 @@ public class MedalCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        if (!player.hasPermission("nardocore.medal.use")) {
+        if (!player.hasPermission("kaoscore.medal.use")) {
             return Collections.emptyList();
         }
 
@@ -105,3 +99,4 @@ public class MedalCommand extends Commands {
                 .collect(Collectors.toList());
     }
 }
+

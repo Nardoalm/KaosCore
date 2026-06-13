@@ -1,12 +1,11 @@
 package com.knowplugins.ysubz.kaoscore.utils.disguise;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.utils.skin.MojangSkinFetcher;
 import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
@@ -17,11 +16,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public final class DisguiseApiService {
@@ -110,6 +106,33 @@ public final class DisguiseApiService {
         });
     }
 
+    public static boolean applyDisguiseWithTextures(Player player, String nick, String skinName, String value, String signature) {
+        String previousEntry = player == null ? null : player.getName();
+        if (!applyNick(player, nick)) {
+            return false;
+        }
+
+        refreshTag(player, previousEntry);
+
+        if (value == null || value.trim().isEmpty()) {
+            deleteStoredSkin(player);
+            new SkinApplier(player).applySkinForOthers();
+            return true;
+        }
+
+        try {
+            GameProfile profile = ((CraftPlayer) player).getProfile();
+            profile.getProperties().removeAll("textures");
+            profile.getProperties().put("textures", new Property("textures", value, signature));
+            saveSkin(player, skinName, value, signature);
+            new SkinApplier(player).applySkinForOthers();
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean applyRandomDisguise(Player player) {
         DisguiseManager disguiseManager = Managers.getDisguiseManager();
         if (disguiseManager == null) {
@@ -151,6 +174,7 @@ public final class DisguiseApiService {
             if (originalName == null || originalName.trim().isEmpty()) {
                 originalName = player.getName();
             }
+            final String finalOriginalName = originalName;
 
             GameProfile profile = ((CraftPlayer) player).getProfile();
             changeName(profile, originalName);
@@ -176,11 +200,11 @@ public final class DisguiseApiService {
             CompletableFuture<Boolean> future = new CompletableFuture<>();
             Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
                 try {
-                    Property fetchedOriginal = OriginalSkinManager.fetchOriginal(player.getUniqueId());
+                    Property fetchedOriginal = MojangSkinFetcher.fetchPropertyByName(finalOriginalName);
                     Bukkit.getScheduler().runTask(getPlugin(), () -> {
                         try {
                             if (player != null && player.isOnline()) {
-                                if (fetchedOriginal != null) {
+                                if (fetchedOriginal != null && fetchedOriginal.getValue() != null && !fetchedOriginal.getValue().trim().isEmpty()) {
                                     GameProfile liveProfile = ((CraftPlayer) player).getProfile();
                                     liveProfile.getProperties().removeAll("textures");
                                     liveProfile.getProperties().put("textures", fetchedOriginal);
@@ -272,17 +296,13 @@ public final class DisguiseApiService {
 
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
             try {
-                URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + targetSkin);
-                InputStreamReader reader = new InputStreamReader(url.openStream());
-                JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
-                JsonObject textureProperty = json.getAsJsonObject("textures").getAsJsonObject("raw");
-
-                String value = textureProperty.get("value").getAsString();
-                String signature = textureProperty.has("signature") && !textureProperty.get("signature").isJsonNull()
-                        ? textureProperty.get("signature").getAsString()
-                        : null;
-
-                future.complete(new RemoteSkinData(value, signature));
+                String clean = targetSkin == null ? "" : targetSkin.trim();
+                Property textures = MojangSkinFetcher.fetchPropertyByName(clean);
+                if (textures == null || textures.getValue() == null || textures.getValue().trim().isEmpty()) {
+                    future.complete(null);
+                    return;
+                }
+                future.complete(new RemoteSkinData(textures.getValue(), textures.getSignature()));
             } catch (Exception e) {
                 future.complete(null);
             }

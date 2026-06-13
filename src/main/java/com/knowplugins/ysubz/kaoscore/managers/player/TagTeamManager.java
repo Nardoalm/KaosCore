@@ -1,11 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.MedalManager;
-import com.knowplugins.ysubz.kaoscore.managers.TagManager;
-import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +15,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -58,6 +58,25 @@ public class TagTeamManager {
             syncTask.cancel();
             syncTask = null;
         }
+
+        Set<Scoreboard> scoreboards = new HashSet<>(trackedBoards.values());
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = online.getScoreboard();
+            if (scoreboard != null) {
+                scoreboards.add(scoreboard);
+            }
+        }
+        if (Bukkit.getScoreboardManager() != null) {
+            Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            if (mainScoreboard != null) {
+                scoreboards.add(mainScoreboard);
+            }
+        }
+
+        for (Scoreboard scoreboard : scoreboards) {
+            clearManagedTeams(scoreboard);
+        }
+
         trackedBoards.clear();
         practiceHiddenPairs.clear();
     }
@@ -132,19 +151,17 @@ public class TagTeamManager {
             Scoreboard scoreboard = resolveScoreboard(viewer);
             if (scoreboard != null) {
                 removeEntries(scoreboard, entries);
+                cleanupEmptyTeams(scoreboard);
             }
             clearPracticeVisibility(viewer, player);
         }
 
+        trackedBoards.remove(player.getUniqueId());
         String playerId = player.getUniqueId().toString();
         practiceHiddenPairs.removeIf(pair -> pair.startsWith(playerId + ":") || pair.endsWith(":" + playerId));
     }
 
     private void syncAll() {
-        if (medalManager != null) {
-            medalManager.advanceAnimations(10);
-        }
-
         Set<UUID> onlinePlayers = new HashSet<>();
         Map<UUID, KaosPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
 
@@ -153,6 +170,7 @@ public class TagTeamManager {
             Scoreboard scoreboard = resolveScoreboard(viewer);
             if (scoreboard != null) {
                 refreshViewer(viewer, scoreboard, practiceStates);
+                cleanupEmptyTeams(scoreboard);
             }
         }
 
@@ -183,6 +201,9 @@ public class TagTeamManager {
             updateVisibility(viewer, target, viewerState, targetState);
             applyTag(scoreboard, target, collectEntries(target), targetState);
         }
+
+        KaosPracticeBridge.PracticeState selfState = practiceStates.get(viewer.getUniqueId());
+        applyTag(scoreboard, viewer, collectEntries(viewer), selfState);
     }
 
     private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries, KaosPracticeBridge.PracticeState practiceState) {
@@ -207,16 +228,47 @@ public class TagTeamManager {
             return;
         }
 
-        if (!style.getPrefix().equals(team.getPrefix())) {
-            team.setPrefix(style.getPrefix());
-        }
+        try {
+            String newPrefix = style.getPrefix();
+            if (!newPrefix.equals(team.getPrefix())) {
+                team.setPrefix(newPrefix);
+            }
 
-        if (!style.getSuffix().equals(team.getSuffix())) {
-            team.setSuffix(style.getSuffix());
-        }
+            String newSuffix = style.getSuffix();
+            if (!newSuffix.equals(team.getSuffix())) {
+                team.setSuffix(newSuffix);
+            }
 
-        if (!team.getEntries().contains(currentEntry)) {
-            team.addEntry(currentEntry);
+            for (Team otherTeam : scoreboard.getTeams()) {
+                if (otherTeam != null && otherTeam != team && otherTeam.getName() != null && otherTeam.getName().startsWith(TEAM_PREFIX)) {
+                    try {
+                        if (otherTeam.hasEntry(currentEntry)) {
+                            otherTeam.removeEntry(currentEntry);
+                        }
+                    } catch (IllegalStateException ignored) {
+                    }
+                }
+            }
+
+            if (!team.hasEntry(currentEntry)) {
+                team.addEntry(currentEntry);
+            }
+
+            if (player.getUniqueId().equals(Bukkit.getPlayer(currentEntry) != null ? Bukkit.getPlayer(currentEntry).getUniqueId() : null)) {
+                player.setPlayerListName(null);
+                String coloredName = newPrefix + currentEntry + newSuffix;
+                if (coloredName.length() > 16) {
+                    coloredName = newPrefix + currentEntry;
+                    if (coloredName.length() > 16) {
+                        coloredName = currentEntry;
+                    }
+                }
+                player.setPlayerListName(coloredName);
+            }
+
+        } catch (IllegalStateException ignored) {
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error applying tag to " + player.getName() + ": " + e.getMessage());
         }
     }
 
@@ -226,15 +278,18 @@ public class TagTeamManager {
         }
 
         String teamName = buildTeamName(style);
-        Team team = scoreboard.getTeam(teamName);
-        if (team != null) {
-            return team;
-        }
 
         try {
+            Team team = scoreboard.getTeam(teamName);
+            if (team != null) {
+                return team;
+            }
             return scoreboard.registerNewTeam(teamName);
-        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalArgumentException e) {
             return scoreboard.getTeam(teamName);
+        } catch (IllegalStateException e) {
+            plugin.getLogger().warning("Failed to create team " + teamName + ": " + e.getMessage());
+            return null;
         }
     }
 
@@ -248,10 +303,10 @@ public class TagTeamManager {
         }
 
         if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
-            String prefix = trim(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
-            String suffix = trim(resolveText(player, practiceState.getSuffix()));
+            String prefix = trimTeamPart(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
+            String suffix = trimTeamPart(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
-            String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor());
+            String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor()) + ":" + styleSignature(prefix, suffix);
             return new NametagStyle(teamKey, prefix, suffix, priority);
         }
 
@@ -260,10 +315,54 @@ public class TagTeamManager {
             return null;
         }
 
-        String medalPrefix = medalManager == null ? "" : medalManager.getNametagDisplay(player);
+        Clan clan = null;
+        ClanManager clanManager = Managers.getClanManager();
+        if (clanManager != null && !DisguiseManager.isDisguised(player)) {
+            clan = clanManager.getClan(player);
+        }
+
+        String clanKey = clan == null ? "" : safe(clan.getName());
+        String clanTagValue = "";
+        String clanSuffix = "";
+        if (clan != null) {
+            clanTagValue = safe(clan.getTag());
+            if (!clanTagValue.isEmpty()) {
+                clanSuffix = " " + clan.getNametagFormattedTag();
+            }
+        }
+
         String tagPrefix = resolveText(player, tag.getPrefix());
+        String tagColor = resolveText(player, tag.getColor());
         String tagSuffix = resolveText(player, tag.getSuffix());
-        return new NametagStyle(tag.getId(), trim(medalPrefix + tagPrefix), trim(tagSuffix), tag.getPosition());
+
+        if (!clanTagValue.isEmpty() && !clanSuffix.isEmpty()) {
+            String strippedSuffix = ChatColor.stripColor(safe(tagSuffix));
+            String token = "[" + clanTagValue + "]";
+            if (strippedSuffix != null && strippedSuffix.contains(token)) {
+                clanSuffix = "";
+            }
+        }
+
+        String tailColor = lastResettingColor(tagColor);
+        if (tailColor.isEmpty()) {
+            tailColor = lastResettingColor(tagPrefix);
+        }
+
+        String prefix;
+        if (!tailColor.isEmpty()) {
+            int available = 16 - tailColor.length();
+            String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
+            prefix = trimTeamPart(trimmedBody + tailColor);
+        } else {
+            prefix = trimTeamPart(tagPrefix);
+        }
+
+        String suffix = trimTeamPart(tagSuffix + clanSuffix);
+        String key = tag.getId()
+                + ":" + (clanKey.isEmpty() ? "none" : clanKey.toLowerCase(Locale.ROOT))
+                + ":" + styleSignature(prefix, suffix);
+
+        return new NametagStyle(key, prefix, suffix, tag.getPosition());
     }
 
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
@@ -277,8 +376,18 @@ public class TagTeamManager {
             }
 
             for (String entry : entries) {
-                if (!safe(entry).isEmpty() && team.getEntries().contains(entry)) {
-                    team.removeEntry(entry);
+                if (safe(entry).isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    if (team.hasEntry(entry)) {
+                        team.removeEntry(entry);
+                    }
+                } catch (IllegalStateException ignored) {
+                    // Player não está no time ou já foi removido - ignorar
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Error removing entry " + entry + " from team " + team.getName() + ": " + e.getMessage());
                 }
             }
         }
@@ -357,7 +466,7 @@ public class TagTeamManager {
         }
 
         viewer.showPlayer(target);
-        if (VanishManager.isVanished(target) && !viewer.hasPermission("nardocore.staff.vanish")) {
+        if (VanishManager.isVanished(target) && !viewer.hasPermission("kaoscore.staff.vanish")) {
             viewer.hidePlayer(target);
         }
     }
@@ -398,16 +507,96 @@ public class TagTeamManager {
 
         String id = style == null ? "tag" : safe(style.getKey());
         int hash = Math.abs(id.hashCode());
-        String suffix = String.format("%06x", hash & 0xFFFFFF);
+        String suffix = String.format("%08x", hash);
         return TEAM_PREFIX + String.format("%04d", position) + suffix;
     }
 
-    private String trim(String value) {
-        String safeValue = safe(value);
-        if (safeValue.length() <= 16) {
-            return safeValue;
+    private void cleanupEmptyTeams(Scoreboard scoreboard) {
+        if (scoreboard == null) {
+            return;
         }
-        return safeValue.substring(0, 16);
+
+        Set<Team> teams = new HashSet<>(scoreboard.getTeams());
+        for (Team team : teams) {
+            if (team == null) {
+                continue;
+            }
+
+            String name = team.getName();
+            if (name == null || !name.startsWith(TEAM_PREFIX) || name.length() != TEAM_PREFIX.length() + 12) {
+                continue;
+            }
+
+            try {
+                Set<String> entries = team.getEntries();
+                if (entries == null || entries.isEmpty()) {
+                    team.unregister();
+                }
+            } catch (IllegalStateException ignored) {
+                // Team já foi desregistrado
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error cleaning up team " + name + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private void clearManagedTeams(Scoreboard scoreboard) {
+        if (scoreboard == null) {
+            return;
+        }
+
+        Set<Team> teams = new HashSet<>(scoreboard.getTeams());
+        for (Team team : teams) {
+            if (team == null) {
+                continue;
+            }
+
+            String name = team.getName();
+            if (name == null || !name.startsWith(TEAM_PREFIX)) {
+                continue;
+            }
+
+            try {
+                team.unregister();
+            } catch (IllegalStateException ignored) {
+                // Team já foi desregistrado
+            } catch (Exception e) {
+                plugin.getLogger().warning("Error clearing team " + name + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private String trimTeamPart(String value) {
+        return trimTeamPart(value, 16);
+    }
+
+    private String trimTeamPart(String value, int maxLen) {
+        String safeValue = safe(value);
+        if (safeValue.isEmpty() || maxLen <= 0) {
+            return "";
+        }
+
+        int length = safeValue.length();
+        int end = Math.min(length, maxLen);
+
+        while (end > 0) {
+            char last = safeValue.charAt(end - 1);
+            if (last == ChatColor.COLOR_CHAR) {
+                end--;
+                continue;
+            }
+            if (end < length && Character.isHighSurrogate(last)) {
+                end--;
+                continue;
+            }
+            break;
+        }
+
+        if (end <= 0) {
+            return "";
+        }
+
+        return safeValue.substring(0, end);
     }
 
     private String format(String value) {
@@ -432,6 +621,30 @@ public class TagTeamManager {
 
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private String styleSignature(String prefix, String suffix) {
+        return Integer.toHexString((safe(prefix) + "|" + safe(suffix)).hashCode());
+    }
+
+    private String lastResettingColor(String text) {
+        String value = safe(text);
+        if (value.length() < 2) {
+            return "";
+        }
+
+        for (int i = value.length() - 2; i >= 0; i--) {
+            if (value.charAt(i) != ChatColor.COLOR_CHAR) {
+                continue;
+            }
+
+            char code = Character.toLowerCase(value.charAt(i + 1));
+            if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f') || code == 'r') {
+                return "" + ChatColor.COLOR_CHAR + code;
+            }
+        }
+
+        return "";
     }
 
     private static final class NametagStyle {

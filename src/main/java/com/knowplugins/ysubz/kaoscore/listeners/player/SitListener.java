@@ -2,127 +2,107 @@ package com.knowplugins.ysubz.kaoscore.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 public class SitListener implements Listener {
-    private final Set<UUID> processingTeleport = new HashSet<>();
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof org.bukkit.entity.ArmorStand) {
+            if (SitManager.SPAWNING_SEAT.get()) {
+                event.setCancelled(false);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Player)) {
-            return;
-        }
+        if (!(event.getRightClicked() instanceof Player)) return;
 
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager == null) {
+        if (sitManager == null) return;
+
+        Player carrier = event.getPlayer();
+        Player target = (Player) event.getRightClicked();
+
+        if (carrier.getItemInHand() != null && carrier.getItemInHand().getType() != Material.AIR) {
             return;
         }
 
-        if (sitManager.carry(event.getPlayer(), (Player) event.getRightClicked())) {
-            event.setCancelled(true);
-        }
+        boolean success = carrier.isSneaking() ? sitManager.ride(carrier, target) : sitManager.carry(carrier, target);
+        if (success) event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR) {
-            return;
+        Action action = event.getAction();
+        SitManager sitManager = Managers.getSitManager();
+        if (sitManager == null) return;
+
+        Player player = event.getPlayer();
+
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            if (sitManager.launch(player)) event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player)) return;
 
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager == null) {
-            return;
-        }
-
-        if (sitManager.launch(event.getPlayer())) {
+        if (sitManager != null && sitManager.launch((Player) event.getDamager())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDismount(EntityDismountEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
+        if (!(event.getEntity() instanceof Player)) return;
 
         SitManager sitManager = Managers.getSitManager();
         if (sitManager != null) {
-            sitManager.handleSeatDismount((Player) event.getEntity(), event.getDismounted());
+            sitManager.handleSeatDismount((Player) event.getEntity());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
-        Player player = event.getPlayer();
-
-        if (processingTeleport.contains(player.getUniqueId())) {
-            return;
-        }
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.UNKNOWN) return;
 
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager != null) {
-            processingTeleport.add(player.getUniqueId());
-            try {
-                sitManager.cleanup(player);
-            } finally {
-                processingTeleport.remove(player.getUniqueId());
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onToggleSneak(PlayerToggleSneakEvent event) {
-        if (!event.isSneaking()) {
-            return;
-        }
-
-        SitManager sitManager = Managers.getSitManager();
-        if (sitManager != null) {
-            sitManager.unsitIfSitting(event.getPlayer());
-        }
+        if (sitManager != null) sitManager.cleanup(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager != null) {
-            sitManager.cleanup(event.getPlayer());
-        }
+        if (sitManager != null) sitManager.cleanup(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onKick(PlayerKickEvent event) {
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager != null) {
-            sitManager.cleanup(event.getPlayer());
-        }
+        if (sitManager != null) sitManager.cleanup(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
         SitManager sitManager = Managers.getSitManager();
-        if (sitManager != null) {
-            sitManager.cleanup((Player) event.getEntity());
-        }
+        if (sitManager != null) sitManager.cleanup(event.getEntity());
     }
 }

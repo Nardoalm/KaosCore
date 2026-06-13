@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
+import com.knowplugins.ysubz.kaoscore.KaosCore;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -53,11 +54,35 @@ public class DisguiseManager {
         DISGUISED.add(player.getUniqueId());
     }
 
+    public void updateTabName(Player player) {
+        if (player == null) return;
+
+        if (isDisguised(player)) {
+            String disguiseNick = getDisguiseNick(player);
+            if (disguiseNick != null && !disguiseNick.isEmpty()) {
+                player.setPlayerListName(disguiseNick);
+            }
+        } else {
+            player.setPlayerListName(null);
+        }
+    }
+
     public void addInDisguise(Player player, String nick) {
         if (player == null) return;
         DISGUISED.add(player.getUniqueId());
         if (nick != null) {
             DISGUISE_NICKS.put(player.getUniqueId(), nick);
+        }
+
+        player.setPlayerListName(nick);
+
+        if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
+            KaosCore core = KaosCore.getInstance();
+            if (core.getTagTeamManager() != null) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    core.getTagTeamManager().refreshPlayer(online);
+                }
+            }
         }
     }
 
@@ -76,9 +101,26 @@ public class DisguiseManager {
 
     public void removeDisguise(Player player) {
         if (player == null) return;
+
+        String originalName = ORIGINAL_NAMES.get(player.getUniqueId());
         DISGUISED.remove(player.getUniqueId());
         DISGUISE_NICKS.remove(player.getUniqueId());
         ORIGINAL_NAMES.remove(player.getUniqueId());
+
+        if (originalName != null && !originalName.isEmpty()) {
+            player.setPlayerListName(originalName);
+        } else {
+            player.setPlayerListName(null);
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
+            KaosCore core = KaosCore.getInstance();
+            if (core.getTagTeamManager() != null) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    core.getTagTeamManager().refreshPlayer(online);
+                }
+            }
+        }
     }
 
     public static boolean isDisguised(Player player) {
@@ -114,7 +156,7 @@ public class DisguiseManager {
                         "Darkness_PT", "LethalGhost", "VortexNuker", "Swiftly", "FrostByte",
                         "iZack_", "MysterioBR", "NightWalk", "ExoticPanda", "VelocityHits",
                         "SilentSteps", "HyperCombo", "ArcticFox_", "LunarPvP", "ShadowBound",
-                        "GrizzlyBear", "IronWill", "SkyFaller", "Noxious", "ZenithPlayer"
+                        "GrizzlyBear", "IronWill", "SkyFaller", "Noxious", "ZenithPlayer", "pescador67"
                 );
 
                 config.set("nicks-extras", extraNicks);
@@ -140,14 +182,13 @@ public class DisguiseManager {
 
     public String getRandomNick() {
         if (this.allNicks.isEmpty()) {
-            return "Steve";
+            return "Disfarcado";
         }
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
             String candidate = this.allNicks.get(random.nextInt(this.allNicks.size()));
             if (!isNickInUse(candidate)) return candidate;
         }
-        // fallback: return any
         return this.allNicks.get(random.nextInt(this.allNicks.size()));
     }
 

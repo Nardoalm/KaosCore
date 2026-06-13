@@ -7,38 +7,47 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;
+import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-public class NPCInteractListener implements Listener {
+/**
+ * Captura clique/interacao no NPC fake (USE_ENTITY) via ProtocolLib.
+ */
+public final class NPCInteractListener {
 
-    public static void register(KaosCore instance) {
+    private NPCInteractListener() {
+    }
+
+    public static void register(KaosCore plugin) {
+        if (plugin == null) {
+            return;
+        }
+
         ProtocolLibrary.getProtocolManager().addPacketListener(
-                new PacketAdapter(instance, PacketType.Play.Client.USE_ENTITY) {
+                new PacketAdapter(plugin, PacketType.Play.Client.USE_ENTITY) {
                     @Override
                     public void onPacketReceiving(PacketEvent event) {
                         Player player = event.getPlayer();
-                        if (player == null) return;
+                        if (player == null) {
+                            return;
+                        }
 
-                        if (Managers.getNpcManager() == null) return;
+                        NPCManager manager = Managers.getNpcManager();
+                        if (manager == null) {
+                            return;
+                        }
 
                         int entityId = event.getPacket().getIntegers().readSafely(0);
+                        EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().readSafely(0);
 
-                        Integer npcId = Managers.getNpcManager().getNpcId(player);
-
-                        if (npcId != null && entityId == npcId) {
-
-                            EnumWrappers.EntityUseAction action = event.getPacket().getEntityUseActions().readSafely(0);
-
-                            if (action != null && (action == EnumWrappers.EntityUseAction.ATTACK || action == EnumWrappers.EntityUseAction.INTERACT)) {
-                                event.setCancelled(true);
-
-                                Bukkit.getScheduler().runTask(plugin, () -> {
-                                    MenuUtils.openMenu(player);
-                                });
+                        if (action != null && (action == EnumWrappers.EntityUseAction.ATTACK || action == EnumWrappers.EntityUseAction.INTERACT)) {
+                            if (!manager.isNpcEntity(player, entityId)) {
+                                return;
                             }
+
+                            event.setCancelled(true);
+                            Bukkit.getScheduler().runTask(plugin, () -> manager.handleInteract(player, entityId));
                         }
                     }
                 }

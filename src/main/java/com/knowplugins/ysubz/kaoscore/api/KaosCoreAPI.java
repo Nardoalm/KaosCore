@@ -2,10 +2,10 @@ package com.knowplugins.ysubz.kaoscore.api;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.clan.Clan;
-import com.knowplugins.ysubz.kaoscore.managers.ClanManager;
-import com.knowplugins.ysubz.kaoscore.managers.TagManager;
-import com.knowplugins.ysubz.kaoscore.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.managers.player.ClanManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.TagManager;
+import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import org.bukkit.entity.Player;
 
 import java.util.List;

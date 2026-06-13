@@ -1,10 +1,5 @@
 medals:
-  bronze:
-    name: "Bronze"
-    permission: "kaoscore.medal.bronze"
-    chat: "§6[BR] "
-    nametag: "§6[BR] "
-    interval: 10
+
   champion:
     name: "Champion"
     permission: "kaoscore.medal.champion"
@@ -19,6 +14,7 @@ medals:
       - "§c✦ "
       - "§6✦ "
     interval: 10
+
   galaxy:
     name: "Galaxy"
     permission: "kaoscore.medal.galaxy"
@@ -32,4 +28,154 @@ medals:
       - "§d✧ "
       - "§f✧ "
       - "§d✧ "
+    interval: 10
+
+  rich:
+    name: "Rich"
+    permission: "kaoscore.medal.rich"
+    chat-frames:
+      - "§2$ "
+      - "§a$ "
+      - "§f$ "
+      - "§a$ "
+    nametag-frames:
+      - "§2$ "
+      - "§a$ "
+      - "§f$ "
+      - "§a$ "
+    interval: 10
+
+  legend:
+    name: "Legend"
+    permission: "kaoscore.medal.legend"
+    chat-frames:
+      - "§6★ "
+      - "§e★ "
+      - "§f★ "
+      - "§e★ "
+    nametag-frames:
+      - "§6★ "
+      - "§e★ "
+      - "§f★ "
+      - "§e★ "
+    interval: 10
+
+  mythic:
+    name: "Mythic"
+    permission: "kaoscore.medal.mythic"
+    chat-frames:
+      - "§5✦ "
+      - "§d✦ "
+      - "§f✦ "
+      - "§d✦ "
+    nametag-frames:
+      - "§5✦ "
+      - "§d✦ "
+      - "§f✦ "
+      - "§d✦ "
+    interval: 10
+
+  diamond:
+    name: "Diamond"
+    permission: "kaoscore.medal.diamond"
+    chat-frames:
+      - "§b◆ "
+      - "§f◆ "
+      - "§b◆ "
+      - "§f◆ "
+    nametag-frames:
+      - "§b◆ "
+      - "§f◆ "
+      - "§b◆ "
+      - "§f◆ "
+    interval: 10
+
+  royal:
+    name: "Royal"
+    permission: "kaoscore.medal.royal"
+    chat-frames:
+      - "§5✪ "
+      - "§d✪ "
+      - "§f✪ "
+      - "§d✪ "
+    nametag-frames:
+      - "§5✪ "
+      - "§d✪ "
+      - "§f✪ "
+      - "§d✪ "
+    interval: 10
+
+  emerald:
+    name: "Emerald"
+    permission: "kaoscore.medal.emerald"
+    chat-frames:
+      - "§2◆ "
+      - "§a◆ "
+      - "§f◆ "
+      - "§a◆ "
+    nametag-frames:
+      - "§2◆ "
+      - "§a◆ "
+      - "§f◆ "
+      - "§a◆ "
+    interval: 10
+
+  shadow:
+    name: "Shadow"
+    permission: "kaoscore.medal.shadow"
+    chat-frames:
+      - "§8✧ "
+      - "§7✧ "
+      - "§f✧ "
+      - "§7✧ "
+    nametag-frames:
+      - "§8✧ "
+      - "§7✧ "
+      - "§f✧ "
+      - "§7✧ "
+    interval: 10
+
+  master:
+    name: "Master"
+    permission: "kaoscore.medal.master"
+    chat-frames:
+      - "§c✪ "
+      - "§6✪ "
+      - "§e✪ "
+      - "§6✪ "
+    nametag-frames:
+      - "§c✪ "
+      - "§6✪ "
+      - "§e✪ "
+      - "§6✪ "
+    interval: 10
+
+  elite:
+    name: "Elite"
+    permission: "kaoscore.medal.elite"
+    chat-frames:
+      - "§b✦ "
+      - "§f✦ "
+      - "§3✦ "
+      - "§f✦ "
+    nametag-frames:
+      - "§b✦ "
+      - "§f✦ "
+      - "§3✦ "
+      - "§f✦ "
+    interval: 10
+
+  divine:
+    name: "Divine"
+    permission: "kaoscore.medal.divine"
+    chat-frames:
+      - "§e✬ "
+      - "§f✬ "
+      - "§6✬ "
+      - "§f✬ "
+    nametag-frames:
+      - "§e✬ "
+      - "§f✬ "
+      - "§6✬ "
+      - "§f✬ "
     interval: 10

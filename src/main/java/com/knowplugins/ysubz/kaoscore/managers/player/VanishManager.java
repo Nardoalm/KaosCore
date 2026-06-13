@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import static com.knowplugins.ysubz.kaoscore.utils.message.ActionBarUtil.sendActionBar;
+
 public class VanishManager {
 
    private static final Set<UUID> USING_VANISH = new HashSet<>();
@@ -50,7 +52,7 @@ public class VanishManager {
                Player player = Bukkit.getPlayer(uuid);
                if (player == null) continue;
 
-               sendActionBar(player, "§a§lVANISH ➔ §aVocê está invisível!");
+               sendActionBar(player, "§aVocê está invisível!");
 
                updateVanishState(player);
             }
@@ -60,34 +62,10 @@ public class VanishManager {
 
    private static void updateVanishState(Player player) {
       for (Player online : Bukkit.getOnlinePlayers()) {
-         if (!online.hasPermission("nardocore.staff.vanish")) {
+         if (!online.hasPermission("kaoscore.staff.vanish")) {
             online.hidePlayer(player);
          }
       }
    }
 
-
-   private static void sendActionBar(Player player, String message) {
-      try {
-         Class<?> craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
-         Class<?> packetPlayOutChatClass = Class.forName("net.minecraft.server." + version + ".PacketPlayOutChat");
-         Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
-         Class<?> chatComponentTextClass = Class.forName("net.minecraft.server." + version + ".ChatComponentText");
-
-         Object craftPlayer = craftPlayerClass.cast(player);
-         Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
-         Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-
-         Object chatComponent = chatComponentTextClass.getConstructor(String.class).newInstance(message);
-
-         Constructor<?> packetConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass, byte.class);
-         Object packet = packetConstructor.newInstance(chatComponent, (byte) 2);
-
-         Method sendPacket = playerConnection.getClass().getMethod("sendPacket", Class.forName("net.minecraft.server." + version + ".Packet"));
-         sendPacket.invoke(playerConnection, packet);
-
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
-   }
 }

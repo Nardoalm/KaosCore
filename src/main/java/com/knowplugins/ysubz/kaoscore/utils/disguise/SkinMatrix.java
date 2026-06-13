@@ -34,6 +34,15 @@ public class SkinMatrix {
         return SKINS.get(RANDOM.nextInt(SKINS.size()));
     }
 
+    public static SkinData getDeterministicSkin(String key) {
+        if (SKINS.isEmpty()) {
+            return null;
+        }
+        String s = key == null ? "" : key.toLowerCase();
+        int index = (s.hashCode() & 0x7fffffff) % SKINS.size();
+        return SKINS.get(index);
+    }
+
     public static class SkinData {
         public final String value, signature;
         public SkinData(String v, String s) { this.value = v; this.signature = s; }

@@ -14,7 +14,7 @@ public class CommandList extends Commands {
          sender.sendMessage("§c§lCOMANDOS ➔ §cApenas jogadores podem utilizar este comando.");
       } else {
          Player player = (Player)sender;
-         if (!player.hasPermission("nardocore.staff.commandlist")) {
+         if (!player.hasPermission("kaoscore.staff.commandlist")) {
             player.sendMessage("§e§lDEV ➔ §eNardoDev.");
          } else {
             sender.sendMessage("");
@@ -40,3 +40,4 @@ public class CommandList extends Commands {
 
    }
 }
+

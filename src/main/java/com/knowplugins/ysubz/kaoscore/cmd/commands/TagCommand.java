@@ -1,7 +1,8 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -12,43 +13,61 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class TagCommand implements CommandExecutor {
+public class TagCommand extends Commands {
 
-    private final KaosCore plugin;
+    private final KaosCore plugin = KaosCore.getInstance();
 
-    public TagCommand(KaosCore plugin) {
-        this.plugin = plugin;
+    public TagCommand() {
+        super("tag", "tags", "prefix");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            return true;
+            return;
         }
 
         Player player = (Player) sender;
         if (plugin == null || plugin.getTagManager() == null) {
-            return true;
+            return;
         }
 
         if (args != null && args.length > 0) {
             Tag selected = plugin.getTagManager().getTagByNameOrId(args[0]);
             if (selected == null) {
-                return true;
+                player.sendMessage("§cTag não encontrada.");
+                sendAvailableTags(player);
+                return;
             }
 
             if (!plugin.getTagManager().canUse(player, selected)) {
-                return true;
+                player.sendMessage("§cVocê não possui permissão para usar essa tag.");
+                sendAvailableTags(player);
+                return;
             }
 
             plugin.getTagManager().setTag(player, selected.getId());
             player.sendMessage("§aTag alterada para: " + format(selected.getColor()) + selected.getName());
-            return true;
+            return;
         }
 
+        sendAvailableTags(player);
+        return;
+    }
+
+    private void sendAvailableTags(Player player) {
         List<Tag> availableTags = plugin.getTagManager().getAvailableTags(player);
+        if (availableTags.isEmpty()) {
+            Tag fallback = plugin.getTagManager().getTagByNameOrId("membro");
+            if (fallback != null) {
+                availableTags = new ArrayList<>(Collections.singletonList(fallback));
+            }
+        }
+
         TextComponent line = new TextComponent("§aSuas tags: ");
 
         for (int i = 0; i < availableTags.size(); i++) {
@@ -60,7 +79,7 @@ public class TagCommand implements CommandExecutor {
             String displayName = format(tag.getColor()) + tag.getName();
             TextComponent component = new TextComponent(displayName);
             component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tag " + tag.getName()));
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar a tag" + displayName).create()));
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Clique para equipar " + displayName).create()));
             line.addExtra(component);
 
             if (i < availableTags.size() - 1) {
@@ -71,10 +90,8 @@ public class TagCommand implements CommandExecutor {
         if (line.getExtra() != null && !line.getExtra().isEmpty()) {
             player.spigot().sendMessage(line);
         } else {
-            player.sendMessage("Suas tags: ");
+            player.sendMessage("§cNenhuma tag disponível.");
         }
-
-        return true;
     }
 
     private String format(String text) {
