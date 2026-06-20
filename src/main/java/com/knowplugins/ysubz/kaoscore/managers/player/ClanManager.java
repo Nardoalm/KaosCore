@@ -6,10 +6,15 @@ import com.knowplugins.ysubz.kaoscore.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.clan.ClanInvite;
 import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -46,27 +51,23 @@ public class ClanManager {
         loadTagColors();
     }
 
+    private boolean isMongo() {
+        return Managers.getDatabaseManager() != null && Managers.getDatabaseManager().isMongo();
+    }
+
+    private MongoCollection<Document> getCollection(String name) {
+        return Managers.getDatabaseManager().getMongoDatabase().getCollection(name);
+    }
+
     private void loadTagColors() {
         tagColors.clear();
         tagColors.addAll(plugin.getConfig().getStringList("clan.tag-colors"));
         if (tagColors.isEmpty()) {
             tagColors.addAll(Arrays.asList(
-                    "§0Preto",
-                    "§1Azul Escuro",
-                    "§2Verde Escuro",
-                    "§3Azul Turquesa",
-                    "§4Vermelho Escuro",
-                    "§5Roxo",
-                    "§6Dourado",
-                    "§7Cinza",
-                    "§8Cinza Escuro",
-                    "§9Azul",
-                    "§aVerde",
-                    "§bAzul Claro",
-                    "§cVermelho",
-                    "§dRosa",
-                    "§eAmarelo",
-                    "§fBranco"
+                    "§0Preto", "§1Azul Escuro", "§2Verde Escuro", "§3Azul Turquesa",
+                    "§4Vermelho Escuro", "§5Roxo", "§6Dourado", "§7Cinza",
+                    "§8Cinza Escuro", "§9Azul", "§aVerde", "§bAzul Claro",
+                    "§cVermelho", "§dRosa", "§eAmarelo", "§fBranco"
             ));
         }
     }
@@ -80,6 +81,53 @@ public class ClanManager {
 
         Map<String, Clan> loadedClans = new HashMap<>();
         Map<UUID, String> loadedPlayerClans = new HashMap<>();
+
+        if (isMongo()) {
+            try {
+                for (Document doc : getCollection("clans").find()) {
+                    String name = doc.getString("name");
+                    String tag = doc.getString("tag");
+                    String tagColor = doc.getString("tag_color");
+                    UUID leader = UUID.fromString(doc.getString("leader"));
+
+                    Clan clan = new Clan(name, tag, leader);
+                    clan.setTagColor(tagColor == null || tagColor.trim().isEmpty() ? "§7" : tagColor);
+                    clan.setCreationDate(doc.getLong("created"));
+                    clan.setWins(doc.getInteger("wins", 0));
+                    clan.setLosses(doc.getInteger("losses", 0));
+                    clan.setElo(doc.getInteger("elo", 1000));
+                    clan.getMembers().clear();
+
+                    Bson memberFilter = Filters.eq("clan_name", name);
+                    for (Document mDoc : getCollection("clan_members").find(memberFilter)) {
+                        try {
+                            UUID uuid = UUID.fromString(mDoc.getString("player_uuid"));
+                            ClanRole role = ClanRole.getByName(mDoc.getString("role"));
+                            clan.getMembers().put(uuid, role);
+                            loadedPlayerClans.put(uuid, name);
+                        } catch (Exception ignored) {}
+                    }
+
+                    if (!clan.getMembers().containsKey(leader)) {
+                        clan.getMembers().put(leader, ClanRole.LEADER);
+                        loadedPlayerClans.put(leader, name);
+                    }
+
+                    loadedClans.put(name.toLowerCase(Locale.ROOT), clan);
+                }
+
+                clans.clear();
+                clans.putAll(loadedClans);
+                playerClans.clear();
+                playerClans.putAll(loadedPlayerClans);
+                invites.clear();
+
+                System.out.println("\u001B[32m[KaosCore] " + clans.size() + " clans carregados do MongoDB\u001B[0m");
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao carregar clans do MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
+            return;
+        }
 
         String selectClans = "SELECT * FROM clans";
         String selectMembers = "SELECT * FROM clan_members WHERE clan_name = ?";
@@ -163,6 +211,38 @@ public class ClanManager {
 
     public synchronized void saveClan(Clan clan) {
         if (clan == null || !hasDatabase()) {
+            return;
+        }
+
+        if (isMongo()) {
+            try {
+                Document clanDoc = new Document("name", clan.getName())
+                        .append("tag", clan.getTag())
+                        .append("tag_color", clan.getTagColor())
+                        .append("leader", clan.getLeader().toString())
+                        .append("created", clan.getCreationDate())
+                        .append("wins", clan.getWins())
+                        .append("losses", clan.getLosses())
+                        .append("elo", clan.getElo());
+
+                getCollection("clans").replaceOne(Filters.eq("name", clan.getName()), clanDoc, new ReplaceOptions().upsert(true));
+                getCollection("clan_members").deleteMany(Filters.eq("clan_name", clan.getName()));
+
+                List<Document> memberDocs = new ArrayList<>();
+                for (Map.Entry<UUID, ClanRole> entry : clan.getMembers().entrySet()) {
+                    memberDocs.add(new Document("clan_name", clan.getName())
+                            .append("player_uuid", entry.getKey().toString())
+                            .append("player_name", resolvePlayerName(entry.getKey()))
+                            .append("role", entry.getValue().name())
+                            .append("joined", System.currentTimeMillis()));
+                }
+
+                if (!memberDocs.isEmpty()) {
+                    getCollection("clan_members").insertMany(memberDocs);
+                }
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao salvar clan no MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
             return;
         }
 
@@ -261,18 +341,28 @@ public class ClanManager {
         clans.remove(clan.getName().toLowerCase(Locale.ROOT));
 
         if (hasDatabase()) {
-            try (Connection conn = Managers.getDatabaseManager().getConnection();
-                 PreparedStatement deleteClanStmt = conn.prepareStatement("DELETE FROM clans WHERE name = ?");
-                 PreparedStatement deleteMembersStmt = conn.prepareStatement("DELETE FROM clan_members WHERE clan_name = ?");
-                 PreparedStatement deleteInvitesStmt = conn.prepareStatement("DELETE FROM clan_invites WHERE clan_name = ?")) {
-                deleteClanStmt.setString(1, clan.getName());
-                deleteMembersStmt.setString(1, clan.getName());
-                deleteInvitesStmt.setString(1, clan.getName());
-                deleteClanStmt.executeUpdate();
-                deleteMembersStmt.executeUpdate();
-                deleteInvitesStmt.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println("\u001B[31m[KaosCore] Erro ao deletar clan: " + e.getMessage() + "\u001B[0m");
+            if (isMongo()) {
+                try {
+                    getCollection("clans").deleteOne(Filters.eq("name", clan.getName()));
+                    getCollection("clan_members").deleteMany(Filters.eq("clan_name", clan.getName()));
+                    getCollection("clan_invites").deleteMany(Filters.eq("clan_name", clan.getName()));
+                } catch (Exception e) {
+                    System.out.println("\u001B[31m[KaosCore] Erro ao deletar clan no MongoDB: " + e.getMessage() + "\u001B[0m");
+                }
+            } else {
+                try (Connection conn = Managers.getDatabaseManager().getConnection();
+                     PreparedStatement deleteClanStmt = conn.prepareStatement("DELETE FROM clans WHERE name = ?");
+                     PreparedStatement deleteMembersStmt = conn.prepareStatement("DELETE FROM clan_members WHERE clan_name = ?");
+                     PreparedStatement deleteInvitesStmt = conn.prepareStatement("DELETE FROM clan_invites WHERE clan_name = ?")) {
+                    deleteClanStmt.setString(1, clan.getName());
+                    deleteMembersStmt.setString(1, clan.getName());
+                    deleteInvitesStmt.setString(1, clan.getName());
+                    deleteClanStmt.executeUpdate();
+                    deleteMembersStmt.executeUpdate();
+                    deleteInvitesStmt.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println("\u001B[31m[KaosCore] Erro ao deletar clan: " + e.getMessage() + "\u001B[0m");
+                }
             }
         }
 
@@ -438,6 +528,15 @@ public class ClanManager {
             return;
         }
 
+        if (isMongo()) {
+            try {
+                getCollection("clan_invites").deleteMany(Filters.eq("target_uuid", playerId.toString()));
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao limpar convites no MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE target_uuid = ?")) {
             stmt.setString(1, playerId.toString());
@@ -561,6 +660,23 @@ public class ClanManager {
             return result;
         }
 
+        if (isMongo()) {
+            try {
+                Bson filter = Filters.eq("target_uuid", playerId.toString());
+                for (Document doc : getCollection("clan_invites").find(filter)) {
+                    result.add(new ClanInvite(
+                            doc.getString("clan_name"),
+                            UUID.fromString(doc.getString("inviter_uuid")),
+                            UUID.fromString(doc.getString("target_uuid")),
+                            doc.getLong("created_at")
+                    ));
+                }
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao carregar convites do MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
+            return result;
+        }
+
         String sql = "SELECT clan_name, inviter_uuid, target_uuid, created_at FROM clan_invites WHERE target_uuid = ? ORDER BY created_at DESC";
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -606,9 +722,20 @@ public class ClanManager {
             return;
         }
 
+        long threshold = System.currentTimeMillis() - ClanInvite.EXPIRATION_MILLIS;
+
+        if (isMongo()) {
+            try {
+                getCollection("clan_invites").deleteMany(Filters.lt("created_at", threshold));
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao limpar convites expirados do MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE created_at < ?")) {
-            stmt.setLong(1, System.currentTimeMillis() - ClanInvite.EXPIRATION_MILLIS);
+            stmt.setLong(1, threshold);
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("\u001B[31m[KaosCore] Erro ao limpar convites expirados de clan: " + e.getMessage() + "\u001B[0m");
@@ -617,6 +744,24 @@ public class ClanManager {
 
     private void saveInvite(ClanInvite invite) {
         if (invite == null || !hasDatabase()) {
+            return;
+        }
+
+        if (isMongo()) {
+            try {
+                Document doc = new Document("clan_name", invite.getClanName())
+                        .append("inviter_uuid", invite.getInviter().toString())
+                        .append("target_uuid", invite.getTarget().toString())
+                        .append("created_at", invite.getTimestamp());
+
+                Bson filter = Filters.and(
+                        Filters.eq("target_uuid", invite.getTarget().toString()),
+                        Filters.eq("clan_name", invite.getClanName())
+                );
+                getCollection("clan_invites").replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao salvar convite no MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
             return;
         }
 
@@ -639,6 +784,19 @@ public class ClanManager {
             return;
         }
 
+        if (isMongo()) {
+            try {
+                Bson filter = Filters.and(
+                        Filters.eq("target_uuid", invite.getTarget().toString()),
+                        Filters.eq("clan_name", invite.getClanName())
+                );
+                getCollection("clan_invites").deleteOne(filter);
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao remover convite do MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE target_uuid = ? AND clan_name = ?")) {
             stmt.setString(1, invite.getTarget().toString());
@@ -651,6 +809,15 @@ public class ClanManager {
 
     private void deleteMemberRecord(UUID playerId) {
         if (playerId == null || !hasDatabase()) {
+            return;
+        }
+
+        if (isMongo()) {
+            try {
+                getCollection("clan_members").deleteOne(Filters.eq("player_uuid", playerId.toString()));
+            } catch (Exception e) {
+                System.out.println("\u001B[31m[KaosCore] Erro ao remover membro do MongoDB: " + e.getMessage() + "\u001B[0m");
+            }
             return;
         }
 

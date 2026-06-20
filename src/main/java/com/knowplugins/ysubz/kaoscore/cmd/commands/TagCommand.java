@@ -70,7 +70,7 @@ public class TagCommand extends Commands {
 
         TextComponent line = new TextComponent("§aYour tags: ");
 
-        for (int i = 0; i < availableTags.size(); i++) {
+        for (int i = availableTags.size() - 1; i >= 0; i--) {
             Tag tag = availableTags.get(i);
             if (tag == null) {
                 continue;
@@ -82,7 +82,7 @@ public class TagCommand extends Commands {
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to equip " + displayName).create()));
             line.addExtra(component);
 
-            if (i < availableTags.size() - 1) {
+            if (i > 0) {
                 line.addExtra(new TextComponent(ChatColor.WHITE + ", "));
             }
         }

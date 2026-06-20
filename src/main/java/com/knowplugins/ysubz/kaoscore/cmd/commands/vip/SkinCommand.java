@@ -32,14 +32,14 @@ public class SkinCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lSKIN ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("kaoscore.member.skin")) {
-            player.sendMessage("§c§lSKIN ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§cYou do not have permission to execute this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -51,7 +51,7 @@ public class SkinCommand extends Commands {
         }
 
         if (args.length != 1) {
-            player.sendMessage("§c§lSKIN ➔ §cUso correto: /skin <nick> | /skin reset | /skin gui");
+            player.sendMessage("§cCorrect usage: \n* /skin <nick> \n* /skin reset \n* /skin gui");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -78,7 +78,7 @@ public class SkinCommand extends Commands {
         try {
             String cleanTarget = targetSkin == null ? "" : targetSkin.trim();
             if (cleanTarget.isEmpty() || cleanTarget.length() > 16) {
-                player.sendMessage("§c§lSKIN ➔ §cNick inválido.");
+                player.sendMessage("§cInvalid nickname.");
                 player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
@@ -110,7 +110,7 @@ public class SkinCommand extends Commands {
 
                     if (textures == null || textures.getValue() == null || textures.getValue().trim().isEmpty()) {
                         Bukkit.getScheduler().runTask(plugin, () -> {
-                            player.sendMessage("§c§lSKIN ➔ §cSkin não encontrada (nick não original) ou erro na API.");
+                            player.sendMessage("§cSkin not found (non-original nickname) or API error.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                         });
                         return;
@@ -143,30 +143,30 @@ public class SkinCommand extends Commands {
                             }
 
                             String message = applyForSelf
-                                    ? "§a§lSKIN ➔ §aSua skin foi alterada para: " + cleanTarget
-                                    : "§a§lSKIN ➔ §aSkin do disfarce aplicada para os outros jogadores: " + cleanTarget;
+                                    ? "§aYour skin has been changed to: " + cleanTarget
+                                    : "§aDisguise skin applied for other players: " + cleanTarget;
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
 
                         } catch (Exception exception) {
-                            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao aplicar a textura da skin.");
+                            player.sendMessage("§cAn error occurred while applying the skin texture.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                             exception.printStackTrace();
                         }
                     });
 
                 } catch (Exception exception) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao buscar skin '" + cleanTarget + "': " + exception.getMessage());
+                    plugin.getLogger().warning("[KaosCore] Error fetching skin '" + cleanTarget + "': " + exception.getMessage());
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.sendMessage("§c§lSKIN ➔ §cSkin não encontrada ou erro na API.");
+                        player.sendMessage("§cSkin not found or API error.");
                         player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                     });
                 }
             });
 
         } catch (Exception exception) {
-            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro interno.");
+            player.sendMessage("§cAn internal error occurred.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             exception.printStackTrace();
         }
@@ -183,7 +183,7 @@ public class SkinCommand extends Commands {
 
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§a§lSKIN ➔ §aSua skin foi resetada para a original.";
+                String message = "§aYour skin has been reset to the original.";
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
                 player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
@@ -226,12 +226,11 @@ public class SkinCommand extends Commands {
                             }
 
                             if (finalFetchedOriginal == null || finalFetchedOriginal.getValue() == null || finalFetchedOriginal.getValue().trim().isEmpty()) {
-                                // In servers with pirates, fall back to pool skins if Mojang doesn't know this name.
                                 KaosCore core = KaosCore.getInstance();
                                 if (core != null && core.getSkinPoolManager() != null) {
                                     core.getSkinPoolManager().applyJoinSkin(player);
                                 } else {
-                                    player.sendMessage("§c§lSKIN ➔ §cSua skin original não foi encontrada.");
+                                    player.sendMessage("§cYour original skin was not found.");
                                     player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                                 }
                                 return;
@@ -243,7 +242,7 @@ public class SkinCommand extends Commands {
 
                             new SkinApplier(player).applySkinForSelf();
 
-                            String message = "§a§lSKIN ➔ §aSua skin foi resetada para a original.";
+                            String message = "§aYour skin has been reset to the original.";
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
@@ -253,21 +252,21 @@ public class SkinCommand extends Commands {
                                 repo.deleteAsync(id);
                             }
                         } catch (Exception ex) {
-                            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
+                            player.sendMessage("§cAn error occurred while resetting the skin.");
                             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                         }
                     });
 
                 } catch (Exception exception) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
+                        player.sendMessage("§cAn error occurred while resetting the skin.");
                         player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                     });
                 }
             });
 
         } catch (Exception exception) {
-            player.sendMessage("§c§lSKIN ➔ §cOcorreu um erro ao resetar a skin.");
+            player.sendMessage("§cAn error occurred while resetting the skin.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             exception.printStackTrace();
         }

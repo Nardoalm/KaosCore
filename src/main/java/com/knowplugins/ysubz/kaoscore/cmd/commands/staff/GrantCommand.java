@@ -28,14 +28,14 @@ public final class GrantCommand extends Commands {
         }
 
         if (!hasPerm(sender)) {
-            sender.sendMessage("§c§lGRANT ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PermissionManager permissions = Managers.getPermissionManager();
         if (permissions == null) {
-            sender.sendMessage("§c§lGRANT ➔ §cPermission system unavailable.");
+            sender.sendMessage("§cPermission system unavailable.");
             return;
         }
 
@@ -48,7 +48,7 @@ public final class GrantCommand extends Commands {
         String groupName = args[1];
 
         if (permissions.getGroup(groupName) == null) {
-            sender.sendMessage("§c§lGRANT ➔ §cGroup not found: §f" + groupName);
+            sender.sendMessage("§cGroup not found: §f" + groupName);
             return;
         }
 
@@ -91,7 +91,7 @@ public final class GrantCommand extends Commands {
                 });
             } catch (Exception e) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage("§c§lGRANT ➔ §cError applying the grant.");
+                    sender.sendMessage("§cError applying the grant.");
                     ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
                 });
                 e.printStackTrace();

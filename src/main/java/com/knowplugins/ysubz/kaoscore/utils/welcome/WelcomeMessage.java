@@ -26,11 +26,13 @@ public class WelcomeMessage {
         }
 
         TagManager tagManager = KaosCore.getInstance().getTagManager();
+        String tag = tagManager.getTag(player).getPrefix();
+
         String playerText;
         if (DisguiseManager.isDisguised(player)) {
-            playerText = "§6§l⭐ " + tagManager.getTag(player).getPrefix() + DisguiseApiService.getDisguiseNick(player);
+            playerText = "§6§l⭐ " + tag + DisguiseApiService.getDisguiseNick(player);
         } else {
-            playerText = "§6§l⭐ " + tagManager.getTag(player).getPrefix() + player.getName();
+            playerText = "§6§l⭐ " + tag + player.getName();
         }
 
         WelcomeMessageManager manager = Managers.getWelcomeMessageManager();

@@ -19,7 +19,7 @@ public final class GroupCommand extends Commands {
     private static final String PERMISSION = "kaoscore.staff.permissions";
 
     public GroupCommand() {
-        super("group", "grupo", "rank");
+        super("group", "rank");
     }
 
     @Override
@@ -29,14 +29,14 @@ public final class GroupCommand extends Commands {
         }
 
         if (!hasPerm(sender)) {
-            sender.sendMessage("§c§lGROUP ➔ §cVocê não possui permissão para executar este comando.");
+            sender.sendMessage("§cYou do not have permission to execute this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PermissionManager permissions = Managers.getPermissionManager();
         if (permissions == null) {
-            sender.sendMessage("§c§lGROUP ➔ §cSistema de permissões indisponível.");
+            sender.sendMessage("§cPermission system is currently unavailable.");
             return;
         }
 
@@ -49,33 +49,33 @@ public final class GroupCommand extends Commands {
         switch (sub) {
             case "list": {
                 Set<String> names = permissions.getGroupNames();
-                sender.sendMessage("§a§lGROUP ➔ §aGrupos: §f" + (names.isEmpty() ? "(nenhum)" : String.join(", ", names)));
+                sender.sendMessage("§aGroups: §f" + (names.isEmpty() ? "(none)" : String.join(", ", names)));
                 return;
             }
             case "info": {
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group info <grupo>");
+                    sender.sendMessage("§cUsage: /grant info <group>");
                     return;
                 }
                 PermissionGroup group = permissions.getGroup(args[1]);
                 if (group == null) {
-                    sender.sendMessage("§c§lGROUP ➔ §cGrupo não encontrado.");
+                    sender.sendMessage("§cGroup not found.");
                     return;
                 }
 
-                sender.sendMessage("§a§lGROUP INFO");
-                sender.sendMessage(" §7Nome: §f" + group.getName());
-                sender.sendMessage(" §7Prioridade: §f" + group.getPriority());
-                sender.sendMessage(" §7Default: §f" + (group.isDefaultGroup() ? "sim" : "não"));
+                sender.sendMessage("§aGRANT INFO");
+                sender.sendMessage(" §7Name: §f" + group.getName());
+                sender.sendMessage(" §7Priority: §f" + group.getPriority());
+                sender.sendMessage(" §7Default: §f" + (group.isDefaultGroup() ? "yes" : "no"));
                 sender.sendMessage(" §7Prefix: §f" + group.getPrefix());
                 sender.sendMessage(" §7Suffix: §f" + group.getSuffix());
-                sender.sendMessage(" §7Herda: §f" + (group.getInherits().isEmpty() ? "(nenhum)" : String.join(", ", group.getInherits())));
-                sender.sendMessage(" §7Permissões: §f" + group.getPermissions().size());
+                sender.sendMessage(" §7Inherits: §f" + (group.getInherits().isEmpty() ? "(none)" : String.join(", ", group.getInherits())));
+                sender.sendMessage(" §7Permissions: §f" + group.getPermissions().size());
                 return;
             }
             case "create": {
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group create <nome> [default]");
+                    sender.sendMessage("§cUsage: /grant create <name> [default]");
                     return;
                 }
                 String name = args[1];
@@ -86,8 +86,8 @@ public final class GroupCommand extends Commands {
                     boolean ok = permissions.createGroup(name, isDefault);
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         sender.sendMessage(ok
-                                ? "§a§lGROUP ➔ §aGrupo criado: §f" + name + (isDefault ? " §7(default)" : "")
-                                : "§c§lGROUP ➔ §cFalha ao criar grupo.");
+                                ? "§aGroup created: §f" + name + (isDefault ? " §7(default)" : "")
+                                : "§cFailed to create group.");
                     });
                 });
                 return;
@@ -95,7 +95,7 @@ public final class GroupCommand extends Commands {
             case "delete":
             case "remove": {
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group delete <nome>");
+                    sender.sendMessage("§cUsage: /grant delete <name>");
                     return;
                 }
                 String name = args[1];
@@ -104,14 +104,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.deleteGroup(name);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aGrupo removido: §f" + name
-                            : "§c§lGROUP ➔ §cFalha ao remover grupo."));
+                            ? "§aGroup removed: §f" + name
+                            : "§cFailed to remove group."));
                 });
                 return;
             }
             case "default": {
                 if (args.length < 2) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group default <grupo>");
+                    sender.sendMessage("§cUsage: /grant default <group>");
                     return;
                 }
                 String name = args[1];
@@ -119,14 +119,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.setDefaultGroup(name);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aGrupo default agora é: §f" + name
-                            : "§c§lGROUP ➔ §cFalha ao setar default."));
+                            ? "§aDefault group is now: §f" + name
+                            : "§cFailed to set default group."));
                 });
                 return;
             }
             case "setpriority": {
                 if (args.length < 3) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group setpriority <grupo> <prioridade>");
+                    sender.sendMessage("§cUsage: /grant setpriority <group> <priority>");
                     return;
                 }
                 String name = args[1];
@@ -134,7 +134,7 @@ public final class GroupCommand extends Commands {
                 try {
                     priority = Integer.parseInt(args[2]);
                 } catch (NumberFormatException ignored) {
-                    sender.sendMessage("§c§lGROUP ➔ §cPrioridade inválida.");
+                    sender.sendMessage("§cInvalid priority.");
                     return;
                 }
 
@@ -142,14 +142,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.setGroupPriority(name, priority);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aPrioridade atualizada."
-                            : "§c§lGROUP ➔ §cFalha ao atualizar prioridade."));
+                            ? "§aPriority updated."
+                            : "§cFailed to update priority."));
                 });
                 return;
             }
             case "setprefix": {
                 if (args.length < 3) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group setprefix <grupo> <prefix>");
+                    sender.sendMessage("§cUsage: /grant setprefix <group> <prefix>");
                     return;
                 }
                 String name = args[1];
@@ -158,14 +158,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.setGroupPrefix(name, prefix);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aPrefix atualizado."
-                            : "§c§lGROUP ➔ §cFalha ao atualizar prefix."));
+                            ? "§aPrefix updated."
+                            : "§cFailed to update prefix."));
                 });
                 return;
             }
             case "setsuffix": {
                 if (args.length < 3) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group setsuffix <grupo> <suffix>");
+                    sender.sendMessage("§cUsage: /grant setsuffix <group> <suffix>");
                     return;
                 }
                 String name = args[1];
@@ -174,14 +174,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.setGroupSuffix(name, suffix);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aSuffix atualizado."
-                            : "§c§lGROUP ➔ §cFalha ao atualizar suffix."));
+                            ? "§aSuffix updated."
+                            : "§cFailed to update suffix."));
                 });
                 return;
             }
             case "addperm": {
                 if (args.length < 3) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group addperm <grupo> <permissão> [true|false]");
+                    sender.sendMessage("§cUsage: /grant addperm <group> <permission> [true|false]");
                     return;
                 }
                 String group = args[1];
@@ -203,14 +203,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.addGroupPermission(group, finalPerm, finalValue);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aPerm adicionada."
-                            : "§c§lGROUP ➔ §cFalha ao adicionar perm."));
+                            ? "§aPermission added."
+                            : "§cFailed to add permission."));
                 });
                 return;
             }
             case "delperm": {
                 if (args.length < 3) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group delperm <grupo> <permissão>");
+                    sender.sendMessage("§cUsage: /grant delperm <group> <permission>");
                     return;
                 }
                 String group = args[1];
@@ -220,14 +220,14 @@ public final class GroupCommand extends Commands {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     boolean ok = permissions.removeGroupPermission(group, perm);
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(ok
-                            ? "§a§lGROUP ➔ §aPerm removida."
-                            : "§c§lGROUP ➔ §cFalha ao remover perm."));
+                            ? "§aPermission removed."
+                            : "§cFailed to remove permission."));
                 });
                 return;
             }
             case "inherit": {
                 if (args.length < 4) {
-                    sender.sendMessage("§c§lGROUP ➔ §cUso: /group inherit add|remove <grupo> <pai>");
+                    sender.sendMessage("§cUsage: /grant inherit add|remove <group> <parent>");
                     return;
                 }
                 String action = args[1].toLowerCase();
@@ -247,8 +247,8 @@ public final class GroupCommand extends Commands {
 
                     boolean finalOk = ok;
                     Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(finalOk
-                            ? "§a§lGROUP ➔ §aHerança atualizada."
-                            : "§c§lGROUP ➔ §cFalha ao atualizar herança."));
+                            ? "§aInheritance updated."
+                            : "§cFailed to update inheritance."));
                 });
                 return;
             }
@@ -256,7 +256,7 @@ public final class GroupCommand extends Commands {
                 JavaPlugin plugin = JavaPlugin.getProvidingPlugin(GroupCommand.class);
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     permissions.reloadGroups();
-                    Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage("§a§lGROUP ➔ §aGrupos recarregados."));
+                    Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage("§aGroups reloaded."));
                 });
                 return;
             }
@@ -267,19 +267,19 @@ public final class GroupCommand extends Commands {
 
     private void sendHelp(CommandSender sender) {
         List<String> lines = new ArrayList<>();
-        lines.add("§e§lGROUP ➔ §eComandos:");
-        lines.add("§e• §e/group list");
-        lines.add("§e• §e/group info <grupo>");
-        lines.add("§e• §e/group create <grupo> [default]");
-        lines.add("§e• §e/group delete <grupo>");
-        lines.add("§e• §e/group default <grupo>");
-        lines.add("§e• §e/group setpriority <grupo> <prioridade>");
-        lines.add("§e• §e/group setprefix <grupo> <prefix>");
-        lines.add("§e• §e/group setsuffix <grupo> <suffix>");
-        lines.add("§e• §e/group addperm <grupo> <perm> [true|false]");
-        lines.add("§e• §e/group delperm <grupo> <perm>");
-        lines.add("§e• §e/group inherit add|remove <grupo> <pai>");
-        lines.add("§e• §e/group reload");
+        lines.add("§eAvailable Commands:");
+        lines.add("§e /grant list");
+        lines.add("§e /grant info <group>");
+        lines.add("§e /grant create <group> [default]");
+        lines.add("§e /grant delete <group>");
+        lines.add("§e /grant default <group>");
+        lines.add("§e /grant setpriority <group> <priority>");
+        lines.add("§e /grant setprefix <group> <prefix>");
+        lines.add("§e /grant setsuffix <group> <suffix>");
+        lines.add("§e /grant addperm <group> <perm> [true|false]");
+        lines.add("§e /grant delperm <group> <perm>");
+        lines.add("§e /grant inherit add|remove <group> <parent>");
+        lines.add("§e /grant reload");
         for (String line : lines) {
             sender.sendMessage(line);
         }
@@ -306,4 +306,3 @@ public final class GroupCommand extends Commands {
         return builder.toString();
     }
 }
-

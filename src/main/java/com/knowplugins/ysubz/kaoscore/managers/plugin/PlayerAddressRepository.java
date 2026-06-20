@@ -1,6 +1,12 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.Sorts;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +29,14 @@ public class PlayerAddressRepository {
         this.databaseManager = databaseManager;
     }
 
+    private boolean isMongo() {
+        return databaseManager.getType().equalsIgnoreCase("mongodb");
+    }
+
+    private MongoCollection<Document> getCollection() {
+        return databaseManager.getMongoDatabase().getCollection("player_addresses");
+    }
+
     public void track(UUID uuid, String name, String ip) {
         if (uuid == null || name == null || name.trim().isEmpty() || ip == null || ip.trim().isEmpty()) {
             return;
@@ -30,6 +44,26 @@ public class PlayerAddressRepository {
 
         knownNames.add(normalizeName(name));
         long now = System.currentTimeMillis();
+
+        if (isMongo()) {
+            try {
+                Document filter = new Document("player_uuid", uuid.toString()).append("ip", ip);
+                Document existing = getCollection().find(filter).first();
+
+                long firstSeen = existing != null && existing.containsKey("first_seen") ? existing.getLong("first_seen") : now;
+
+                Document doc = new Document("player_uuid", uuid.toString())
+                        .append("player_name", name)
+                        .append("ip", ip)
+                        .append("first_seen", firstSeen)
+                        .append("last_seen", now);
+
+                getCollection().replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao registrar IP do jogador no MongoDB: " + e.getMessage());
+            }
+            return;
+        }
 
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement("INSERT INTO player_addresses (player_uuid, player_name, ip, first_seen, last_seen) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE player_name = VALUES(player_name), last_seen = VALUES(last_seen)")) {
@@ -53,6 +87,19 @@ public class PlayerAddressRepository {
 
         if (knownNames.contains(normalizedName)) {
             return true;
+        }
+
+        if (isMongo()) {
+            try {
+                Document doc = getCollection().find(new Document("player_name", new Document("$regex", "^" + normalizedName + "$").append("$options", "i"))).first();
+                if (doc != null) {
+                    knownNames.add(normalizedName);
+                    return true;
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao verificar histórico de nome do jogador no MongoDB: " + e.getMessage());
+            }
+            return false;
         }
 
         String sql = "SELECT 1 FROM player_addresses WHERE LOWER(player_name) = ? LIMIT 1";
@@ -80,6 +127,38 @@ public class PlayerAddressRepository {
             String uuidValue = targetUuid == null ? "" : targetUuid.toString();
 
             if (normalizedName.isEmpty() && uuidValue.isEmpty()) {
+                return result;
+            }
+
+            if (isMongo()) {
+                try {
+                    Bson selfFilter = uuidValue.isEmpty()
+                            ? Filters.regex("player_name", "^" + normalizedName + "$", "i")
+                            : Filters.or(Filters.eq("player_uuid", uuidValue), Filters.regex("player_name", "^" + normalizedName + "$", "i"));
+
+                    List<String> ips = new ArrayList<>();
+                    for (Document doc : getCollection().find(selfFilter)) {
+                        String ip = doc.getString("ip");
+                        if (ip != null && !ips.contains(ip)) ips.add(ip);
+                    }
+
+                    if (ips.isEmpty()) return result;
+
+                    for (Document doc : getCollection().find(Filters.in("ip", ips)).sort(Sorts.descending("last_seen"))) {
+                        String name = doc.getString("player_name");
+                        String playerUuid = doc.getString("player_uuid");
+
+                        if (name == null || name.trim().isEmpty()) continue;
+                        if (!uuidValue.isEmpty() && uuidValue.equalsIgnoreCase(playerUuid)) continue;
+                        if (!normalizedName.isEmpty() && normalizedName.equalsIgnoreCase(name)) continue;
+
+                        if (!result.contains(name)) {
+                            result.add(name);
+                        }
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao buscar alts no MongoDB: " + e.getMessage());
+                }
                 return result;
             }
 

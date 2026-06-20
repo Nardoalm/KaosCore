@@ -16,67 +16,71 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CbanCommand extends Commands {
-    public CbanCommand(){
+
+    public CbanCommand() {
         super("cban", "cb", "cheatban");
     }
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cUsage: /cheatban <player>");
+            sender.sendMessage("§cUsage: /cheatban <player>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.banir")) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cPunishment system unavailable.");
+            sender.sendMessage("§cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
-        Player onlineTarget = target.getPlayer();
-        if (onlineTarget == null || !onlineTarget.isOnline()) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cJogador não existe ou não está online.");
+
+        if (target == null || target.getUuid() == null) {
+            sender.sendMessage("§cPlayer does not exist.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        if (sender instanceof Player && target.getUuid() != null && target.getUuid().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cYou cannot ban yourself!");
+        if (sender instanceof Player && target.getUuid().equals(((Player) sender).getUniqueId())) {
+            sender.sendMessage("§cYou cannot ban yourself!");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        String reason = "Uso de trapaças";
+        String reason = "Cheating";
         long expiresAt = System.currentTimeMillis() + (30L * 86_400_000L);
         UUID punisherUuid = ModerationCommandUtil.getSenderUuid(sender);
         String punisherName = ModerationCommandUtil.getSenderName(sender);
 
         PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "CHEATBAN");
         if (punishment == null) {
-            sender.sendMessage("§c§lCHEATBAN ➔ §cNão foi possível aplicar o CHEATBAN.");
+            sender.sendMessage("§cCould not apply CHEATBAN.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
 
-        sender.sendMessage(ChatColor.GREEN + "§a§lCHEATBAN ➔ §a" + target.getName() + " was banned for 30 days successfully!");
+        sender.sendMessage(ChatColor.GREEN + "§a" + target.getName() + " was banned for 30 days successfully!");
         ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
-        onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
-        onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
+        Player onlineTarget = target.getPlayer();
+        if (onlineTarget != null && onlineTarget.isOnline()) {
+            onlineTarget.getWorld().strikeLightningEffect(onlineTarget.getLocation());
+            onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
+        }
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage("§c§lCHEATBAN ➔ §c" + target.getName() + " §cwas banned for cheating.");
+            p.sendMessage("§c" + target.getName() + " §cwas banned for cheating.");
             p.playSound(p.getLocation(), Sound.ARROW_HIT, 1.0f, 1.0f);
         }
     }

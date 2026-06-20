@@ -27,20 +27,20 @@ public final class SetTagCommand extends Commands {
         }
 
         if (!sender.hasPermission(PERMISSION)) {
-            sender.sendMessage("§c§lSETTAG ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args == null || args.length < 2) {
-            sender.sendMessage("§c§lSETTAG ➔ §cUsage: /settag <player> <tag|off>");
+            sender.sendMessage("§cUsage: /settag <player> <tag|off>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         KaosCore plugin = KaosCore.getInstance();
         if (plugin == null || plugin.getTagManager() == null) {
-            sender.sendMessage("§c§lSETTAG ➔ §cTag system unavailable.");
+            sender.sendMessage("§cTag system unavailable.");
             return;
         }
 
@@ -56,7 +56,7 @@ public final class SetTagCommand extends Commands {
         } else {
             OfflinePlayer offline = Bukkit.getOfflinePlayer(targetName);
             if (offline == null || offline.getUniqueId() == null) {
-                sender.sendMessage("§c§lSETTAG ➔ §cJogador inválido.");
+                sender.sendMessage("§cJogador inválido.");
                 return;
             }
             targetUuid = offline.getUniqueId();
@@ -75,20 +75,20 @@ public final class SetTagCommand extends Commands {
 
         Tag tag = plugin.getTagManager().getTagByNameOrId(tagArg);
         if (tag == null) {
-            sender.sendMessage("§c§lSETTAG ➔ §cTag not found.");
+            sender.sendMessage("§cTag not found.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (target != null && target.isOnline() && !plugin.getTagManager().canUse(target, tag)) {
-            sender.sendMessage("§c§lSETTAG ➔ §cThat player does not have permission to use this tag.");
+            sender.sendMessage("§cThat player does not have permission to use this tag.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         boolean ok = plugin.getTagManager().setTag(targetUuid, tag.getId());
         if (!ok) {
-            sender.sendMessage("§c§lSETTAG ➔ §cUnable to set the tag.");
+            sender.sendMessage("§cUnable to set the tag.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }

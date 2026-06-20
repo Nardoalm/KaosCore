@@ -1,6 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;
@@ -20,10 +23,35 @@ public class PlayerMedalRepository {
         this.databaseManager = databaseManager;
     }
 
+    private boolean isMongo() {
+        return databaseManager != null && databaseManager.getType().equalsIgnoreCase("mongodb");
+    }
+
+    private MongoCollection<Document> getCollection() {
+        return databaseManager.getMongoDatabase().getCollection("player_medals");
+    }
+
     public Map<UUID, String> loadAll() {
         Map<UUID, String> result = new HashMap<>();
 
         if (databaseManager == null) {
+            return result;
+        }
+
+        if (isMongo()) {
+            try {
+                for (Document doc : getCollection().find()) {
+                    try {
+                        UUID uuid = UUID.fromString(doc.getString("uuid"));
+                        String medalId = doc.getString("medal_id");
+                        if (medalId != null && !medalId.trim().isEmpty()) {
+                            result.put(uuid, medalId);
+                        }
+                    } catch (Exception ignored) {}
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao carregar medalhas selecionadas do MongoDB: " + e.getMessage());
+            }
             return result;
         }
 
@@ -55,6 +83,16 @@ public class PlayerMedalRepository {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    Document doc = new Document("uuid", uuid.toString()).append("medal_id", medalId);
+                    getCollection().replaceOne(new Document("uuid", uuid.toString()), doc, new ReplaceOptions().upsert(true));
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao salvar medalha selecionada no MongoDB: " + e.getMessage());
+                }
+                return;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("REPLACE INTO player_medals (uuid, medal_id) VALUES (?, ?)")) {
                 ps.setString(1, uuid.toString());
@@ -73,6 +111,15 @@ public class PlayerMedalRepository {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    getCollection().deleteOne(new Document("uuid", uuid.toString()));
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao remover medalha selecionada no MongoDB: " + e.getMessage());
+                }
+                return;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("DELETE FROM player_medals WHERE uuid = ?")) {
                 ps.setString(1, uuid.toString());

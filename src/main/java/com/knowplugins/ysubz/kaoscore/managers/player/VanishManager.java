@@ -52,7 +52,7 @@ public class VanishManager {
                Player player = Bukkit.getPlayer(uuid);
                if (player == null) continue;
 
-               sendActionBar(player, "§aVocê está invisível!");
+               sendActionBar(player, "§aVanish enabled");
 
                updateVanishState(player);
             }

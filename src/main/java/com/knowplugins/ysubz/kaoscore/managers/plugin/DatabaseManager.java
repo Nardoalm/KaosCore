@@ -24,6 +24,7 @@ public class DatabaseManager {
     }
 
     private final KaosCore plugin;
+    private final String configuredType;
     private final DatabaseType databaseType;
     private final String host;
     private final String database;
@@ -41,7 +42,7 @@ public class DatabaseManager {
 
     public DatabaseManager(KaosCore plugin) {
         this.plugin = plugin;
-        String configuredType = plugin.getConfig().getString("database.type", "mysql");
+        this.configuredType = plugin.getConfig().getString("database.type", "mysql");
         this.databaseType = "mongodb".equalsIgnoreCase(configuredType) ? DatabaseType.MONGODB : DatabaseType.MYSQL;
         this.host = plugin.getConfig().getString("database.mysql.host");
         this.port = plugin.getConfig().getInt("database.mysql.port");
@@ -102,7 +103,7 @@ public class DatabaseManager {
             dataSource = hikari;
             connected = createTables();
             if (connected) {
-            System.out.println("\u001B[32m[KaosCore] Connected to MySQL with HikariCP!\u001B[0m");
+                System.out.println("\u001B[32m[KaosCore] Connected to MySQL with HikariCP!\u001B[0m");
                 return true;
             }
         } catch (Exception e) {
@@ -161,6 +162,14 @@ public class DatabaseManager {
         closeMongo();
         closeDataSource();
         System.out.println("\u001B[33m[KaosCore] HikariCP shut down\u001B[0m");
+    }
+
+    public String getType() {
+        return configuredType;
+    }
+
+    public DatabaseType getDatabaseType() {
+        return databaseType;
     }
 
     public boolean isMongo() {

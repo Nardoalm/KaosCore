@@ -17,14 +17,14 @@ public class SetSpawnCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lSPAWN ➔ §cOnly players can use this command.");
+            sender.sendMessage("§cOnly players can use this command.");
             return;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("kaoscore.admin.setspawn")) {
-            player.sendMessage(ChatColor.RED + "§c§lSPAWN ➔ §cYou do not have permission to use this command.");
+            player.sendMessage(ChatColor.RED + "§cYou do not have permission to use this command.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;

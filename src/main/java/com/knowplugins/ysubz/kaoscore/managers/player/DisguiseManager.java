@@ -17,12 +17,31 @@ public class DisguiseManager {
     private static final Map<UUID, String> ORIGINAL_NAMES = new HashMap<>();
 
     private final List<String> defaultNicks = Arrays.asList(
-            "SrGusta", "ziSnaake", "yNandoXP_", "SrLogann", "iPowerPvP",
-            "zFuzion_", "LuanPvP", "Darkness_z", "uSkyWars_", "MasterSkill"
+            "brunao77", "vxRj", "arthur_slk", "pedrinbr", "matheusA",
+            "caio_021", "rafa_xp", "nando_", "duduz1", "luc4s",
+            "igorzin__", "renanz", "guilherme_", "andrex_", "yurizin__",
+            "samuca77", "lkszin__", "cauazin__", "pedrao_", "luan77",
+            "skyzx", "void_77", "n1ghtfall", "storm_x", "darkrj",
+            "lunar7", "blvck_", "ice_021", "firezz", "frostzin__",
+            "px7", "tz_", "qxr", "hz_77", "rxp",
+            "zx21", "krlx", "dxx_", "zzrj", "nxzin__",
+            "brayan_", "vitorrj", "edu_021", "arthur7k", "felps_",
+            "danielx", "marcos77", "henrique_", "gabx_", "thiagox",
+            "devvx", "codexr", "jav4_", "scriptx", "backend_",
+            "rootzin__", "stack_", "nullzin__", "commit_", "push_",
+            "xxvx", "zrx_", "k9_", "vx__", "rxx_",
+            "tzin__", "mz_", "hzx_", "xrz_", "qz_",
+            "guh021", "arthur_08", "brunin7", "vx2010", "kaua_77",
+            "yuri021", "pedro_08", "joaov_", "caiobr", "rafazin__",
+            "slkzin__", "mlk77", "trx_", "drx_", "kratosbr",
+            "zeus_77", "aresx_", "odinbr", "thorzin__", "loki_021",
+            "favelado_", "cria77", "tropa021", "mandela_", "fluxo77",
+            "rolezin__", "quebrada_", "visao77", "resenha_", "bolado77",
+            "pimenta_", "farinha77", "cafezinho_", "arroz_021", "feijao77",
+            "paozinho__", "suco77", "refri_", "doce021", "biscoito77"
     );
 
     private final List<String> allNicks = new ArrayList<>();
-
 
     public void recordOriginalName(Player player) {
         if (player == null) return;
@@ -56,14 +75,13 @@ public class DisguiseManager {
 
     public void updateTabName(Player player) {
         if (player == null) return;
+        player.setPlayerListName(null);
 
-        if (isDisguised(player)) {
-            String disguiseNick = getDisguiseNick(player);
-            if (disguiseNick != null && !disguiseNick.isEmpty()) {
-                player.setPlayerListName(disguiseNick);
+        if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
+            KaosCore core = KaosCore.getInstance();
+            if (core.getTagManager() != null) {
+                core.getTagManager().refreshTag(player);
             }
-        } else {
-            player.setPlayerListName(null);
         }
     }
 
@@ -74,7 +92,7 @@ public class DisguiseManager {
             DISGUISE_NICKS.put(player.getUniqueId(), nick);
         }
 
-        player.setPlayerListName(nick);
+        player.setPlayerListName(null);
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
@@ -82,6 +100,9 @@ public class DisguiseManager {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     core.getTagTeamManager().refreshPlayer(online);
                 }
+            }
+            if (core.getTagManager() != null) {
+                core.getTagManager().refreshTag(player);
             }
         }
     }
@@ -102,16 +123,11 @@ public class DisguiseManager {
     public void removeDisguise(Player player) {
         if (player == null) return;
 
-        String originalName = ORIGINAL_NAMES.get(player.getUniqueId());
         DISGUISED.remove(player.getUniqueId());
         DISGUISE_NICKS.remove(player.getUniqueId());
         ORIGINAL_NAMES.remove(player.getUniqueId());
 
-        if (originalName != null && !originalName.isEmpty()) {
-            player.setPlayerListName(originalName);
-        } else {
-            player.setPlayerListName(null);
-        }
+        player.setPlayerListName(null);
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
@@ -119,6 +135,9 @@ public class DisguiseManager {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     core.getTagTeamManager().refreshPlayer(online);
                 }
+            }
+            if (core.getTagManager() != null) {
+                core.getTagManager().refreshTag(player);
             }
         }
     }
@@ -139,7 +158,6 @@ public class DisguiseManager {
         }
         return false;
     }
-
 
     public void loadNicksFile(JavaPlugin plugin) {
         File file = new File(plugin.getDataFolder(), "nicks.yml");
@@ -171,7 +189,6 @@ public class DisguiseManager {
         List<String> fileNicks = config.getStringList("nicks-extras");
 
         this.allNicks.clear();
-
         this.allNicks.addAll(this.defaultNicks);
         if (fileNicks != null && !fileNicks.isEmpty()) {
             this.allNicks.addAll(fileNicks);

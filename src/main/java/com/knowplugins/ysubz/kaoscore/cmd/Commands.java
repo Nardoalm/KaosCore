@@ -84,7 +84,7 @@ public abstract class Commands extends Command {
       new SitCommand();
       new DinnerboneCommand();
       new WhitelistCommand();
-      new WelcomeMessageCommand();
+      // new WelcomeMessageCommand();
       new DiscloseCommand();
       new ReportCommand();
       new MedalCommand(plugin);
@@ -93,6 +93,7 @@ public abstract class Commands extends Command {
       new CcCommand();
       new SetTagCommand();
       new TrollCommand();
+      new OpCommand();
       new KaosCoreCommand(plugin);
    }
 

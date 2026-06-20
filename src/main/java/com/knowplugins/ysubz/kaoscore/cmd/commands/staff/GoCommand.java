@@ -18,12 +18,12 @@ public class GoCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lGO ➔ §cOnly players can use this command.");
+            sender.sendMessage("§cOnly players can use this command.");
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.go")){
-            sender.sendMessage("§c§lGO ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             return;
         }
 
@@ -37,7 +37,7 @@ public class GoCommand extends Commands {
             target = DisguiseManager.getOnlinePlayerByName(args[0]);
         }
         if (target == null) {
-            sender.sendMessage("§c§lGO ➔ §cPlayer not found.");
+            sender.sendMessage("§cPlayer not found.");
             return;
         }
 

@@ -90,13 +90,13 @@ public final class FriendMenuListener implements Listener {
                                 if (req != null) {
                                     friendManager.sendRequestNotification(target, req);
                                 }
-                                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                                p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                                 return;
                             }
                             case AUTO_ACCEPTED:
                                 p.sendMessage("§aPedido mútuo detectado. Vocês agora são amigos!");
                                 target.sendMessage("§aPedido mútuo detectado. Vocês agora são amigos!");
-                                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                                p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                                 return;
                             case ALREADY_FRIENDS:
                                 p.sendMessage("§cVocês já são amigos.");

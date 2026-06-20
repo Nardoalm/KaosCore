@@ -22,20 +22,20 @@ public class HistoryCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.history")) {
-            sender.sendMessage("§c§lHISTORY ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lHISTORY ➔ §cUsage: /history <player> [limit]");
+            sender.sendMessage("§cUsage: /history <player> [limit]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lHISTORY ➔ §cPunishment system unavailable.");
+            sender.sendMessage("§cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -46,7 +46,7 @@ public class HistoryCommand extends Commands {
             try {
                 limit = Math.max(1, Math.min(50, Integer.parseInt(args[1])));
             } catch (NumberFormatException ignored) {
-                sender.sendMessage("§c§lHISTORY ➔ §cInvalid limit.");
+                sender.sendMessage("§cInvalid limit.");
                 ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
                 return;
             }

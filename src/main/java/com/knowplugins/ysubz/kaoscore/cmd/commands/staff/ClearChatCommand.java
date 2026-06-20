@@ -17,14 +17,13 @@ public class ClearChatCommand extends Commands {
    @Override
    public void perform(CommandSender sender, String label, String[] args) {
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lCHAT ➔ §cApenas jogadores podem executar este comando.");
+         sender.sendMessage("§cOnly players can use this command.");
       } else {
-         Player player = (Player)sender;
+         Player player = (Player) sender;
 
          if (!player.hasPermission("kaoscore.cmd.clearchat")) {
-            player.sendMessage("§c§lCHAT ➔ §cVocê não tem permissão para executar este comando.");
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.sendMessage("§cYou do not have permission to execute this command.");
+            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
 
          } else {
             IntStream.range(0, 200).forEach((i) -> {
@@ -33,15 +32,13 @@ public class ClearChatCommand extends Commands {
                });
             });
             TextComponent component = new TextComponent("");
-            Arrays.stream(TextComponent.fromLegacyText("§a§lCHAT ➔ §aO chat foi limpo.")).forEach(component::addExtra);
+            Arrays.stream(TextComponent.fromLegacyText("§aThe chat has been cleared.")).forEach(component::addExtra);
             Bukkit.getOnlinePlayers().forEach((consumer) -> {
                consumer.spigot().sendMessage(component);
             });
 
-            Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
          }
       }
    }
 }
-

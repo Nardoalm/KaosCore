@@ -17,7 +17,7 @@ public class FriendRequest {
 
     public FriendRequest(UUID requesterId, String requesterName, UUID targetId, long createdAt) {
         this.requesterId = requesterId;
-        this.requesterName = requesterName == null ? "Desconhecido" : requesterName;
+        this.requesterName = requesterName == null ? "Unknown" : requesterName;
         this.targetId = targetId;
         this.createdAt = createdAt;
     }

@@ -15,7 +15,7 @@ public class MenuCommand extends Commands {
             Player player = (Player) sender;
             MenuUtils.openMenu(player);
         } else {
-            sender.sendMessage("§c§lERROR -> §cOnly players can use this command.");
+            sender.sendMessage("§c§lERROR ➔ §cOnly players can use this command.");
         }
     }
 }

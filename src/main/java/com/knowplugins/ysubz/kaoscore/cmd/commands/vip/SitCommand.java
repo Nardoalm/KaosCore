@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 public class SitCommand extends Commands {
 
     public SitCommand() {
-        super("sit", "sentar");
+        super("sit");
     }
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lSIT ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§cOnly players can use this command.");
             return;
         }
 
@@ -24,12 +24,12 @@ public class SitCommand extends Commands {
         SitManager sitManager = Managers.getSitManager();
 
         if (sitManager == null) {
-            player.sendMessage("§c§lSIT ➔ §cO sistema de assentos está temporariamente indisponível.");
+            player.sendMessage("§cThe seating system is temporarily unavailable.");
             return;
         }
 
         if (!sitManager.hasPermission(player)) {
-            player.sendMessage("§c§lSIT ➔ §cVocê não tem permissão para executar esse comando.");
+            player.sendMessage("§cYou do not have permission to execute this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -37,7 +37,7 @@ public class SitCommand extends Commands {
         if (!sitManager.sit(player)) {
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
         } else {
-            player.sendMessage("§e§lSIT ➔ §eVocê sentou. Pressiona §6SHIFT §epara levantar.");
+            player.sendMessage("§aYou are now sitting. Press §6SHIFT §ato stand up.");
         }
     }
 }

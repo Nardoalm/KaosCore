@@ -144,8 +144,8 @@ public class WelcomeMessageManager {
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§e" + safe(template.getName()));
 
-            String playerTag = PlaceholderAPI.setPlaceholders(player, "%kaoscore_tag_prefix%");
-            String playerName = playerTag + player.getName();
+
+            String playerName = plugin.getTagManager().getTag(player).getPrefix() + player.getName();
 
             List<String> lore = new ArrayList<>();
             String preview = safe(template.getText()).replace("{player}", playerName);
@@ -212,7 +212,7 @@ public class WelcomeMessageManager {
 
                 String id = normalize(key);
                 String name = section.getString("name", key);
-                String text = section.getString("text", "{player} entrou no lobby!");
+                String text = section.getString("text", "{player} entered the lobby!");
                 String permission = section.getString("permission", "");
 
                 templates.put(id, new Template(id, name, color(text), permission));

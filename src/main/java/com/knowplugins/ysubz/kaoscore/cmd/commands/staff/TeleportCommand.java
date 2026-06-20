@@ -23,19 +23,19 @@ public class TeleportCommand extends Commands {
    public void perform(CommandSender sender, String label, String[] args) {
 
       if (!(sender instanceof Player)) {
-         sender.sendMessage("§c§lTELEPORT ➔ §cOnly players can use this command.");
+         sender.sendMessage("§cOnly players can use this command.");
          return;
       }
 
       if (args.length > 1 && Objects.equals(args[0], args[1])) {
-         sender.sendMessage("§c§lTELEPORT ➔ §cYou cannot teleport to yourself!");
+         sender.sendMessage("§cYou cannot teleport to yourself!");
          Player senderPlayer = (Player) sender;
          senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
          return;
       }
 
       if (!sender.hasPermission("kaoscore.staff.teleportar")) {
-         sender.sendMessage("§c§lTELEPORT ➔ §cYou do not have permission to use this command.");
+         sender.sendMessage("§cYou do not have permission to use this command.");
          Player senderPlayer = (Player) sender;
          senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
          return;
@@ -44,7 +44,7 @@ public class TeleportCommand extends Commands {
 
    public boolean execute(CommandSender sender, String currentAlias, String[] args) {
       if (!sender.hasPermission("kaoscore.staff.teleportar")) {
-         sender.sendMessage("§c§lTELEPORT ➔ §cYou do not have permission to use this command.");
+         sender.sendMessage("§cYou do not have permission to use this command.");
          Player senderPlayer = (Player) sender;
          senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
          return true;
@@ -58,7 +58,7 @@ public class TeleportCommand extends Commands {
             if (player == null) player = DisguiseManager.getOnlinePlayerByName(args[0]);
          } else {
             if (!(sender instanceof Player)) {
-               sender.sendMessage("§c§lTELEPORT ➔ §cEnter a player name!");
+               sender.sendMessage("§cEnter a player name!");
                Player senderPlayer = (Player) sender;
                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                return true;
@@ -68,7 +68,7 @@ public class TeleportCommand extends Commands {
          }
 
          if (player == null) {
-            sender.sendMessage("§c§lTELEPORT ➔ §cPlayer not found: " + args[0]);
+            sender.sendMessage("§cPlayer not found: " + args[0]);
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return true;
@@ -77,7 +77,7 @@ public class TeleportCommand extends Commands {
                Player target = Bukkit.getPlayerExact(args[args.length - 1]);
                if (target == null) target = DisguiseManager.getOnlinePlayerByName(args[args.length - 1]);
                if (target == null) {
-                  sender.sendMessage("§c§lTELEPORT ➔ §cCould not find player " + args[args.length - 1] + ". Teleport cancelled.");
+                  sender.sendMessage("§cCould not find player " + args[args.length - 1] + ". Teleport cancelled.");
                   Player senderPlayer = (Player) sender;
                   senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                   return true;
@@ -94,7 +94,7 @@ public class TeleportCommand extends Commands {
                double y = this.getCoordinate(sender, playerLocation.getY(), args[args.length - 2], 0, 0);
                double z = this.getCoordinate(sender, playerLocation.getZ(), args[args.length - 1]);
                if (x == -3.0000001E7D || y == -3.0000001E7D || z == -3.0000001E7D) {
-                  sender.sendMessage("§c§lTELEPORT ➔ §cInvalid coordinates!");
+                  sender.sendMessage("§cInvalid coordinates!");
                   Player senderPlayer = (Player) sender;
                   senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                   return true;
@@ -112,7 +112,7 @@ public class TeleportCommand extends Commands {
             return true;
          }
       } else {
-         sender.sendMessage("§c§lTELEPORT ➔ §cUsage: /tp <player>");
+         sender.sendMessage("§cUsage: /tp <player>");
          Player senderPlayer = (Player) sender;
          senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
          return false;

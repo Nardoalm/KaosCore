@@ -17,7 +17,7 @@ public class KaosCoreCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.reload")) {
-            sender.sendMessage("§c§lKAOSCORE ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             if (sender instanceof org.bukkit.entity.Player) {
                 ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             }
@@ -36,7 +36,7 @@ public class KaosCoreCommand extends Commands {
                 ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
             }
         } catch (Exception ex) {
-            sender.sendMessage("§c§lKAOSCORE ➔ §cFailed to reload configuration. Check the console.");
+            sender.sendMessage("§cFailed to reload configuration. Check the console.");
             plugin.getLogger().severe("Failed to execute /kaoscore reload: " + ex.getMessage());
             ex.printStackTrace();
         }

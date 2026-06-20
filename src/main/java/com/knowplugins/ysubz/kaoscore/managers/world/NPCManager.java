@@ -10,15 +10,19 @@ import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;
 import com.knowplugins.ysubz.kaoscore.utils.skin.MojangSkinFetcher;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityHeadRotation;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
 import net.minecraft.server.v1_8_R3.PlayerInteractManager;
 import net.minecraft.server.v1_8_R3.WorldServer;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -45,13 +49,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * NPCs por pacote (fake players) com configuracao em npcs.yml.
- * Cada NPC e enviado individualmente por viewer, entao precisamos mapear entityIds por player.
- */
 public final class NPCManager {
 
     private static final long NPC_TABLIST_REMOVE_DELAY_TICKS = 60L;
+    private static final double LINE_SPACING = 0.28;
 
     private final KaosCore plugin;
     private final File file;
@@ -65,12 +66,118 @@ public final class NPCManager {
 
     private final ConcurrentMap<UUID, ConcurrentMap<Integer, String>> npcByEntityIdByViewer = new ConcurrentHashMap<>();
     private final ConcurrentMap<UUID, ConcurrentMap<String, Integer>> entityIdByNpcIdByViewer = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, ConcurrentMap<String, List<EntityArmorStand>>> textStandsByNpcByViewer = new ConcurrentHashMap<>();
 
     public NPCManager(KaosCore plugin, DatabaseManager databaseManager) {
         this.plugin = plugin;
         this.file = plugin == null ? null : new File(plugin.getDataFolder(), "npcs.yml");
         this.skinCacheRepository = (plugin == null || databaseManager == null) ? null : new SkinCacheRepository(plugin, databaseManager);
         reload();
+        startVisibilityHeartbeat();
+    }
+
+    private void startVisibilityHeartbeat() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            if (!enabled) return;
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online != null && online.isOnline()) {
+                    checkProximityAndSpawn(online);
+                    updateHologramTexts(online);
+                }
+            }
+        }, 40L, 20L);
+    }
+
+    private void checkProximityAndSpawn(Player viewer) {
+        Location viewerLoc = viewer.getLocation();
+        UUID viewerId = viewer.getUniqueId();
+        ConcurrentMap<String, Integer> npcToEntity = entityIdByNpcIdByViewer.get(viewerId);
+
+        for (NpcDefinition npc : npcsById.values()) {
+            if (npc == null || !npc.enabled) continue;
+
+            Location loc = npc.location;
+            if (!loc.getWorld().getName().equals(viewerLoc.getWorld().getName())) {
+                if (npcToEntity != null && npcToEntity.containsKey(npc.id)) {
+                    despawnSingleNpc(viewer, npc.id);
+                }
+                continue;
+            }
+
+            double distanceSquared = loc.distanceSquared(viewerLoc);
+            boolean isSpawned = (npcToEntity != null && npcToEntity.containsKey(npc.id));
+
+            if (distanceSquared <= 2304) {
+                if (!isSpawned) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (viewer.isOnline()) spawnNpcFor(viewer, npc);
+                    });
+                }
+            } else {
+                if (isSpawned) {
+                    despawnSingleNpc(viewer, npc.id);
+                }
+            }
+        }
+    }
+
+    private void updateHologramTexts(Player viewer) {
+        ConcurrentMap<String, List<EntityArmorStand>> viewerStands = textStandsByNpcByViewer.get(viewer.getUniqueId());
+        if (viewerStands == null || viewerStands.isEmpty()) return;
+
+        PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
+
+        for (Map.Entry<String, List<EntityArmorStand>> entry : viewerStands.entrySet()) {
+            NpcDefinition npc = npcsById.get(entry.getKey());
+            if (npc == null || npc.lines.isEmpty()) continue;
+
+            List<EntityArmorStand> stands = entry.getValue();
+            int limit = Math.min(npc.lines.size(), stands.size());
+
+            for (int i = 0; i < limit; i++) {
+                EntityArmorStand as = stands.get(i);
+                String rawLine = npc.lines.get(i);
+                String processed = ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(viewer, rawLine));
+
+                if (!processed.equals(as.getCustomName())) {
+                    as.setCustomName(processed);
+                    as.setCustomNameVisible(!processed.trim().isEmpty());
+                    connection.sendPacket(new PacketPlayOutEntityMetadata(as.getId(), as.getDataWatcher(), true));
+                }
+            }
+        }
+    }
+
+    private void despawnSingleNpc(Player viewer, String npcId) {
+        UUID viewerId = viewer.getUniqueId();
+        ConcurrentMap<String, Integer> npcToEntity = entityIdByNpcIdByViewer.get(viewerId);
+        ConcurrentMap<Integer, String> entityToNpc = npcByEntityIdByViewer.get(viewerId);
+
+        List<Integer> entitiesToDestroy = new ArrayList<>();
+
+        if (npcToEntity != null && npcToEntity.containsKey(npcId)) {
+            int entityId = npcToEntity.remove(npcId);
+            entitiesToDestroy.add(entityId);
+            if (entityToNpc != null) {
+                entityToNpc.remove(entityId);
+            }
+        }
+
+        ConcurrentMap<String, List<EntityArmorStand>> viewerStands = textStandsByNpcByViewer.get(viewerId);
+        if (viewerStands != null) {
+            List<EntityArmorStand> stands = viewerStands.remove(npcId);
+            if (stands != null) {
+                for (EntityArmorStand as : stands) {
+                    entitiesToDestroy.add(as.getId());
+                }
+            }
+        }
+
+        if (!entitiesToDestroy.isEmpty()) {
+            int[] ids = entitiesToDestroy.stream().mapToInt(Integer::intValue).toArray();
+            PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
+            connection.sendPacket(new PacketPlayOutEntityDestroy(ids));
+        }
     }
 
     public void reload() {
@@ -128,13 +235,24 @@ public final class NPCManager {
             float pitch = (float) section.getDouble("pitch");
             Location loc = new Location(world, x, y, z, yaw, pitch);
 
+            List<String> lines = new ArrayList<>();
+            if (section.contains("lines")) {
+                lines.addAll(section.getStringList("lines"));
+            } else {
+                for (int i = 1; i <= 5; i++) {
+                    if (section.contains("line" + i)) {
+                        lines.add(section.getString("line" + i));
+                    }
+                }
+            }
+
             String skinNick = cleanNick(section.getString("skin-nick", ""));
             List<String> commands = section.getStringList("commands");
             if (commands == null) {
                 commands = Collections.emptyList();
             }
 
-            loaded.put(id, new NpcDefinition(id, enabled, loc, skinNick, commands));
+            loaded.put(id, new NpcDefinition(id, lines, enabled, loc, skinNick, commands));
         }
 
         npcsById.putAll(loaded);
@@ -167,6 +285,12 @@ public final class NPCManager {
             cfg.set(path + ".z", loc.getZ());
             cfg.set(path + ".yaw", (double) loc.getYaw());
             cfg.set(path + ".pitch", (double) loc.getPitch());
+            if (!cfg.contains(path + ".line1")) {
+                cfg.set(path + ".line1", "&b&lALLEY");
+            }
+            if (!cfg.contains(path + ".line2")) {
+                cfg.set(path + ".line2", "%kaos_playing-count%");
+            }
             if (!cleanSkin.isEmpty()) {
                 cfg.set(path + ".skin-nick", cleanSkin);
             } else if (!cfg.contains(path + ".skin-nick")) {
@@ -239,11 +363,14 @@ public final class NPCManager {
         if (!enabled || viewer == null || plugin == null || !viewer.isOnline()) {
             return;
         }
+        Location viewerLoc = viewer.getLocation();
         for (NpcDefinition npc : npcsById.values()) {
-            if (npc == null || !npc.enabled) {
+            if (npc == null || !npc.enabled || npc.location == null || !npc.location.getWorld().getName().equals(viewerLoc.getWorld().getName())) {
                 continue;
             }
-            spawnNpcFor(viewer, npc);
+            if (npc.location.distanceSquared(viewerLoc) <= 2304) {
+                spawnNpcFor(viewer, npc);
+            }
         }
     }
 
@@ -255,22 +382,28 @@ public final class NPCManager {
         UUID viewerId = viewer.getUniqueId();
         Map<Integer, String> map = npcByEntityIdByViewer.remove(viewerId);
         entityIdByNpcIdByViewer.remove(viewerId);
-        if (map == null || map.isEmpty()) {
-            return;
+
+        List<Integer> entitiesToDestroy = new ArrayList<>();
+
+        if (map != null && !map.isEmpty()) {
+            entitiesToDestroy.addAll(map.keySet());
         }
 
-        int[] ids = new int[map.size()];
-        int i = 0;
-        for (Integer id : map.keySet()) {
-            if (id != null) {
-                ids[i++] = id;
+        ConcurrentMap<String, List<EntityArmorStand>> viewerStands = textStandsByNpcByViewer.remove(viewerId);
+        if (viewerStands != null) {
+            for (List<EntityArmorStand> stands : viewerStands.values()) {
+                for (EntityArmorStand as : stands) {
+                    entitiesToDestroy.add(as.getId());
+                }
             }
+            viewerStands.clear();
         }
 
-        if (i <= 0) {
+        if (entitiesToDestroy.isEmpty()) {
             return;
         }
 
+        int[] ids = entitiesToDestroy.stream().mapToInt(Integer::intValue).toArray();
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutEntityDestroy(ids));
     }
@@ -279,8 +412,10 @@ public final class NPCManager {
         if (viewer == null) {
             return;
         }
-        npcByEntityIdByViewer.remove(viewer.getUniqueId());
-        entityIdByNpcIdByViewer.remove(viewer.getUniqueId());
+        UUID viewerId = viewer.getUniqueId();
+        npcByEntityIdByViewer.remove(viewerId);
+        entityIdByNpcIdByViewer.remove(viewerId);
+        textStandsByNpcByViewer.remove(viewerId);
     }
 
     public void shutdown() {
@@ -296,6 +431,7 @@ public final class NPCManager {
         loadingSkins.clear();
         npcByEntityIdByViewer.clear();
         entityIdByNpcIdByViewer.clear();
+        textStandsByNpcByViewer.clear();
     }
 
     public boolean isNpcEntity(Player viewer, int entityId) {
@@ -353,9 +489,10 @@ public final class NPCManager {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
 
-        // GameProfile name precisa ser sem cores e <= 16.
-        String profileName = buildProfileName(npc.id);
-        GameProfile profile = new GameProfile(buildProfileUuid(npc), profileName);
+        GameProfile profile = new GameProfile(buildProfileUuid(npc), "§8[NPC] " + npc.id);
+        if (profile.getName().length() > 16) {
+            profile = new GameProfile(buildProfileUuid(npc), profile.getName().substring(0, 16));
+        }
         applySkin(profile, npc);
 
         EntityPlayer entity = new EntityPlayer(server, world, profile, new PlayerInteractManager(world));
@@ -371,6 +508,32 @@ public final class NPCManager {
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
         connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entity));
         connection.sendPacket(new PacketPlayOutEntityHeadRotation(entity, (byte) (loc.getYaw() * 256 / 360)));
+
+        if (!npc.lines.isEmpty()) {
+            List<EntityArmorStand> stands = new ArrayList<>();
+            Location currentLoc = loc.clone().add(0, 1.85 + ((npc.lines.size() - 1) * LINE_SPACING), 0);
+
+            for (String raw : npc.lines) {
+                EntityArmorStand as = new EntityArmorStand(world);
+                as.setLocation(currentLoc.getX(), currentLoc.getY(), currentLoc.getZ(), 0.0F, 0.0F);
+                as.setGravity(false);
+                as.setInvisible(true);
+                as.setSmall(true);
+                as.setBasePlate(false);
+                as.setArms(false);
+
+                String text = ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(viewer, raw));
+                as.setCustomName(text);
+                as.setCustomNameVisible(!text.trim().isEmpty());
+
+                connection.sendPacket(new PacketPlayOutSpawnEntityLiving(as));
+                connection.sendPacket(new PacketPlayOutEntityMetadata(as.getId(), as.getDataWatcher(), true));
+
+                stands.add(as);
+                currentLoc.subtract(0, LINE_SPACING, 0);
+            }
+            textStandsByNpcByViewer.computeIfAbsent(viewerId, k -> new ConcurrentHashMap<>()).put(npc.id, stands);
+        }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             try {
@@ -390,7 +553,6 @@ public final class NPCManager {
         String nick = normalize(npc.skinNick);
         Skin skin = nick.isEmpty() ? null : skinByNick.get(nick);
         if (skin == null || skin.value == null || skin.value.trim().isEmpty()) {
-            // Hard fallback para nunca ficar Steve.
             SkinMatrix.SkinData matrix = SkinMatrix.getDeterministicSkin(nick.isEmpty() ? npc.id : nick);
             if (matrix != null && matrix.value != null && !matrix.value.trim().isEmpty()) {
                 skin = new Skin(matrix.value, matrix.signature);
@@ -497,7 +659,6 @@ public final class NPCManager {
             return null;
         }
 
-        // 1) Mojang
         try {
             Property textures = MojangSkinFetcher.fetchPropertyByName(clean);
             if (textures != null && textures.getValue() != null && !textures.getValue().trim().isEmpty()) {
@@ -511,7 +672,6 @@ public final class NPCManager {
         } catch (Exception ignored) {
         }
 
-        // 2) DB cache
         SkinCacheRepository repo = skinCacheRepository;
         if (repo != null) {
             try {
@@ -523,7 +683,6 @@ public final class NPCManager {
             }
         }
 
-        // 3) Hard fallback
         SkinMatrix.SkinData matrix = SkinMatrix.getDeterministicSkin(clean);
         if (matrix != null && matrix.value != null && !matrix.value.trim().isEmpty()) {
             return new Skin(matrix.value, matrix.signature);
@@ -599,19 +758,6 @@ public final class NPCManager {
         Bukkit.dispatchCommand(sender, cmd);
     }
 
-    private String buildProfileName(String id) {
-        String s = normalize(id);
-        if (s.isEmpty()) {
-            return "npc";
-        }
-        s = s.replaceAll("[^a-z0-9_]", "_");
-        s = "npc_" + s;
-        if (s.length() > 16) {
-            s = s.substring(0, 16);
-        }
-        return s;
-    }
-
     private UUID buildProfileUuid(NpcDefinition npc) {
         String key = "kaoscore:npc:" + safeNpcPart(npc == null ? null : npc.id) + ":" + safeNpcPart(npc == null ? null : npc.skinNick);
         return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
@@ -644,13 +790,15 @@ public final class NPCManager {
 
     private static final class NpcDefinition {
         public final String id;
+        public final List<String> lines;
         public final boolean enabled;
         public final Location location;
         public final String skinNick;
         public final List<String> commands;
 
-        private NpcDefinition(String id, boolean enabled, Location location, String skinNick, List<String> commands) {
+        private NpcDefinition(String id, List<String> lines, boolean enabled, Location location, String skinNick, List<String> commands) {
             this.id = id;
+            this.lines = lines == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(lines));
             this.enabled = enabled;
             this.location = location;
             this.skinNick = skinNick == null ? "" : skinNick;

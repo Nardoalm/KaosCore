@@ -27,14 +27,14 @@ public final class UngrantCommand extends Commands {
         }
 
         if (!hasPerm(sender)) {
-            sender.sendMessage("§c§lUNGRANT ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PermissionManager permissions = Managers.getPermissionManager();
         if (permissions == null) {
-            sender.sendMessage("§c§lUNGRANT ➔ §cPermission system unavailable.");
+            sender.sendMessage("§cPermission system unavailable.");
             return;
         }
 
@@ -70,7 +70,7 @@ public final class UngrantCommand extends Commands {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 sender.sendMessage(ok
                         ? "§a§lUNGRANT ➔ §aGrant removed from §f" + finalResolvedName + " §a(" + groupName + ")."
-                        : "§c§lUNGRANT ➔ §cNo active grant found to remove.");
+                        : "§cNo active grant found to remove.");
                 ModerationCommandUtil.play(sender, ok ? Sound.LEVEL_UP : Sound.VILLAGER_NO);
             });
         });

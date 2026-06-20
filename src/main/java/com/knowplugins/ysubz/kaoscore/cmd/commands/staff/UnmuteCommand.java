@@ -19,20 +19,20 @@ public class UnmuteCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.mutar")) {
-            sender.sendMessage("§c§lUNMUTE ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lUNMUTE ➔ §cUsage: /unmute <player>");
+            sender.sendMessage("§cUsage: /unmute <player>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lUNMUTE ➔ §cPunishment system unavailable.");
+            sender.sendMessage("§cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -43,7 +43,7 @@ public class UnmuteCommand extends Commands {
 
         boolean removed = punishmentManager.clearActive(PunishmentType.MUTE, target.getUuid(), target.getName(), senderUuid, senderName, "Mute removido manualmente");
         if (!removed) {
-            sender.sendMessage("§c§lUNMUTE ➔ §cThat player is not muted.");
+            sender.sendMessage("§cThat player is not muted.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }

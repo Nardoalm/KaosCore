@@ -6,10 +6,15 @@ import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -54,6 +59,14 @@ public class FriendManager {
         this.requests = new ConcurrentHashMap<>();
     }
 
+    private boolean isMongo() {
+        return Managers.getDatabaseManager() != null && Managers.getDatabaseManager().isMongo();
+    }
+
+    private MongoCollection<Document> getCollection(String name) {
+        return Managers.getDatabaseManager().getMongoDatabase().getCollection(name);
+    }
+
     public void loadFriends() {
         friends.clear();
         requests.clear();
@@ -63,6 +76,19 @@ public class FriendManager {
         }
 
         cleanupExpiredRequests();
+
+        if (isMongo()) {
+            try {
+                for (Document doc : getCollection("friends").find()) {
+                    UUID playerId = UUID.fromString(doc.getString("player_uuid"));
+                    UUID friendId = UUID.fromString(doc.getString("friend_uuid"));
+                    friends.computeIfAbsent(playerId, key -> ConcurrentHashMap.newKeySet()).add(friendId);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao carregar amigos do MongoDB: " + e.getMessage());
+            }
+            return;
+        }
 
         String sql = "SELECT player_uuid, friend_uuid FROM friends";
         try (Connection conn = Managers.getDatabaseManager().getConnection();
@@ -304,15 +330,15 @@ public class FriendManager {
         List<FriendRequest> playerRequests = getRequests(player.getUniqueId());
         if (playerRequests.isEmpty()) {
             if (announceEmpty) {
-                player.sendMessage("§cVocê não tem pedidos de amizade pendentes.");
+                player.sendMessage("§cYou do not have any pending friend requests.");
             }
             return false;
         }
 
         if (fromLogin) {
-            player.sendMessage("§6Você possui §e" + playerRequests.size() + " §6pedido(s) de amizade pendente(s):");
+            player.sendMessage("§6You have §e" + playerRequests.size() + " §6pending friend request(s):");
         } else {
-            player.sendMessage("§6§m+-------------------§6[ §ePedidos de Amizade §6]§m-------------------+");
+            player.sendMessage("§6§m+-------------------§6[ §eFriend Requests §6]§m-------------------+");
         }
 
         for (FriendRequest request : playerRequests) {
@@ -330,7 +356,7 @@ public class FriendManager {
             return;
         }
 
-        target.sendMessage("§8➥ " + request.getRequesterName() + " §6quer te adicionar como amigo(a).");
+        target.sendMessage("§8➥ " + request.getRequesterName() + " §6wants to add you as a friend.");
         target.spigot().sendMessage(buildRequestComponent(request));
     }
 
@@ -347,7 +373,7 @@ public class FriendManager {
 
             String color = resolveTagColor(player);
             String displayName = PlaceholderManager.getDisplayName(player);
-            friend.sendMessage("§a§lAMIZADE ➔ §eSeu amigo " + color + displayName + " §eentrou no servidor.");
+            friend.sendMessage("§a§lFRIEND ➔ §eYour friend " + color + displayName + " §ejoined the server.");
         }
     }
 
@@ -357,7 +383,7 @@ public class FriendManager {
 
     public String getFriendAccountName(UUID friendId) {
         if (friendId == null) {
-            return "Desconhecido";
+            return "Unknown";
         }
 
         if (plugin != null && plugin.getAccountController() != null) {
@@ -380,12 +406,12 @@ public class FriendManager {
         }
 
         OfflinePlayer offline = Bukkit.getOfflinePlayer(friendId);
-        return offline != null && offline.getName() != null ? offline.getName() : "Desconhecido";
+        return offline != null && offline.getName() != null ? offline.getName() : "Unknown";
     }
 
     public String getFriendVisibleName(UUID friendId) {
         if (friendId == null) {
-            return "Desconhecido";
+            return "Unknown";
         }
 
         Player online = Bukkit.getPlayer(friendId);
@@ -463,6 +489,23 @@ public class FriendManager {
             return result;
         }
 
+        if (isMongo()) {
+            try {
+                Bson filter = Filters.eq("target_uuid", targetId.toString());
+                for (Document doc : getCollection("friend_requests").find(filter)) {
+                    result.add(new FriendRequest(
+                            UUID.fromString(doc.getString("requester_uuid")),
+                            doc.getString("requester_name"),
+                            UUID.fromString(doc.getString("target_uuid")),
+                            doc.getLong("created_at")
+                    ));
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao carregar pedidos de amizade do MongoDB: " + e.getMessage());
+            }
+            return result;
+        }
+
         String sql = "SELECT requester_uuid, requester_name, target_uuid, created_at FROM friend_requests WHERE target_uuid = ? ORDER BY created_at DESC";
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -511,9 +554,20 @@ public class FriendManager {
             return;
         }
 
+        long threshold = System.currentTimeMillis() - FriendRequest.EXPIRATION_MILLIS;
+
+        if (isMongo()) {
+            try {
+                getCollection("friend_requests").deleteMany(Filters.lt("created_at", threshold));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao limpar pedidos de amizade expirados do MongoDB: " + e.getMessage());
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friend_requests WHERE created_at < ?")) {
-            stmt.setLong(1, System.currentTimeMillis() - FriendRequest.EXPIRATION_MILLIS);
+            stmt.setLong(1, threshold);
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().warning("Erro ao limpar pedidos de amizade expirados: " + e.getMessage());
@@ -529,6 +583,23 @@ public class FriendManager {
 
     private void saveFriend(UUID playerId, UUID friendId, long since) {
         if (playerId == null || friendId == null || !hasDatabase()) {
+            return;
+        }
+
+        if (isMongo()) {
+            try {
+                Document doc = new Document("player_uuid", playerId.toString())
+                        .append("friend_uuid", friendId.toString())
+                        .append("friend_name", getFriendAccountName(friendId))
+                        .append("since", since);
+                Bson filter = Filters.and(
+                        Filters.eq("player_uuid", playerId.toString()),
+                        Filters.eq("friend_uuid", friendId.toString())
+                );
+                getCollection("friends").replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao salvar amizade no MongoDB: " + e.getMessage());
+            }
             return;
         }
 
@@ -550,6 +621,19 @@ public class FriendManager {
             return;
         }
 
+        if (isMongo()) {
+            try {
+                Bson filter = Filters.or(
+                        Filters.and(Filters.eq("player_uuid", playerId.toString()), Filters.eq("friend_uuid", friendId.toString())),
+                        Filters.and(Filters.eq("player_uuid", friendId.toString()), Filters.eq("friend_uuid", playerId.toString()))
+                );
+                getCollection("friends").deleteMany(filter);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao remover amizade do MongoDB: " + e.getMessage());
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friends WHERE (player_uuid = ? AND friend_uuid = ?) OR (player_uuid = ? AND friend_uuid = ?)")) {
             stmt.setString(1, playerId.toString());
@@ -564,6 +648,23 @@ public class FriendManager {
 
     private void saveRequest(FriendRequest request) {
         if (request == null || !hasDatabase()) {
+            return;
+        }
+
+        if (isMongo()) {
+            try {
+                Document doc = new Document("requester_uuid", request.getRequesterId().toString())
+                        .append("requester_name", request.getRequesterName())
+                        .append("target_uuid", request.getTargetId().toString())
+                        .append("created_at", request.getCreatedAt());
+                Bson filter = Filters.and(
+                        Filters.eq("requester_uuid", request.getRequesterId().toString()),
+                        Filters.eq("target_uuid", request.getTargetId().toString())
+                );
+                getCollection("friend_requests").replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao salvar pedido de amizade no MongoDB: " + e.getMessage());
+            }
             return;
         }
 
@@ -597,6 +698,19 @@ public class FriendManager {
             return;
         }
 
+        if (isMongo()) {
+            try {
+                Bson filter = Filters.and(
+                        Filters.eq("requester_uuid", requesterId.toString()),
+                        Filters.eq("target_uuid", targetId.toString())
+                );
+                getCollection("friend_requests").deleteOne(filter);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao remover pedido de amizade do MongoDB: " + e.getMessage());
+            }
+            return;
+        }
+
         try (Connection conn = Managers.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friend_requests WHERE requester_uuid = ? AND target_uuid = ?")) {
             stmt.setString(1, requesterId.toString());
@@ -610,15 +724,15 @@ public class FriendManager {
     private TextComponent buildRequestComponent(FriendRequest request) {
         TextComponent line = new TextComponent(" §7- §f" + request.getRequesterName() + " ");
 
-        TextComponent accept = new TextComponent("§a§l[ACEITAR]");
-        accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/amigo aceitar " + request.getRequesterName()));
-        accept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aClique para aceitar").create()));
+        TextComponent accept = new TextComponent("§a§l[ACCEPT]");
+        accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/friend accept " + request.getRequesterName()));
+        accept.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aClick to accept").create()));
 
         TextComponent space = new TextComponent(" ");
 
-        TextComponent deny = new TextComponent("§c§l[RECUSAR]");
-        deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/amigo recusar " + request.getRequesterName()));
-        deny.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cClique para recusar").create()));
+        TextComponent deny = new TextComponent("§c§l[DENY]");
+        deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/friend deny " + request.getRequesterName()));
+        deny.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cClick to deny").create()));
 
         line.addExtra(accept);
         line.addExtra(space);

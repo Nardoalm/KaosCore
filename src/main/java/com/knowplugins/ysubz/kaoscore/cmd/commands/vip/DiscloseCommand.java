@@ -18,13 +18,13 @@ public class DiscloseCommand extends Commands {
     private static final ConcurrentMap<UUID, Long> LAST_USE = new ConcurrentHashMap<>();
 
     public DiscloseCommand() {
-        super("divulgar", "div");
+        super("disclose", "disc");
     }
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lDIVULGAR ➔ §cApenas jogadores podem utilizar este comando.");
+            sender.sendMessage("§cOnly players can use this command.");
             return;
         }
 
@@ -35,20 +35,20 @@ public class DiscloseCommand extends Commands {
         }
 
         if (!plugin.getConfig().getBoolean("divulgar.enabled", true)) {
-            player.sendMessage("§c§lDIVULGAR ➔ §cEste comando está desativado.");
+            player.sendMessage("§cThis command is currently disabled.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         String permission = safe(plugin.getConfig().getString("divulgar.permission"));
         if (!permission.trim().isEmpty() && !player.hasPermission(permission)) {
-            player.sendMessage("§c§lDIVULGAR ➔ §cVocê não tem permissão para divulgar.");
+            player.sendMessage("§cYou do not have permission to use this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
-            player.sendMessage("§c§lDIVULGAR ➔ §cUso: /divulgar <link>");
+            player.sendMessage("§cUsage: /disclose <link>");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -56,7 +56,7 @@ public class DiscloseCommand extends Commands {
         String link = join(args, 0);
         link = sanitizeLink(link);
         if (link.isEmpty()) {
-            player.sendMessage("§c§lDIVULGAR ➔ §cLink inválido.");
+            player.sendMessage("§cInvalid link.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
@@ -71,7 +71,7 @@ public class DiscloseCommand extends Commands {
                 long remainingMs = (last + (cooldownSeconds * 1000L)) - now;
                 if (remainingMs > 0) {
                     long remaining = Math.max(1, (remainingMs + 999) / 1000);
-                    player.sendMessage("§c§lDIVULGAR ➔ §cAguarde §f" + remaining + "s §cpara divulgar novamente.");
+                    player.sendMessage("§cPlease wait §f" + remaining + "s §cto advertise again.");
                     player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                     return;
                 }
@@ -83,7 +83,7 @@ public class DiscloseCommand extends Commands {
         if (lines == null || lines.isEmpty()) {
             lines = java.util.Arrays.asList(
                     "",
-                    "&6&lDIVULGAR &8➔ &e{player} &7divulgou:",
+                    "&6&lSERVER ➔ &e{player} &7advertised:",
                     " &b{link}",
                     ""
             );
@@ -95,7 +95,6 @@ public class DiscloseCommand extends Commands {
                     .replace("{player}", playerName)
                     .replace("{link}", link);
             String colored = ChatColor.translateAlternateColorCodes('&', line);
-            // Allow multi-line entries in config.
             for (String split : colored.split("\n")) {
                 Bukkit.broadcastMessage(split);
             }
@@ -124,16 +123,13 @@ public class DiscloseCommand extends Commands {
             return "";
         }
 
-        // Remove minecraft color codes to avoid chat injection.
         value = value.replaceAll("(?i)§[0-9A-FK-OR]", "");
         value = value.replace('\n', ' ').replace('\r', ' ').trim();
 
-        // Basic sanity: don't allow whitespace inside.
         if (value.contains(" ")) {
             value = value.replace(" ", "");
         }
 
-        // Avoid absurd length.
         if (value.length() > 120) {
             value = value.substring(0, 120);
         }
@@ -145,4 +141,3 @@ public class DiscloseCommand extends Commands {
         return value == null ? "" : value;
     }
 }
-

@@ -1,44 +1,43 @@
-# KaosCore - Mensagens de Punicoes
-# Use "&" para cores. O plugin converte para "§".
+# KaosCore - Punishment Messages
+# Use "&" for colors. The plugin converts them to "§".
 #
 # Placeholders:
-# - {reason}  -> motivo
-# - {expires} -> data de expiracao (ban) / "Permanente"
-# - {duration} -> tempo restante (mute)
-# - {staff}   -> responsavel (kick)
+# - {reason}  -> reason
+# - {expires} -> expiration date (ban) / "Permanent"
+# - {duration} -> remaining time (mute)
+# - {staff}   -> punisher (kick)
 
 ban:
   permanent:
-    - "&cVocê foi banido permanentemente."
+    - "&cYou have been permanently banned."
     - ""
-    - "&cMotivo: &7{reason}"
-    - "&cExpira em: &7Permanente"
-    - "&eAdquira seu unban em: &bwww.freepmc.com.br"
-    - "&cBanido injustamente? Contate-nos via"
-    - "&9discord.gg/freepmc"
+    - "&cReason: &7{reason}"
+    - "&cExpires on: &7Permanent"
+    - "&ePurchase your unban at: &balleypvp.us"
+    - "&cBanned unfairly? Contact us via"
+    - "&9discord.gg/alleypvp"
   temporary:
-    - "&cVocê foi banido temporariamente."
+    - "&cYou have been temporarily banned."
     - ""
-    - "&cMotivo: &7{reason}"
-    - "&cExpira em: &7{expires}"
-    - "&eAdquira seu unban em: &bwww.freepmc.com.br"
-    - "&cBanido injustamente? Contate-nos via"
-    - "&9discord.gg/freepmc"
+    - "&cReason: &7{reason}"
+    - "&cExpires on: &7{expires}"
+    - "&ePurchase your unban at: &balleypvp.us"
+    - "&cBanned unfairly? Contact us via"
+    - "&9discord.gg/alleypvp"
 
 kick:
   screen:
-    - "&cVocê foi expulso do servidor."
+    - "&cYou have been kicked from the server."
     - ""
-    - "&cMotivo: &7{reason}"
-    - "&cResponsável: &7{staff}"
+    - "&cReason: &7{reason}"
+    - "&cPunisher: &7{staff}"
 
 mute:
   chat:
-    - "&c&lMUTE ➔ &cVocê está mutado."
-    - "&cMotivo: &7{reason}"
-    - "&cDuração: &7{duration}"
+    - "&cYou are muted."
+    - "&cReason: &7{reason}"
+    - "&cDuration: &7{duration}"
   notice:
-    - "&c&lMUTE ➔ &cVocê foi mutado."
-    - "&cMotivo: &7{reason}"
-    - "&cDuração: &7{duration}"
-
+    - "&cYou have been muted."
+    - "&cReason: &7{reason}"
+    - "&cDuration: &7{duration}"

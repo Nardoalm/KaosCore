@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class FlyCommand extends Commands {
 
     public FlyCommand() {
-        super("fly", "voar", "f");
+        super("fly");
     }
 
     @Override
@@ -20,39 +20,41 @@ public class FlyCommand extends Commands {
 
         if (args.length > 0) {
             if (!sender.hasPermission("kaoscore.staff.fly")) {
-                sender.sendMessage("§c§lFLY ➔ §cVocê não tem permissão para dar fly em outros jogadores.");
-                Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                sender.sendMessage("§cYou do not have permission to toggle flight for other players.");
+                if (sender instanceof Player) {
+                    Player senderPlayer = (Player) sender;
+                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                }
                 return;
             }
 
             target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage("§c§lFLY ➔ §cJogador não encontrado.");
-                Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                sender.sendMessage("§cPlayer not found.");
+                if (sender instanceof Player) {
+                    Player senderPlayer = (Player) sender;
+                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                }
                 return;
             }
         } else {
             if (!(sender instanceof Player)) {
-                sender.sendMessage( "§c§lERRO ➔ §cApenas jogadores podem usar este comando.");
+                sender.sendMessage("§cOnly players can use this command.");
                 return;
             }
             target = (Player) sender;
 
             if (!target.hasPermission("kaoscore.member.fly")) {
-                sender.sendMessage(ChatColor.RED + "§c§lFLY ➔ §cVocê não possui permissão para executar este comando.");
-                Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                sender.sendMessage("§cYou do not have permission to execute this command.");
+                target.playSound(target.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
         }
 
-
         boolean newStatus = !target.getAllowFlight();
         if (PracticeModeBlocker.checkActiveMatch(target, true)) {
             if (sender != target) {
-                sender.sendMessage("§c§lFLY ➔ §cEsse jogador está em partida do Practice.");
+                sender.sendMessage("§cThis player is currently in a Practice match.");
             }
             return;
         }
@@ -63,12 +65,12 @@ public class FlyCommand extends Commands {
             target.setFlying(false);
         }
 
-        String status = newStatus ? ChatColor.GREEN + "ativado" : ChatColor.GREEN + "desativado";
+        String status = newStatus ? ChatColor.GREEN + "enabled" : ChatColor.GREEN + "disabled";
 
-        target.sendMessage ("§a§lFLY ➔ §aFly está " + status + ".");
+        target.sendMessage("§aFlight has been " + status + ".");
 
         if (sender != target) {
-            sender.sendMessage(ChatColor.GREEN + "§a§lFLY ➔ §aFly está " + target.getName() + " " + status + ".");
+            sender.sendMessage("§aFlight has been " + status + " §afor " + target.getName() + ".");
         }
     }
 }

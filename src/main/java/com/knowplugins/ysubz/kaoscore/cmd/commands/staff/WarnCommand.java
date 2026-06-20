@@ -19,27 +19,27 @@ public class WarnCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.warn")) {
-            sender.sendMessage("§c§lWARN ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 2) {
-            sender.sendMessage("§c§lWARN ➔ §cUsage: /warn <player> <reason>");
+            sender.sendMessage("§cUsage: /warn <player> <reason>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
-            sender.sendMessage("§c§lWARN ➔ §cPunishment system unavailable.");
+            sender.sendMessage("§cPunishment system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         if (target.getName().isEmpty()) {
-            sender.sendMessage("§c§lWARN ➔ §cInvalid player.");
+            sender.sendMessage("§cInvalid player.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -50,17 +50,17 @@ public class WarnCommand extends Commands {
 
         PunishmentEntry warning = punishmentManager.warn(target.getUuid(), target.getName(), punisherUuid, punisherName, reason, "WARN");
         if (warning == null) {
-            sender.sendMessage("§c§lWARN ➔ §cUnable to register the warning.");
+            sender.sendMessage("§cUnable to register the warning.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        sender.sendMessage("§a§lWARN ➔ §aWarning issued to " + target.getName() + ".");
+        sender.sendMessage("§aWarning issued to " + target.getName() + ".");
         ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
 
         Player onlineTarget = target.getPlayer();
         if (onlineTarget != null && onlineTarget.isOnline()) {
-            onlineTarget.sendMessage("§e§lWARN ➔ §eYou received a warning.");
+            onlineTarget.sendMessage("§eYou received a warning.");
             onlineTarget.sendMessage("§eReason: §f" + reason);
             onlineTarget.playSound(onlineTarget.getLocation(), Sound.NOTE_BASS, 1.0f, 1.0f);
         }

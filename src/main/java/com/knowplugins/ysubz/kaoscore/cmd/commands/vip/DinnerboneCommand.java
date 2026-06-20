@@ -24,7 +24,6 @@ public class DinnerboneCommand extends Commands {
     private static final String PERM_SELF = "kaoscore.member.dinnerbone";
     private static final String PERM_OTHERS = "kaoscore.staff.dinnerbone";
 
-    // Guarda o nome original
     private static final ConcurrentMap<UUID, String> ORIGINAL_NAMES = new ConcurrentHashMap<>();
 
     public DinnerboneCommand() {
@@ -34,43 +33,43 @@ public class DinnerboneCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cApenas jogadores podem usar este comando!");
+            sender.sendMessage("§cOnly players can use this command!");
             return;
         }
 
         Player player = (Player) sender;
 
         if (args.length > 1) {
-            player.sendMessage("§c§lDINNERBONE ➔ §cUso correto: /dinnerbone ou /dinnerbone <nick>");
+            player.sendMessage("§cCorrect usage: /dinnerbone or /dinnerbone <nick>");
             return;
         }
 
         if (args.length == 1) {
             if (!player.hasPermission(PERM_OTHERS)) {
-                player.sendMessage("§c§lDINNERBONE ➔ §cVocê não possui permissão para executar este comando.");
+                player.sendMessage("§cYou do not have permission to execute this command.");
                 player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
                 return;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null || !target.isOnline()) {
-                player.sendMessage("§c§lDINNERBONE ➔ §cJogador não encontrado.");
+                player.sendMessage("§cPlayer not found.");
                 return;
             }
 
             boolean enabled = toggle(target);
-            player.sendMessage("§a§lDINNERBONE ➔ §a" + target.getName() + (enabled ? " agora está de cabeça pra baixo." : " voltou ao normal."));
+            player.sendMessage("§a" + target.getName() + (enabled ? " is now upside down." : " is back to normal."));
             return;
         }
 
         if (!player.hasPermission(PERM_SELF)) {
-            player.sendMessage("§c§lDINNERBONE ➔ §cVocê não possui permissão para executar este comando.");
+            player.sendMessage("§cYou do not have permission to execute this command.");
             player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             return;
         }
 
         boolean enabled = toggle(player);
-        player.sendMessage("§a§lDINNERBONE ➔ §a" + (enabled ? "Você agora está de cabeça pra baixo." : "Você voltou ao normal."));
+        player.sendMessage("§a" + (enabled ? "You are now upside down." : "You are back to normal."));
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
     }
 
@@ -83,14 +82,13 @@ public class DinnerboneCommand extends Commands {
             changeProfileNameAndRefresh(player, originalName, originalName);
             return false;
         } else {
-            String realName = player.getName(); // Salva o nome antes de mudar
+            String realName = player.getName();
             ORIGINAL_NAMES.put(id, realName);
             changeProfileNameAndRefresh(player, "Dinnerbone", realName);
             return true;
         }
     }
 
-    // O "Motor" NMS que separa a visão do jogador da visão dos outros
     private void changeProfileNameAndRefresh(Player player, String newProfileName, String realName) {
         try {
             EntityPlayer ep = ((CraftPlayer) player).getHandle();

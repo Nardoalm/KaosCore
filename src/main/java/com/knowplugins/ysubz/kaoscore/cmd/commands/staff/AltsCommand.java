@@ -19,20 +19,20 @@ public class AltsCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.alts")) {
-            sender.sendMessage("§c§lALTS ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lALTS ➔ §cUsage: /alts <player>");
+            sender.sendMessage("§cUsage: /alts <player>");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
         if (repository == null) {
-            sender.sendMessage("§c§lALTS ➔ §cAlt system unavailable.");
+            sender.sendMessage("§cAlt system unavailable.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -43,12 +43,12 @@ public class AltsCommand extends Commands {
 
     private void sendResult(CommandSender sender, String targetName, List<String> alts) {
         if (alts == null || alts.isEmpty()) {
-            sender.sendMessage("§e§lALTS ➔ §eNo related accounts found for §f" + targetName + "§e.");
+            sender.sendMessage("§eNo related accounts found for §f" + targetName + "§e.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
-        sender.sendMessage("§e§lALTS ➔ §eRelated accounts for §f" + targetName + "§e: §f" + String.join("§7, §f", alts));
+        sender.sendMessage("§eRelated accounts for §f" + targetName + "§e: §f" + String.join("§7, §f", alts));
         ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
     }
 }

@@ -49,52 +49,52 @@ public class ClanCommand extends Commands {
         }
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
-            case "criar":
+            case "create":
                 cmdCreate(player, args);
                 break;
-            case "deletar":
+            case "delete":
                 cmdDelete(player);
                 break;
-            case "sair":
+            case "leave":
                 cmdLeave(player);
                 break;
-            case "convidar":
+            case "invite":
                 cmdInvite(player, args);
                 break;
-            case "convites":
+            case "invites":
                 cmdInvites(player);
                 break;
-            case "aceitar":
+            case "accept":
                 cmdAccept(player, args);
                 break;
-            case "recusar":
+            case "deny":
                 cmdDeny(player, args);
                 break;
-            case "expulsar":
+            case "kick":
                 cmdKick(player, args);
                 break;
-            case "promover":
+            case "promote":
                 cmdPromote(player, args);
                 break;
-            case "demover":
+            case "demote":
                 cmdDemote(player, args);
                 break;
-            case "transferir":
+            case "transfer":
                 cmdTransfer(player, args);
                 break;
-            case "cortag":
+            case "color":
                 cmdColorTag(player, args);
                 break;
-            case "editar":
+            case "edit":
                 cmdEditTag(player, args);
                 break;
-            case "ver":
+            case "info":
                 cmdInfo(player, args);
                 break;
-            case "membros":
+            case "members":
                 cmdMembers(player, args);
                 break;
-            case "listar":
+            case "list":
                 cmdList(player, args);
                 break;
             case "chat":
@@ -115,23 +115,9 @@ public class ClanCommand extends Commands {
         Player player = (Player) sender;
         if (args.length == 1) {
             List<String> commands = Arrays.asList(
-                    "criar",
-                    "deletar",
-                    "sair",
-                    "convidar",
-                    "convites",
-                    "aceitar",
-                    "recusar",
-                    "expulsar",
-                    "promover",
-                    "demover",
-                    "transferir",
-                    "cortag",
-                    "editar",
-                    "ver",
-                    "membros",
-                    "listar",
-                    "chat"
+                    "create", "delete", "leave", "invite", "invites", "accept",
+                    "deny", "kick", "promote", "demote", "transfer", "color",
+                    "edit", "info", "members", "list", "chat"
             );
             return commands.stream()
                     .filter(command -> command.startsWith(args[0].toLowerCase(Locale.ROOT)))
@@ -140,21 +126,21 @@ public class ClanCommand extends Commands {
 
         if (args.length >= 2) {
             String subCommand = args[0].toLowerCase(Locale.ROOT);
-            if (subCommand.equals("cortag")) {
+            if (subCommand.equals("color")) {
                 return getAvailableTagColors(player).stream()
                         .map(option -> option.token)
                         .filter(token -> token.startsWith(args[args.length - 1].toLowerCase(Locale.ROOT)))
                         .collect(Collectors.toList());
             }
 
-            if (Arrays.asList("convidar", "expulsar", "promover", "demover", "transferir").contains(subCommand)) {
+            if (Arrays.asList("invite", "kick", "promote", "demote", "transfer").contains(subCommand)) {
                 return Bukkit.getOnlinePlayers().stream()
                         .map(Player::getDisplayName)
                         .filter(name -> ChatColor.stripColor(name).toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
                         .collect(Collectors.toList());
             }
 
-            if (Arrays.asList("aceitar", "recusar", "ver", "membros").contains(subCommand)) {
+            if (Arrays.asList("accept", "deny", "info", "members").contains(subCommand)) {
                 return Managers.getClanManager().getAllClans().stream()
                         .map(Clan::getName)
                         .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
@@ -167,37 +153,35 @@ public class ClanCommand extends Commands {
 
     private void sendHelp(Player player) {
         player.sendMessage("§eUsage of §6/clan§e:");
-        sendHelpLine(player, "criar", " §e• §6/clan criar <name> <tag>");
-        sendHelpLine(player, "deletar", " §e• §6/clan deletar");
-        sendHelpLine(player, "sair", " §e• §6/clan sair");
-        sendHelpLine(player, "convidar", " §e• §6/clan convidar <player>");
-        sendHelpLine(player, "convites", " §e• §6/clan convites");
-        sendHelpLine(player, "aceitar", " §e• §6/clan aceitar <name|tag>");
-        sendHelpLine(player, "recusar", " §e• §6/clan recusar <name|tag>");
-        sendHelpLine(player, "expulsar", " §e• §6/clan expulsar <player>");
-        sendHelpLine(player, "promover", " §e• §6/clan promover <player>");
-        sendHelpLine(player, "demover", " §e• §6/clan demover <player>");
-        sendHelpLine(player, "transferir", " §e• §6/clan transferir <player>");
-        sendHelpLine(player, "cortag", " §e• §6/clan cortag <color>");
-        sendHelpLine(player, "editar", " §e• §6/clan editar <new_tag>");
-        sendHelpLine(player, "ver", " §e• §6/clan ver <name|tag>");
-        sendHelpLine(player, "membros", " §e• §6/clan membros <name|tag>");
-        sendHelpLine(player, "listar", " §e• §6/clan listar [page]");
+        sendHelpLine(player, "create", " §e• §6/clan create <name> <tag>");
+        sendHelpLine(player, "delete", " §e• §6/clan delete");
+        sendHelpLine(player, "leave", " §e• §6/clan leave");
+        sendHelpLine(player, "invite", " §e• §6/clan invite <player>");
+        sendHelpLine(player, "invites", " §e• §6/clan invites");
+        sendHelpLine(player, "accept", " §e• §6/clan accept <name|tag>");
+        sendHelpLine(player, "deny", " §e• §6/clan deny <name|tag>");
+        sendHelpLine(player, "kick", " §e• §6/clan kick <player>");
+        sendHelpLine(player, "promote", " §e• §6/clan promote <player>");
+        sendHelpLine(player, "demote", " §e• §6/clan demote <player>");
+        sendHelpLine(player, "transfer", " §e• §6/clan transfer <player>");
+        sendHelpLine(player, "color", " §e• §6/clan color <color>");
+        sendHelpLine(player, "edit", " §e• §6/clan edit <new_tag>");
+        sendHelpLine(player, "info", " §e• §6/clan info <name|tag>");
+        sendHelpLine(player, "members", " §e• §6/clan members <name|tag>");
+        sendHelpLine(player, "list", " §e• §6/clan list [page]");
         sendHelpLine(player, "chat", " §e• §6/clan chat");
         player.sendMessage("");
     }
 
     private void cmdCreate(Player player, String[] args) {
-        if (!requirePermission(player, "criar")) {
-            return;
-        }
+        if (!requirePermission(player, "create")) return;
 
         if (args.length < 3) {
-            player.sendMessage("§cUsage: /clan criar <name> <tag>");
+            player.sendMessage("§cUsage: /clan create <name> <tag>");
             return;
         }
 
-        String nome = args[1];
+        String name = args[1];
         String tag = args[2].toUpperCase(Locale.ROOT);
 
         if (tag.length() > 8) {
@@ -210,8 +194,8 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().createClan(nome, tag, player)) {
-            player.sendMessage("§aClan §f" + nome + " §a[" + tag + "] §acreated successfully!");
+        if (Managers.getClanManager().createClan(name, tag, player)) {
+            player.sendMessage("§aClan §f" + name + " §a[" + tag + "] §acreated successfully!");
             return;
         }
 
@@ -219,9 +203,7 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdDelete(Player player) {
-        if (!requirePermission(player, "deletar")) {
-            return;
-        }
+        if (!requirePermission(player, "delete")) return;
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
@@ -240,9 +222,7 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdLeave(Player player) {
-        if (!requirePermission(player, "sair")) {
-            return;
-        }
+        if (!requirePermission(player, "leave")) return;
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
@@ -251,7 +231,7 @@ public class ClanCommand extends Commands {
         }
 
         if (clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cYou are the leader and cannot leave! Use /clan transferir first.");
+            player.sendMessage("§cYou are the leader and cannot leave! Use /clan transfer first.");
             return;
         }
 
@@ -260,12 +240,10 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdInvite(Player player, String[] args) {
-        if (!requirePermission(player, "convidar")) {
-            return;
-        }
+        if (!requirePermission(player, "invite")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUsage: /clan convidar <player>");
+            player.sendMessage("§cUsage: /clan invite <player>");
             return;
         }
 
@@ -302,28 +280,21 @@ public class ClanCommand extends Commands {
         }
 
         Managers.getClanManager().sendInvite(clan, player.getUniqueId(), target.getUniqueId());
-        String targetColorPrefix = PlaceholderAPI.setPlaceholders(
-                target,
-                "%kaoscore_tag_color%"
-        );
+        String targetColorPrefix = PlaceholderAPI.setPlaceholders(target, "%kaoscore_tag_color%");
         player.sendMessage("§aInvite sent to §f" + targetColorPrefix + target.getDisplayName());
         Managers.getClanManager().sendInviteNotification(target, clan, player.getUniqueId());
     }
 
     private void cmdInvites(Player player) {
-        if (!requirePermission(player, "convites")) {
-            return;
-        }
+        if (!requirePermission(player, "invites")) return;
         Managers.getClanManager().sendInviteList(player, true, false);
     }
 
     private void cmdAccept(Player player, String[] args) {
-        if (!requirePermission(player, "aceitar")) {
-            return;
-        }
+        if (!requirePermission(player, "accept")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUsage: /clan aceitar <name|tag>");
+            player.sendMessage("§cUsage: /clan accept <name|tag>");
             return;
         }
 
@@ -357,12 +328,10 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdDeny(Player player, String[] args) {
-        if (!requirePermission(player, "recusar")) {
-            return;
-        }
+        if (!requirePermission(player, "deny")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUsage: /clan recusar <name|tag>");
+            player.sendMessage("§cUsage: /clan deny <name|tag>");
             return;
         }
 
@@ -377,12 +346,10 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdKick(Player player, String[] args) {
-        if (!requirePermission(player, "expulsar")) {
-            return;
-        }
+        if (!requirePermission(player, "kick")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUsage: /clan expulsar <player>");
+            player.sendMessage("§cUsage: /clan kick <player>");
             return;
         }
 
@@ -421,157 +388,147 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdPromote(Player player, String[] args) {
-        if (!requirePermission(player, "promover")) {
-            return;
-        }
+        if (!requirePermission(player, "promote")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan promover <jogador>");
+            player.sendMessage("§cUse: /clan promote <player>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode promover!");
+            player.sendMessage("§cOnly the leader can promote!");
             return;
         }
 
         Player target = resolvePlayer(args[1]);
         if (target == null) {
-            player.sendMessage("§cJogador não encontrado!");
+            player.sendMessage("§cPlayer not found!");
             return;
         }
 
         if (!clan.isMember(target.getUniqueId())) {
-            player.sendMessage("§cJogador não está no clan!");
+            player.sendMessage("§cPlayer is not in the clan!");
             return;
         }
 
         Managers.getClanManager().promote(clan, target.getUniqueId());
-        player.sendMessage("§a" + target.getDisplayName() + " foi promovido!");
-        target.sendMessage("§aVocê foi promovido no clan!");
+        player.sendMessage("§a" + target.getDisplayName() + " has been promoted!");
+        target.sendMessage("§aYou have been promoted in the clan!");
     }
 
     private void cmdDemote(Player player, String[] args) {
-        if (!requirePermission(player, "demover")) {
-            return;
-        }
+        if (!requirePermission(player, "demote")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan demover <jogador>");
+            player.sendMessage("§cUse: /clan demote <player>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode rebaixar!");
+            player.sendMessage("§cOnly the leader can demote!");
             return;
         }
 
         Player target = resolvePlayer(args[1]);
         if (target == null) {
-            player.sendMessage("§cJogador não encontrado!");
+            player.sendMessage("§cPlayer not found!");
             return;
         }
 
         if (!clan.isMember(target.getUniqueId())) {
-            player.sendMessage("§cJogador não está no clan!");
+            player.sendMessage("§cPlayer is not in the clan!");
             return;
         }
 
         Managers.getClanManager().demote(clan, target.getUniqueId());
-        player.sendMessage("§c" + target.getDisplayName() + " foi rebaixado!");
-        target.sendMessage("§cVocê foi rebaixado no clan!");
+        player.sendMessage("§c" + target.getDisplayName() + " has been demoted!");
+        target.sendMessage("§cYou have been demoted in the clan!");
     }
 
     private void cmdTransfer(Player player, String[] args) {
-        if (!requirePermission(player, "transferir")) {
-            return;
-        }
+        if (!requirePermission(player, "transfer")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan transferir <jogador>");
+            player.sendMessage("§cUse: /clan transfer <player>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode transferir!");
+            player.sendMessage("§cOnly the leader can transfer leadership!");
             return;
         }
 
         Player target = resolvePlayer(args[1]);
         if (target == null) {
-            player.sendMessage("§cJogador não encontrado!");
+            player.sendMessage("§cPlayer not found!");
             return;
         }
 
         if (target.getUniqueId().equals(player.getUniqueId())) {
-            player.sendMessage("§cVocê já é o líder deste clan!");
+            player.sendMessage("§cYou are already the leader!");
             return;
         }
 
         if (!clan.isMember(target.getUniqueId())) {
-            player.sendMessage("§cJogador não está no clan!");
+            player.sendMessage("§cPlayer is not in the clan!");
             return;
         }
 
         Managers.getClanManager().transfer(clan, target.getUniqueId());
-        player.sendMessage("§cLiderança transferida para §f" + target.getDisplayName());
-        target.sendMessage("§aVocê agora é o líder do clan!");
+        player.sendMessage("§cLeadership transferred to §f" + target.getDisplayName());
+        target.sendMessage("§aYou are now the clan leader!");
     }
 
     private void cmdColorTag(Player player, String[] args) {
-        if (!requirePermission(player, "cortag")) {
-            return;
-        }
+        if (!requirePermission(player, "color")) return;
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode mudar a cor da tag!");
+            player.sendMessage("§cOnly the leader can change the tag color!");
             return;
         }
 
         List<TagColorOption> availableColors = getAvailableTagColors(player);
         if (availableColors.isEmpty()) {
-            player.sendMessage("§cVocê não tem permissão para nenhuma cor de tag.");
+            player.sendMessage("§cYou do not have permission for any tag colors.");
             return;
         }
 
         if (args.length < 2) {
-            player.sendMessage("§aSuas cortag:");
+            player.sendMessage("§aAvailable tag colors:");
             TextComponent line = new TextComponent("");
 
             for (int i = 0; i < availableColors.size(); i++) {
                 TagColorOption option = availableColors.get(i);
                 TextComponent colorComponent = new TextComponent(option.colorCode + option.name);
-                colorComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan cortag " + option.token));
-                colorComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Clique para usar a cor §f" + option.name).create()));
+                colorComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan color " + option.token));
+                colorComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Click to use color §f" + option.name).create()));
                 line.addExtra(colorComponent);
 
-                if (i < availableColors.size() - 1) {
-                    line.addExtra(new TextComponent("§f, "));
-                }
+                if (i < availableColors.size() - 1) line.addExtra(new TextComponent("§f, "));
             }
 
             player.spigot().sendMessage(line);
@@ -588,93 +545,87 @@ public class ClanCommand extends Commands {
         }
 
         if (selected == null) {
-            player.sendMessage("§cCor não encontrada ou sem permissão!");
+            player.sendMessage("§cColor not found or no permission!");
             return;
         }
 
         Managers.getClanManager().setTagColor(clan, selected.colorCode);
-        player.sendMessage("§aCor da tag alterada para: " + selected.preview());
+        player.sendMessage("§aTag color changed to: " + selected.preview());
     }
 
     private void cmdEditTag(Player player, String[] args) {
-        if (!requirePermission(player, "editar")) {
-            return;
-        }
+        if (!requirePermission(player, "edit")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan editar <nova_tag>");
+            player.sendMessage("§cUse: /clan edit <new_tag>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
         if (!clan.isLeader(player.getUniqueId())) {
-            player.sendMessage("§cApenas o líder pode editar a tag!");
+            player.sendMessage("§cOnly the leader can edit the tag!");
             return;
         }
 
         String newTag = args[1].toUpperCase(Locale.ROOT);
         if (newTag.length() > 6) {
-            player.sendMessage("§cA tag deve ter no máximo 6 caracteres!");
+            player.sendMessage("§cThe tag must be at most 6 characters long!");
             return;
         }
 
         if (Managers.getClanManager().isTagTaken(newTag, clan.getName())) {
-            player.sendMessage("§cEsta tag já está sendo usada por outro clan!");
+            player.sendMessage("§cThis tag is already being used by another clan!");
             return;
         }
 
         clan.setTag(newTag);
         Managers.getClanManager().saveClan(clan);
-        player.sendMessage("§aTag alterada para: " + clan.getFormattedTag());
+        player.sendMessage("§aTag changed to: " + clan.getFormattedTag());
     }
 
     private void cmdInfo(Player player, String[] args) {
-        if (!requirePermission(player, "ver")) {
-            return;
-        }
+        if (!requirePermission(player, "info")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan ver <nome|tag>");
+            player.sendMessage("§cUse: /clan info <name|tag>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getClan(joinArgs(args, 1));
         if (clan == null) {
-            player.sendMessage("§cClan não encontrado!");
+            player.sendMessage("§cClan not found!");
             return;
         }
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         player.sendMessage("§6§m+-------------------§6[ §e" + clan.getName() + " §6]§m-------------------+");
         player.sendMessage(" §7Tag: " + clan.getFormattedTag());
-        player.sendMessage(" §7Líder: §f" + Bukkit.getOfflinePlayer(clan.getLeader()).getName());
-        player.sendMessage(" §7Membros: §f" + clan.getMemberCount() + "/" + clan.getMaxMembers());
-        player.sendMessage(" §7Criado em: §f" + format.format(new Date(clan.getCreationDate())));
+        player.sendMessage(" §7Leader: §f" + Bukkit.getOfflinePlayer(clan.getLeader()).getName());
+        player.sendMessage(" §7Members: §f" + clan.getMemberCount() + "/" + clan.getMaxMembers());
+        player.sendMessage(" §7Created at: §f" + format.format(new Date(clan.getCreationDate())));
         player.sendMessage("§6§m----------------------------------------------------------+");
     }
 
     private void cmdMembers(Player player, String[] args) {
-        if (!requirePermission(player, "membros")) {
-            return;
-        }
+        if (!requirePermission(player, "members")) return;
 
         if (args.length < 2) {
-            player.sendMessage("§cUse: /clan membros <nome|tag>");
+            player.sendMessage("§cUse: /clan members <name|tag>");
             return;
         }
 
         Clan clan = Managers.getClanManager().getClan(joinArgs(args, 1));
         if (clan == null) {
-            player.sendMessage("§cClan não encontrado!");
+            player.sendMessage("§cClan not found!");
             return;
         }
 
-        player.sendMessage("§6§m+-------------------§6[ §eMembros de " + clan.getName() + " §6]§m-------------------+");
+        player.sendMessage("§6§m+-------------------§6[ §eMembers of " + clan.getName() + " §6]§m-------------------+");
         for (Map.Entry<UUID, ClanRole> entry : clan.getMembers().entrySet()) {
             String playerName = Bukkit.getOfflinePlayer(entry.getKey()).getName();
             player.sendMessage(" §7- " + entry.getValue().getDisplay() + " §f" + playerName);
@@ -683,13 +634,11 @@ public class ClanCommand extends Commands {
     }
 
     private void cmdList(Player player, String[] args) {
-        if (!requirePermission(player, "listar")) {
-            return;
-        }
+        if (!requirePermission(player, "list")) return;
 
         Collection<Clan> clans = Managers.getClanManager().getAllClans();
         if (clans.isEmpty()) {
-            player.sendMessage("§cNão há clans criados.");
+            player.sendMessage("§cNo clans found.");
             return;
         }
 
@@ -701,16 +650,14 @@ public class ClanCommand extends Commands {
                 page = 1;
             }
         }
-        if (page < 1) {
-            page = 1;
-        }
+        if (page < 1) page = 1;
 
         List<Clan> clanList = new ArrayList<>(clans);
         clanList.sort(Comparator.comparing(Clan::getName, String.CASE_INSENSITIVE_ORDER));
 
         int totalPages = Math.max(1, (clanList.size() + 9) / 10);
         if (page > totalPages) {
-            player.sendMessage("§cPágina inválida. Máximo: " + totalPages + ".");
+            player.sendMessage("§cInvalid page. Max: " + totalPages + ".");
             return;
         }
 
@@ -723,20 +670,18 @@ public class ClanCommand extends Commands {
             player.sendMessage(" §7" + (i + 1) + ". " + clan.getFormattedTag() + " §f- " + clan.getName());
         }
         player.sendMessage("§6§m----------------------------------------------------------+");
-        player.sendMessage("§7Página §f" + page + " §7de §f" + totalPages);
+        player.sendMessage("§7Page §f" + page + " §7of §f" + totalPages);
     }
 
     private void cmdChat(Player player) {
-        if (!requirePermission(player, "chat")) {
-            return;
-        }
+        if (!requirePermission(player, "chat")) return;
 
         if (!Managers.getClanManager().isInClan(player.getUniqueId())) {
-            player.sendMessage("§cVocê não está em um clan!");
+            player.sendMessage("§cYou are not in a clan!");
             return;
         }
 
-        player.sendMessage("§6Use §f/cc <mensagem> §6para falar no chat do clan.");
+        player.sendMessage("§6Use §f/cc <message> §6to talk in the clan chat.");
     }
 
     private void sendHelpLine(Player player, String subCommand, String text) {
@@ -752,18 +697,14 @@ public class ClanCommand extends Commands {
     }
 
     private Player resolvePlayer(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return null;
-        }
+        if (name == null || name.trim().isEmpty()) return null;
         return DisguiseManager.getOnlinePlayerByName(name);
     }
 
     private String joinArgs(String[] args, int startIndex) {
         StringBuilder builder = new StringBuilder();
         for (int i = startIndex; i < args.length; i++) {
-            if (builder.length() > 0) {
-                builder.append(' ');
-            }
+            if (builder.length() > 0) builder.append(' ');
             builder.append(args[i]);
         }
         return builder.toString().trim();
@@ -772,43 +713,33 @@ public class ClanCommand extends Commands {
     private List<TagColorOption> getAvailableTagColors(Player player) {
         List<TagColorOption> colors = new ArrayList<>();
         TagColorOption animated = TagColorOption.animated();
-        if (hasPermission(player, animated.permission)) {
-            colors.add(animated);
-        }
+        if (hasPermission(player, animated.permission)) colors.add(animated);
 
         for (String raw : Managers.getClanManager().getTagColors()) {
             TagColorOption option = parseTagColor(raw);
-            if (option != null && hasPermission(player, option.permission)) {
-                colors.add(option);
-            }
+            if (option != null && hasPermission(player, option.permission)) colors.add(option);
         }
         colors.sort(Comparator.comparing(option -> option.normalizedName));
         return colors;
     }
 
     private TagColorOption parseTagColor(String raw) {
-        if (raw == null) {
-            return null;
-        }
+        if (raw == null) return null;
 
         String[] parts = raw.split("\\|", 2);
         String value = parts[0].trim().replace('&', '§');
         if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(value)) {
             String permission = parts.length > 1 && !parts[1].trim().isEmpty()
                     ? parts[1].trim()
-                    : "kaoscore.clan.cortag.animada";
-            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animada", "animada", "animada", permission);
+                    : "kaoscore.clan.cortag.animated";
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animated", "animated", "animated", permission);
         }
 
-        if (value.length() < 3 || value.charAt(0) != '§') {
-            return null;
-        }
+        if (value.length() < 3 || value.charAt(0) != '§') return null;
 
         String colorCode = value.substring(0, 2);
         String name = value.substring(2).trim();
-        if (name.isEmpty()) {
-            return null;
-        }
+        if (name.isEmpty()) return null;
 
         String normalizedName = normalizeColorName(name);
         String token = normalizedName.replace(' ', '_');
@@ -845,14 +776,12 @@ public class ClanCommand extends Commands {
         }
 
         private String preview() {
-            if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(colorCode)) {
-                return "§f[§cW§6A§eV§aE§f]";
-            }
+            if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(colorCode)) return "§f[§cW§6A§eV§aE§f]";
             return colorCode + name;
         }
 
         private static TagColorOption animated() {
-            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animada", "animada", "animada", "kaoscore.clan.cortag.animada");
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animated", "animated", "animated", "kaoscore.clan.cortag.animated");
         }
     }
 }

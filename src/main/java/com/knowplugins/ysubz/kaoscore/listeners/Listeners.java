@@ -5,11 +5,9 @@ import com.knowplugins.ysubz.kaoscore.listeners.entity.EntityListener;
 import com.knowplugins.ysubz.kaoscore.listeners.entity.MenuClickListener;
 import com.knowplugins.ysubz.kaoscore.listeners.entity.NPCInteractListener;
 import com.knowplugins.ysubz.kaoscore.listeners.player.*;
-import com.knowplugins.ysubz.kaoscore.listeners.world.SoundListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.TimeListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.WeatherListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.WorldProtectionListener;
+import com.knowplugins.ysubz.kaoscore.listeners.world.*;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.NPC;
 import org.bukkit.plugin.PluginManager;
 
 public class Listeners {
@@ -31,6 +29,7 @@ public class Listeners {
          pm.registerEvents(new SkinMenuListener(), plugin);
          pm.registerEvents(new FriendMenuListener(), plugin);
          pm.registerEvents(new SitListener(), plugin);
+         pm.registerEvents(new NPCWorldListener(), plugin);
          // pm.registerEvents(new WeatherListener(), plugin);
          // pm.registerEvents(new InteractListener(), plugin);
          // pm.registerEvents(new MenuClickListener(), plugin);

@@ -17,13 +17,13 @@ public class KickCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.kickar")) {
-            sender.sendMessage("§c§lKICK ➔ §cYou do not have permission to use this command.");
+            sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lKICK ➔ §cUsage: /kick <player> [reason]");
+            sender.sendMessage("§cUsage: /kick <player> [reason]");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
@@ -31,13 +31,13 @@ public class KickCommand extends Commands {
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         Player player = target.getPlayer();
         if (player == null || !player.isOnline()) {
-            sender.sendMessage("§c§lKICK ➔ §cThat player is not online.");
+            sender.sendMessage("§cThat player is not online.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }
 
         if (sender instanceof Player && player.getUniqueId().equals(((Player) sender).getUniqueId())) {
-            sender.sendMessage("§c§lKICK ➔ §cYou cannot kick yourself.");
+            sender.sendMessage("§cYou cannot kick yourself.");
             ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
             return;
         }

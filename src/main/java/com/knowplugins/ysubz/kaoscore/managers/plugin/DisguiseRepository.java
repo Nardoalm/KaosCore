@@ -1,6 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;
@@ -21,8 +24,28 @@ public class DisguiseRepository {
         this.databaseManager = databaseManager;
     }
 
+    private boolean isMongo() {
+        return databaseManager.getType().equalsIgnoreCase("mongodb");
+    }
+
+    private MongoCollection<Document> getCollection() {
+        return databaseManager.getMongoDatabase().getCollection("disguises");
+    }
+
     public CompletableFuture<String> load(UUID uuid) {
         return CompletableFuture.supplyAsync(() -> {
+            if (isMongo()) {
+                try {
+                    Document doc = getCollection().find(new Document("uuid", uuid.toString())).first();
+                    if (doc != null && doc.getBoolean("is_disguised", false)) {
+                        return doc.getString("disguise_meta");
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao carregar disguise do MongoDB: " + e.getMessage());
+                }
+                return null;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT is_disguised, disguise_meta FROM disguises WHERE uuid = ?")) {
                 ps.setString(1, uuid.toString());
@@ -45,6 +68,21 @@ public class DisguiseRepository {
     public CompletableFuture<Map<UUID, String>> loadAllActive() {
         return CompletableFuture.supplyAsync(() -> {
             Map<UUID, String> result = new HashMap<>();
+            if (isMongo()) {
+                try {
+                    for (Document doc : getCollection().find(new Document("is_disguised", true))) {
+                        try {
+                            UUID uuid = UUID.fromString(doc.getString("uuid"));
+                            String meta = doc.getString("disguise_meta");
+                            result.put(uuid, meta);
+                        } catch (Exception ignored) {}
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao carregar disguises ativos do MongoDB: " + e.getMessage());
+                }
+                return result;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("SELECT uuid, disguise_meta FROM disguises WHERE is_disguised = 1")) {
                 try (ResultSet rs = ps.executeQuery()) {
@@ -66,6 +104,19 @@ public class DisguiseRepository {
 
     public void saveAsync(UUID uuid, boolean isDisguised, String type, String meta) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    Document doc = new Document("uuid", uuid.toString())
+                            .append("is_disguised", isDisguised)
+                            .append("disguise_type", type)
+                            .append("disguise_meta", meta);
+                    getCollection().replaceOne(new Document("uuid", uuid.toString()), doc, new ReplaceOptions().upsert(true));
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao salvar disguise no MongoDB: " + e.getMessage());
+                }
+                return;
+            }
+
             try (Connection conn = databaseManager.getConnection()) {
                 try (PreparedStatement ps = conn.prepareStatement("REPLACE INTO disguises (uuid,is_disguised,disguise_type,disguise_meta) VALUES (?,?,?,?)")) {
                     ps.setString(1, uuid.toString());

@@ -1,6 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;
@@ -21,6 +24,14 @@ public final class SkinCacheRepository {
         this.databaseManager = databaseManager;
     }
 
+    private boolean isMongo() {
+        return databaseManager.getType().equalsIgnoreCase("mongodb");
+    }
+
+    private MongoCollection<Document> getCollection() {
+        return databaseManager.getMongoDatabase().getCollection("skin_cache");
+    }
+
     public CompletableFuture<SkinData> load(String nick) {
         String clean = normalizeNick(nick);
         if (clean.isEmpty()) {
@@ -35,6 +46,20 @@ public final class SkinCacheRepository {
     public SkinData loadSync(String nick) {
         String clean = normalizeNick(nick);
         if (clean.isEmpty()) {
+            return null;
+        }
+
+        if (isMongo()) {
+            try {
+                Document doc = getCollection().find(new Document("nick", clean)).first();
+                if (doc != null) {
+                    return new SkinData(clean, doc.getString("skin_value"), doc.getString("skin_signature"));
+                }
+            } catch (Exception e) {
+                if (plugin != null) {
+                    plugin.getLogger().warning("[KaosCore] Erro ao carregar skin cache do MongoDB: " + e.getMessage());
+                }
+            }
             return null;
         }
 
@@ -64,6 +89,20 @@ public final class SkinCacheRepository {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    Document doc = new Document("nick", clean)
+                            .append("skin_value", value)
+                            .append("skin_signature", signature);
+                    getCollection().replaceOne(new Document("nick", clean), doc, new ReplaceOptions().upsert(true));
+                } catch (Exception e) {
+                    if (plugin != null) {
+                        plugin.getLogger().warning("[KaosCore] Erro ao salvar skin cache no MongoDB: " + e.getMessage());
+                    }
+                }
+                return;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("REPLACE INTO kaoscore_skin_cache (nick, skin_value, skin_signature) VALUES (?,?,?)")) {
                 ps.setString(1, clean);
@@ -82,6 +121,24 @@ public final class SkinCacheRepository {
     public List<SkinData> loadAnyPoolSync(int limit) {
         int lim = limit <= 0 ? 64 : Math.min(limit, 512);
         List<SkinData> out = new ArrayList<>();
+
+        if (isMongo()) {
+            try {
+                for (Document doc : getCollection().find().limit(lim)) {
+                    String nick = doc.getString("nick");
+                    String value = doc.getString("skin_value");
+                    String signature = doc.getString("skin_signature");
+                    if (nick != null && value != null && !value.trim().isEmpty()) {
+                        out.add(new SkinData(nick, value, signature));
+                    }
+                }
+            } catch (Exception e) {
+                if (plugin != null) {
+                    plugin.getLogger().warning("[KaosCore] Erro ao carregar pool de skins do MongoDB: " + e.getMessage());
+                }
+            }
+            return out;
+        }
 
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement("SELECT nick, skin_value, skin_signature FROM kaoscore_skin_cache LIMIT " + lim)) {

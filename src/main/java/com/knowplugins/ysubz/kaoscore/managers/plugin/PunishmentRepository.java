@@ -3,6 +3,12 @@ package com.knowplugins.ysubz.kaoscore.managers.plugin;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 
 import java.sql.Connection;
@@ -25,8 +31,35 @@ public class PunishmentRepository {
         this.databaseManager = databaseManager;
     }
 
+    private boolean isMongo() {
+        return databaseManager.getType().equalsIgnoreCase("mongodb");
+    }
+
+    private MongoCollection<Document> getCollection() {
+        return databaseManager.getMongoDatabase().getCollection("punishments");
+    }
+
     public List<PunishmentEntry> loadActive() {
         List<PunishmentEntry> result = new ArrayList<>();
+
+        if (isMongo()) {
+            try {
+                long now = System.currentTimeMillis();
+                Bson filter = Filters.and(
+                        Filters.eq("active", true),
+                        Filters.or(Filters.eq("expires_at", 0L), Filters.gt("expires_at", now))
+                );
+                for (Document doc : getCollection().find(filter)) {
+                    PunishmentEntry entry = mapMongo(doc);
+                    if (entry != null) {
+                        result.add(entry);
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Erro ao carregar punicoes ativas do MongoDB: " + e.getMessage());
+            }
+            return result;
+        }
 
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement("SELECT id, target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active, removed_at, removed_by_uuid, removed_by_name, removed_reason FROM punishments WHERE active = 1 AND (expires_at IS NULL OR expires_at = 0 OR expires_at > ?)")) {
@@ -53,6 +86,27 @@ public class PunishmentRepository {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    long nextId = System.currentTimeMillis();
+                    Document doc = new Document("id", nextId)
+                            .append("target_uuid", entry.getTargetUuid() != null ? entry.getTargetUuid().toString() : null)
+                            .append("target_name", entry.getTargetName())
+                            .append("punishment_type", entry.getType().name())
+                            .append("reason", entry.getReason())
+                            .append("created_at", entry.getCreatedAt())
+                            .append("expires_at", entry.isPermanent() ? 0L : entry.getExpiresAt())
+                            .append("punisher_uuid", entry.getPunisherUuid() != null ? entry.getPunisherUuid().toString() : null)
+                            .append("punisher_name", entry.getPunisherName())
+                            .append("source", entry.getSource())
+                            .append("active", entry.isActive());
+                    getCollection().insertOne(doc);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao salvar punicao no MongoDB: " + e.getMessage());
+                }
+                return;
+            }
+
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement("INSERT INTO punishments (target_uuid, target_name, punishment_type, reason, created_at, expires_at, punisher_uuid, punisher_name, source, active) VALUES (?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
                 setUuid(ps, 1, entry.getTargetUuid());
@@ -83,6 +137,37 @@ public class PunishmentRepository {
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    List<Bson> filters = new ArrayList<>();
+                    filters.add(Filters.eq("active", true));
+                    filters.add(Filters.eq("punishment_type", type.name()));
+
+                    if (targetUuid != null && targetName != null && !targetName.trim().isEmpty()) {
+                        filters.add(Filters.or(Filters.eq("target_uuid", targetUuid.toString()), Filters.eq("target_name", targetName.toLowerCase())));
+                    } else if (targetUuid != null) {
+                        filters.add(Filters.eq("target_uuid", targetUuid.toString()));
+                    } else if (targetName != null && !targetName.trim().isEmpty()) {
+                        filters.add(Filters.eq("target_name", targetName.toLowerCase()));
+                    } else {
+                        return;
+                    }
+
+                    Bson update = Updates.combine(
+                            Updates.set("active", false),
+                            Updates.set("removed_at", System.currentTimeMillis()),
+                            Updates.set("removed_by_uuid", removedByUuid != null ? removedByUuid.toString() : null),
+                            Updates.set("removed_by_name", removedByName),
+                            Updates.set("removed_reason", removedReason)
+                    );
+
+                    getCollection().updateMany(Filters.and(filters), update);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao revogar punicao no MongoDB: " + e.getMessage());
+                }
+                return;
+            }
+
             String sql = buildRevokeSql(targetUuid, targetName);
             if (sql == null) {
                 return;
@@ -117,12 +202,34 @@ public class PunishmentRepository {
     public CompletableFuture<List<PunishmentEntry>> loadHistory(UUID targetUuid, String targetName, int limit) {
         return CompletableFuture.supplyAsync(() -> {
             List<PunishmentEntry> result = new ArrayList<>();
+            int resolvedLimit = limit <= 0 ? 10 : limit;
+
+            if (isMongo()) {
+                try {
+                    List<Bson> filters = new ArrayList<>();
+                    if (targetUuid != null) filters.add(Filters.eq("target_uuid", targetUuid.toString()));
+                    if (targetName != null && !targetName.trim().isEmpty()) filters.add(Filters.eq("target_name", targetName.toLowerCase()));
+
+                    if (filters.isEmpty()) return result;
+
+                    Bson finalFilter = filters.size() == 2 ? Filters.or(filters) : filters.get(0);
+
+                    for (Document doc : getCollection().find(finalFilter).sort(Sorts.descending("created_at")).limit(resolvedLimit)) {
+                        PunishmentEntry entry = mapMongo(doc);
+                        if (entry != null) {
+                            result.add(entry);
+                        }
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Erro ao carregar histórico de punicoes do MongoDB: " + e.getMessage());
+                }
+                return result;
+            }
+
             String sql = buildHistorySql(targetUuid, targetName);
             if (sql == null) {
                 return result;
             }
-
-            int resolvedLimit = limit <= 0 ? 10 : limit;
 
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -216,6 +323,30 @@ public class PunishmentRepository {
             return new PunishmentEntry(id, targetUuid, targetName, type, reason, createdAt, expiresAt, punisherUuid, punisherName, source, active, removedAt, removedByUuid, removedByName, removedReason);
         } catch (Exception e) {
             plugin.getLogger().warning("Erro ao mapear punicao do DB: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private PunishmentEntry mapMongo(Document doc) {
+        try {
+            long id = doc.getLong("id");
+            UUID targetUuid = parseUuid(doc.getString("target_uuid"));
+            String targetName = doc.getString("target_name");
+            PunishmentType type = PunishmentType.valueOf(doc.getString("punishment_type"));
+            String reason = doc.getString("reason");
+            long createdAt = doc.getLong("created_at");
+            long expiresAt = doc.containsKey("expires_at") ? doc.getLong("expires_at") : 0L;
+            UUID punisherUuid = parseUuid(doc.getString("punisher_uuid"));
+            String punisherName = doc.getString("punisher_name");
+            String source = doc.getString("source");
+            boolean active = doc.getBoolean("active", false);
+            long removedAt = doc.containsKey("removed_at") ? doc.getLong("removed_at") : 0L;
+            UUID removedByUuid = parseUuid(doc.getString("removed_by_uuid"));
+            String removedByName = doc.getString("removed_by_name");
+            String removedReason = doc.getString("removed_reason");
+            return new PunishmentEntry(id, targetUuid, targetName, type, reason, createdAt, expiresAt, punisherUuid, punisherName, source, active, removedAt, removedByUuid, removedByName, removedReason);
+        } catch (Exception e) {
+            plugin.getLogger().warning("Erro ao mapear punicao do MongoDB: " + e.getMessage());
             return null;
         }
     }

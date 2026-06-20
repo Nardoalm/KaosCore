@@ -14,14 +14,14 @@ public class PingCommand extends Commands {
 
    public void perform(CommandSender sender, String label, String[] args) {
       if(args.length < 1){
-         sender.sendMessage("§a§lPING ➔ §aYour ping is " + (sender instanceof Player ? ((CraftPlayer) sender).getHandle().ping : 0) + " §ams!");
+         sender.sendMessage("§aYour ping is " + (sender instanceof Player ? ((CraftPlayer) sender).getHandle().ping : 0) + " §ams!");
          Player senderPlayer = (Player) sender;
          senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
       } else {
          Player target = (args.length > 0) ? Bukkit.getPlayer(args[0]) : (sender instanceof Player ? (Player) sender : null);
 
          if (target == null) {
-            sender.sendMessage("§a§lERROR ➔ §cPlayer not found.");
+            sender.sendMessage("§cPlayer not found.");
             if (sender instanceof Player) {
                Player p = (Player) sender;
                p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
@@ -30,11 +30,11 @@ public class PingCommand extends Commands {
          }
 
          int ping = ((CraftPlayer) target).getHandle().ping;
-         sender.sendMessage(String.format("§a§lPING ➔ §a%s's ping is %d ms!", target.getName(), ping));
+         sender.sendMessage(String.format("§a%s's ping is %d ms!", target.getName(), ping));
 
          if (sender instanceof Player) {
             Player p = (Player) sender;
-            p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
          }
       }
    }

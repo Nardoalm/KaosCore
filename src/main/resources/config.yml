@@ -1,78 +1,69 @@
-license: "COLOQUE_SUA_CHAVE_AQUI" # Gere no discord.
-
+license: PUT_YOUR_KEY_HERE
 features:
   nametag:
     enabled: true
-
   scoreboard:
-    enabled: true
+    enabled: false
     update-ticks: 4
-    # Rodapé unificado para combinar com o novo IP
-    bottom: "&brosty.com.br"
-    lobby-line: "&fLobby: &a#1"
+    bottom: '&balleypvp.us'
+    lobby-line: '&fLobby: &a#1'
     title-animation:
-      - "&f&lR&b&lOSTY"
-      - "&b&lR&f&lO&b&lSTY"
-      - "&b&lRO&f&lS&b&lTY"
-      - "&b&lROS&f&lT&b&lY"
-      - "&b&lROST&f&lY"
-      - "&f&lROSTY"
-      - "&f&lROSTY"
-      - "&b&lROSTY"
-      - "&b&lROSTY"
-      - "&f&lROSTY"
-      - "&f&lROSTY"
+      - '&f&lA&b&lLLEY'
+      - '&b&lA&f&lL&b&lLEY'
+      - '&b&lAL&f&lL&b&lEY'
+      - '&b&lALL&f&lE&b&lY'
+      - '&b&lALLE&f&lY'
+      - '&f&lALLEY'
+      - '&f&lALLEY'
+      - '&b&lALLEY'
+      - '&b&lALLEY'
+      - '&f&lALLEY'
+      - '&f&lALLEY'
     lines:
-      - "&7&m        &m               "
-      - ""
-      - "&fRank: %kaoscore_prefix%"
-      - "&fLobby: &a#1"
-      - ""
-      - "&fJogadores: &a{online}"
-      - ""
-      - "&7&m        &m               "
-      - "&brosty.com.br"
-
+      - '&7&m        &m               '
+      - ''
+      - '&fRank: %kaoscore_prefix%'
+      - '&fLobby: &a#1'
+      - ''
+      - '&fPlayers: &a{online}'
+      - ''
+      - '&7&m        &m               '
+      - '&balleypvp.us'
   join-title:
     enabled: true
-    title: "&b&lROSTY"
-    subtitle: "&fSeja bem-vindo ao nosso servidor!"
+    title: '&b&lALLEY'
+    subtitle: '&fWelcome to our server!'
     fade-in: 20
     stay: 40
     fade-out: 20
-
   tablist:
     enabled: true
     header:
-      - ""
-      - "&b&lROSTY NETWORK"
-      - "&7Atualmente em: &fLobby #1"
-      - ""
+      - ''
+      - '&b&lALLEY'
+      - ''
     footer:
-      - ""
-      - "&fLoja: &brosty.com.br"
-      - "&fDiscord: &bdiscord.rosty.com.br"
-      - ""
-
+      - ''
+      - '&fStore: &bstore.alleypvp.us'
+      - '&fDiscord: &bdc.alleypvp.us'
+      - ''
   welcome-messages:
     enabled: true
-
   protections:
     spawn:
-      enabled: true
+      enabled: false
       cancel-damage: true
       cancel-hunger: true
       cancel-combust: true
     pvp:
-      enabled: false # Em lobby, o ideal é manter desativado por padrão
+      enabled: false
     world:
-      enabled: true
+      enabled: false
       cancel-block-break: true
       cancel-block-place: true
     entities:
-      cancel-spawn: true
-      clear-drops: true
-
+      cancel-spawn: false
+      clear-drops: false
 sit:
   enabled: true
   carry:
@@ -82,76 +73,58 @@ sit:
   right-click:
     enabled: false
     require-empty-hand: true
-
 practice-blocks:
-  message: "&b&lROSTY &8➔ &cVocê não pode usar comandos durante o Practice."
+  message: '&b&lALLEY &8➔ &cYou cannot use commands during Practice.'
   commands:
-    - "fly"
-    - "voar"
-    - "f"
-    - "sit"
-    - "disguise"
-    - "skin"
-    - "dinnerbone"
-    - "troll"
-    - "tag"
-    - "clan"
-    - "cc"
-    - "friend"
-    - "friends"
-    - "welcomemessage"
-    - "wm"
-    - "disclose"
-
+    - fly
+    - voar
+    - f
+    - sit
 chat:
-  # Formato mais elegante com separadores modernos
-  format: "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» &f{message}"
-  default-color: "&7"
-  vip-color: "&f"
+  format: '%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player}
+    &8» &f{message}'
+  default-color: '&7'
+  vip-color: '&f'
   mentions:
     enabled: true
-    format: "&b@{nick}&f"
-    actionbar: "&b&l! &fO jogador &b{nick} &fmencionou você!"
-    notify-sound: "NOTE_PLING"
+    format: '&b@{nick}&f'
+    actionbar: '&b&l! &fPlayer &b{nick} &fmentioned you!'
+    notify-sound: NOTE_PLING
     notify-volume: 1.0
     notify-pitch: 1.2
-
 divulgar:
   enabled: true
-  permission: "kaoscore.member.divulgar"
-  bypass-permission: "kaoscore.staff.divulgar"
+  permission: kaoscore.member.divulgar
+  bypass-permission: kaoscore.staff.divulgar
   cooldown-seconds: 60
   broadcast:
-    - "&b&lSOCIAL &8➔ %kaoscore_tag_prefix%{player} &7está online em: &f{link}"
-
+    - '&b&lSOCIAL &8➔ %kaoscore_tag_prefix%{player} &7is live at: &f{link}'
 autobroadcast:
   enabled: true
   interval-seconds: 300
   random: true
   messages:
-    - "&b&lDICA &8➔ &fAdquira vantagens exclusivas em nossa loja: &brosty.com.br"
-    - "&b&lSOCIAL &8➔ &fEntre em nosso Discord oficial: &bdiscord.rosty.com.br"
-    - "&b&lDICA &8➔ &fUse &b/wm &fpara customizar sua mensagem de entrada!"
-
+    - '&b&lTIP &8➔ &fPurchase exclusive ranks on our store: &balleypvp.us'
+    - '&b&lSOCIAL &8➔ &fJoin our official Discord: &bdiscord.alleypvp.us'
+    - '&b&lTIP &8➔ &fUse &b/wm &fto customize your join message!'
 spawn-limits:
   enabled: true
   only-spawn-world: true
-  bypass-permission: "kaoscore.spawnlimits.bypass"
+  bypass-permission: kaoscore.spawnlimits.bypass
   check-interval-ticks: 10
   void-level-y: -20
   max-distance-from-spawn: 200.0
-  message-void: "&b&lROSTY &8➔ &fVocê caiu no limbo e foi trazido de volta."
-  message-radius: "&b&lROSTY &8➔ &fVocê se afastou demais e foi trazido de volta."
-  sound: "ENDERMAN_TELEPORT"
-
+  message-void: '&b&lALLEY &8➔ &fYou fell into the void and were brought back.'
+  message-radius: '&b&lALLEY &8➔ &fYou went too far away and were brought back.'
+  sound: ENDERMAN_TELEPORT
 database:
-  type: "mysql" # mysql or mongodb
+  type: mongodb
   mysql:
-    host: "localhost"
+    host: localhost
     port: 3306
-    database: "bancodedados"
-    user: "root"
-    password: "root"
+    database: database
+    user: root
+    password: root
     pool:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -161,9 +134,8 @@ database:
       validation-timeout-ms: 5000
       leak-detection-threshold-ms: 0
   mongodb:
-    uri: "mongodb://localhost:27017"
-    database: "kaoscore"
-
+    uri: mongodb://localhost:27017
+    database: kaoscore
 npc-spawn:
   enabled: false
   world: world
@@ -172,4 +144,4 @@ npc-spawn:
   z: 0.5
   yaw: 0.0
   pitch: 0.0
-  skin-nick: 'Notch'
+  skin-nick: Notch

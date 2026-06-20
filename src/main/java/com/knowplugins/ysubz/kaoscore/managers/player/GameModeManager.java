@@ -35,13 +35,13 @@ public class GameModeManager {
    public static String getFrom(String type) {
       try {
          if (Integer.parseInt(type) == 0) {
-            return "Sobrevivência";
+            return "Survival";
          } else if (Integer.parseInt(type) == 1) {
-            return "Criativo";
+            return "Creative";
          } else if (Integer.parseInt(type) == 2) {
-            return "Aventura";
+            return "Adventure";
          } else {
-            return Integer.parseInt(type) == 3 ? "Espectador" : "Sobrevivência";
+            return Integer.parseInt(type) == 3 ? "Spectador" : "Survival";
          }
       } catch (NumberFormatException var2) {
          if (type.equalsIgnoreCase("Survival")) {

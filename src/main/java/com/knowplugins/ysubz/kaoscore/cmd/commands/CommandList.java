@@ -15,7 +15,7 @@ public class CommandList extends Commands {
       } else {
          Player player = (Player)sender;
          if (!player.hasPermission("kaoscore.staff.commandlist")) {
-            player.sendMessage("§e§lDEV ➔ §eNardoDev.");
+            player.sendMessage("§e§lDEV ➔ §eysubz.");
          } else {
             sender.sendMessage("");
             sender.sendMessage("§7Utility command list:");

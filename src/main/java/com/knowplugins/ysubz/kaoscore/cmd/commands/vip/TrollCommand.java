@@ -20,7 +20,7 @@ public class TrollCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
 
         if (sender instanceof Player && !sender.hasPermission(PERMISSION)) {
-            sender.sendMessage("§c§lTROLL ➔ §cVocê não possui permissão para executar este comando.");
+            sender.sendMessage("§cYou do not have permission to execute this command.");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             }
@@ -28,7 +28,7 @@ public class TrollCommand extends Commands {
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c§lTROLL ➔ §cUso correto: /troll <jogador>");
+            sender.sendMessage("§cUsage: /troll <player>");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             }
@@ -37,7 +37,7 @@ public class TrollCommand extends Commands {
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null || !target.isOnline()) {
-            sender.sendMessage("§c§lTROLL ➔ §cJogador não encontrado.");
+            sender.sendMessage("§cPlayer not found.");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
             }
@@ -45,18 +45,16 @@ public class TrollCommand extends Commands {
         }
 
         try {
-            // GameStateChange id=5 costuma abrir a tela de demo (depende do client).
             ((CraftPlayer) target).getHandle().playerConnection.sendPacket(new PacketPlayOutGameStateChange(5, 0.0F));
 
-            sender.sendMessage("§a§lTROLL ➔ §aA tela de demonstração foi aberta para " + target.getName() + ".");
+            sender.sendMessage("§aThe demo screen has been opened for " + target.getName() + ".");
             if (sender instanceof Player) {
                 ((Player) sender).playSound(((Player) sender).getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
             }
 
         } catch (Exception ex) {
-            sender.sendMessage("§c§lTROLL ➔ §cOcorreu um erro interno ao tentar trollar o jogador.");
+            sender.sendMessage("§cAn internal error occurred while trying to troll the player.");
             ex.printStackTrace();
         }
     }
 }
-
