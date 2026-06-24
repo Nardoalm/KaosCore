@@ -11,6 +11,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,11 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Anvil GUI para input de texto (1.8.8).
- * Usa ContainerAnvil NMS para o campo de renomear funcionar corretamente.
- */
-public final class AnvilInputMenu {
+public final class AnvilInputMenu implements Listener {
 
     public interface Handler {
         void onSubmit(Player player, String text);
@@ -123,6 +122,24 @@ public final class AnvilInputMenu {
         return new PacketPlayOutOpenWindow(windowId, type, title, 0);
     }
 
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getPlayer();
+        Session session = SESSIONS.remove(player.getUniqueId());
+
+        if (session != null) {
+            Inventory topInventory = event.getInventory();
+            if (topInventory != null) {
+                topInventory.clear();
+            }
+            session.handler.onClose(player);
+        }
+    }
+
     public static final class Session {
         public final int windowId;
         public final Handler handler;
@@ -133,4 +150,3 @@ public final class AnvilInputMenu {
         }
     }
 }
-

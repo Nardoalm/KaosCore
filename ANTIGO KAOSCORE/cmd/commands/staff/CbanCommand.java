@@ -24,20 +24,20 @@ public class CbanCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (args.length < 1) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cUso correto: /CHEATBAN <jogador>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.banir")) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cSistema de punições indisponível.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -45,13 +45,13 @@ public class CbanCommand extends Commands {
         Player onlineTarget = target.getPlayer();
         if (onlineTarget == null || !onlineTarget.isOnline()) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cJogador não existe ou não está online.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (sender instanceof Player && target.getUuid() != null && target.getUuid().equals(((Player) sender).getUniqueId())) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cVocê não pode se banir!");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -63,7 +63,7 @@ public class CbanCommand extends Commands {
         PunishmentEntry punishment = punishmentManager.punish(PunishmentType.BAN, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "CHEATBAN");
         if (punishment == null) {
             sender.sendMessage("§c§lCHEATBAN ➔ §cNão foi possível aplicar o CHEATBAN.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

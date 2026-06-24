@@ -25,19 +25,17 @@ public final class SkinMenu {
 
         Inventory inv = Bukkit.createInventory(null, 27, TITLE);
 
-        inv.setItem(11, item(Material.NAME_TAG, "§aEscolher Skin", lore(
-                "§7Escolha uma skin por nick.",
-                "§7Apenas VIP.",
+        inv.setItem(11, item(Material.NAME_TAG, "§aChoose Skin", lore(
+                "§7Choose a skin by username.",
+                "§7VIP Only.",
                 "",
-                "§eClique para escolher.",
-                LORE_ACTION_PREFIX + "choose"
+                "§eClick to choose."
         )));
 
-        inv.setItem(15, item(Material.BARRIER, "§cResetar Skin", lore(
-                "§7Volta para sua skin original.",
+        inv.setItem(15, item(Material.BARRIER, "§cReset Skin", lore(
+                "§7Revert to your original skin.",
                 "",
-                "§eClique para resetar.",
-                LORE_ACTION_PREFIX + "reset"
+                "§eClick to reset."
         )));
 
         player.openInventory(inv);
@@ -76,4 +74,3 @@ public final class SkinMenu {
         return list;
     }
 }
-

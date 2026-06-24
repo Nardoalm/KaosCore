@@ -25,13 +25,13 @@ public final class SetNpcCommand extends Commands {
         Player player = (Player) sender;
         if (!player.hasPermission("kaoscore.admin.setnpc")) {
             player.sendMessage("§c§lNPC ➔ §cYou do not have permission to use this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
             player.sendMessage("§c§lNPC ➔ §cUsage: /setnpc <id> [skinNick]");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -39,7 +39,7 @@ public final class SetNpcCommand extends Commands {
         NPCManager manager = Managers.getNpcManager();
         if (plugin == null || manager == null || !manager.isEnabled()) {
             player.sendMessage("§c§lNPC ➔ §cNPCs are disabled in npcs.yml.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -50,11 +50,11 @@ public final class SetNpcCommand extends Commands {
         boolean ok = manager.upsertNpc(id, loc, skinNick);
         if (!ok) {
             player.sendMessage("§c§lNPC ➔ §cUnable to save the NPC.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         player.sendMessage("§a§lNPC ➔ §aNPC '" + id + "' saved in §fnpcs.yml§a.");
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 }

@@ -30,14 +30,14 @@ public class TeleportCommand extends Commands {
       if (Objects.equals(args[1], sender.getName())) {
          sender.sendMessage("§c§lTELEPORT ➔ §cVocê não pode teleportar para si mesmo!");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
 
       if (!sender.hasPermission("kaoscore.staff.teleportar")) {
          sender.sendMessage("§c§lTELEPORT ➔ §cVocê não possui permissão para executar este comando.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
    }
@@ -46,7 +46,7 @@ public class TeleportCommand extends Commands {
       if (!sender.hasPermission("kaoscore.staff.teleportar")) {
          sender.sendMessage("§c§lTELEPORT ➔ §cVocê não possui permissão para executar este comando.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return true;
       }
       if (!this.testPermission(sender)) {
@@ -60,7 +60,7 @@ public class TeleportCommand extends Commands {
             if (!(sender instanceof Player)) {
                sender.sendMessage("§c§lTELEPORT ➔ §cDigite o nome de um jogador!");
                Player senderPlayer = (Player) sender;
-               senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+               senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                return true;
             }
 
@@ -70,7 +70,7 @@ public class TeleportCommand extends Commands {
          if (player == null) {
             sender.sendMessage("§c§lTELEPORT ➔ §cJogador não encontrado: " + args[0]);
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return true;
          } else {
             if (args.length < 3) {
@@ -79,7 +79,7 @@ public class TeleportCommand extends Commands {
                if (target == null) {
                   sender.sendMessage("§c§lTELEPORT ➔ §cNão foi possível localizar o jogador " + args[args.length - 1] + ". Portanto, sem teleporte.");
                   Player senderPlayer = (Player) sender;
-                  senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                   return true;
                }
 
@@ -96,7 +96,7 @@ public class TeleportCommand extends Commands {
                if (x == -3.0000001E7D || y == -3.0000001E7D || z == -3.0000001E7D) {
                   sender.sendMessage("§c§lTELEPORT ➔ §cCoordenadas erradas!");
                   Player senderPlayer = (Player) sender;
-                  senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                   return true;
                }
 
@@ -114,7 +114,7 @@ public class TeleportCommand extends Commands {
       } else {
          sender.sendMessage("§c§lTELEPORT ➔ §cUso correto: /tp <jogador>");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return false;
       }
    }

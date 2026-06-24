@@ -194,16 +194,16 @@ public class ChatListener implements Listener {
 
     private String applyVipFormatting(String msg, String chatColor) {
         String formatted = ChatColor.translateAlternateColorCodes('&', msg);
-        formatted = formatted.replaceAll("(?i)\\bgg\\b", "§3§lGG" + chatColor);
+        formatted = formatted.replaceAll("(?i)\\bgg\\b", "§3§lGG!" + chatColor);
         formatted = formatted.replaceAll("(?i)\\bez\\b", "§a§lEZ!" + chatColor);
-        formatted = formatted.replaceAll("(?i)\\blol\\b", "§e§lLOL" + chatColor);
-        formatted = formatted.replaceAll("(?i)\\brip\\b", "§8§lRIP" + chatColor);
-        formatted = formatted.replaceAll("(?i)\\bnice\\b", "§a§lNICE" + chatColor);
+        formatted = formatted.replaceAll("(?i)\\blol\\b", "§e§lLOL!" + chatColor);
+        formatted = formatted.replaceAll("(?i)\\brip\\b", "§8§lRIP!" + chatColor);
+        formatted = formatted.replaceAll("(?i)\\bnice\\b", "§a§lNICE!" + chatColor);
         formatted = formatted.replace("<3", "§c❤");
-        formatted = formatted.replaceAll("(?i)\\bbruh\\b", "§7§lBRUH" + chatColor);
-        formatted = formatted.replaceAll("(?i)\\bnoob\\b", "§7§lNOOB");
-        formatted = formatted.replaceAll("(?i)\\bmid\\b", "§d§lMID");
-        formatted = formatted.replaceAll("(?i)\\beasy\\b", "§a§lEASY");
+        formatted = formatted.replaceAll("(?i)\\bbruh\\b", "§7§lBRUH!" + chatColor);
+        formatted = formatted.replaceAll("(?i)\\bnoob\\b", "§7§lNOOB!");
+        formatted = formatted.replaceAll("(?i)\\bmid\\b", "§d§lMID!");
+        formatted = formatted.replaceAll("(?i)\\beasy\\b", "§a§lEASY!");
         formatted = formatted.replace(":sword:", "⚔");
         formatted = formatted.replace(":shield:", "⛨");
         formatted = formatted.replace(":diamond:", "◆");

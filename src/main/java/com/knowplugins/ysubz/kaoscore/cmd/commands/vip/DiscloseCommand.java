@@ -36,20 +36,20 @@ public class DiscloseCommand extends Commands {
 
         if (!plugin.getConfig().getBoolean("divulgar.enabled", true)) {
             player.sendMessage("§cThis command is currently disabled.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         String permission = safe(plugin.getConfig().getString("divulgar.permission"));
         if (!permission.trim().isEmpty() && !player.hasPermission(permission)) {
             player.sendMessage("§cYou do not have permission to use this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
             player.sendMessage("§cUsage: /disclose <link>");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -57,7 +57,7 @@ public class DiscloseCommand extends Commands {
         link = sanitizeLink(link);
         if (link.isEmpty()) {
             player.sendMessage("§cInvalid link.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -72,7 +72,7 @@ public class DiscloseCommand extends Commands {
                 if (remainingMs > 0) {
                     long remaining = Math.max(1, (remainingMs + 999) / 1000);
                     player.sendMessage("§cPlease wait §f" + remaining + "s §cto advertise again.");
-                    player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     return;
                 }
             }
@@ -100,7 +100,7 @@ public class DiscloseCommand extends Commands {
             }
         }
 
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
     private String join(String[] args, int start) {

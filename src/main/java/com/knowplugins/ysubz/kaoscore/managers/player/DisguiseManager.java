@@ -1,6 +1,13 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.lunarclient.apollo.Apollo;
+import com.lunarclient.apollo.module.team.*;
+import com.lunarclient.apollo.module.nametag.*;
+import com.lunarclient.apollo.recipients.Recipients;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,28 +24,51 @@ public class DisguiseManager {
     private static final Map<UUID, String> ORIGINAL_NAMES = new HashMap<>();
 
     private final List<String> defaultNicks = Arrays.asList(
-            "brunao77", "vxRj", "arthur_slk", "pedrinbr", "matheusA",
-            "caio_021", "rafa_xp", "nando_", "duduz1", "luc4s",
-            "igorzin__", "renanz", "guilherme_", "andrex_", "yurizin__",
-            "samuca77", "lkszin__", "cauazin__", "pedrao_", "luan77",
-            "skyzx", "void_77", "n1ghtfall", "storm_x", "darkrj",
-            "lunar7", "blvck_", "ice_021", "firezz", "frostzin__",
-            "px7", "tz_", "qxr", "hz_77", "rxp",
-            "zx21", "krlx", "dxx_", "zzrj", "nxzin__",
-            "brayan_", "vitorrj", "edu_021", "arthur7k", "felps_",
-            "danielx", "marcos77", "henrique_", "gabx_", "thiagox",
-            "devvx", "codexr", "jav4_", "scriptx", "backend_",
-            "rootzin__", "stack_", "nullzin__", "commit_", "push_",
-            "xxvx", "zrx_", "k9_", "vx__", "rxx_",
-            "tzin__", "mz_", "hzx_", "xrz_", "qz_",
-            "guh021", "arthur_08", "brunin7", "vx2010", "kaua_77",
-            "yuri021", "pedro_08", "joaov_", "caiobr", "rafazin__",
-            "slkzin__", "mlk77", "trx_", "drx_", "kratosbr",
-            "zeus_77", "aresx_", "odinbr", "thorzin__", "loki_021",
-            "favelado_", "cria77", "tropa021", "mandela_", "fluxo77",
-            "rolezin__", "quebrada_", "visao77", "resenha_", "bolado77",
-            "pimenta_", "farinha77", "cafezinho_", "arroz_021", "feijao77",
-            "paozinho__", "suco77", "refri_", "doce021", "biscoito77"
+            "iZack_x", "iClaudio1256_", "VaterSeinSohn", "G2U", "RoadMore", "69Drunk", "ZeusYT_",
+            "MaskedBetrayel", "Sincriterio", "SUW0", "rilsy", "MIBECON", "wreeperbeastmode", "luvniss",
+            "Dqnd", "licorne_soiyeuse", "blokovac", "3rst", "_Kaori_Chan_", "AfterChange", "DogeBigEyes_",
+            "due1", "iGen", "ManoEdson", "qSamra", "ImNotCrying_", "scuzii", "Aama", "69Excited",
+            "pookiechan", "bunyeet", "BerkeBetterPlays", "T6Q", "Norddur", "_ShiMoRin_", "Tsuk",
+            "zTwoRod", "7rq", "Rick_Grimez", "HindSightQ", "Himmelsschimmer", "lovily", "Di3play",
+            "iExcelsior", "Laiinox", "sender852", "dripgf", "verschlaft", "BasicHenry_", "ShiroDeCitron",
+            "Dark_Senna", "Kay05", "cowtails", "__olek2k__", "overdohse", "Puxqh", "Vanify",
+            "Colton229", "LA_Capone", "caughtfeelings", "Po4ka_", "Spanka", "MHF_Mineskin", "iFqncyou",
+            "lovlx", "umrumie", "iiStxr", "lizukox", "YourCherry_", "Blirry", "yungdrib", "Lireaax",
+            "dcvie", "Fanaa_", "Lounce", "The_Vizard", "LegacySFX", "Ylovoir", "Dolarr", "ReallyEasy",
+            "Exttasy", "swashi", "gejj", "mvtsy", "xNullx", "oviate", "Volds", "Epode", "Neegah",
+            "shiddenly", "Fruitopiaa", "malsiee", "_A4G", "abusings", "maxae", "Jackyzlex", "BigTayTay",
+            "BooVs_sss", "NoHaxLegit", "qwrpy", "AhmedQ", "Waggen", "toxci", "dumb_child", "Ancil",
+            "1000001", "2807", "EatThatP445", "oLa2930", "TildiGaming", "Kyandorux", "qKenji",
+            "ThanksMojang", "Keiffes", "stariey", "Zyxess", "Lefty006", "kitten2004", "MiniDiggerTest",
+            "Unapprovinq", "Badger", "Xaoa", "DaDLine", "imbitter", "Parveon", "AAAWojack", "Piska",
+            "0hated", "iYagHan_", "notgb", "Exsaynor", "High_up", "KrissaN04", "Hacks", "Jefz",
+            "revvlon", "mightness", "oWuv", "Therealbertje", "IDareYouDaddy", "BeamerGirl", "K1nqz",
+            "Mavyoo", "RegeditG0D", "oFLODJES", "Trapzzi", "MrM4ng0", "Itz_Er", "StickyVibes",
+            "beefqke", "Naquatic", "Bqrderos", "Sunn1x", "cupofcomfy", "Fluxin", "LighTiti",
+            "Txrtled", "Px_Diamocles", "owoshiro", "LavRox_", "Dehlu", "Kamyxo", "bellscafe",
+            "zillla", "DocLP", "RCE", "Bmbi", "Madilaine", "RumpelstyleOG", "Colombians", "fukboys",
+            "Topoi", "12b", "SpopPvP", "Termirom", "iSxlated", "uwunuzzleme", "iChosenRoy",
+            "qq6q", "_gxt", "DiscordApp", "ImDxlqs_", "felixiie", "Shotz08", "AhmedV", "IzDragon",
+            "uhMarco", "iCustomi", "Breed444", "DOF", "Atser", "sfxnd", "zGhozttt", "herobrine1234_",
+            "Lecuuu", "FullPrice", "Malabu", "Juggie", "lemrad", "MOBOMBER", "LinkGamer27",
+            "beksmoel", "JJs300", "_Daxe_", "ChillWooper", "AyyThomas", "xFatTurtle", "matic1909",
+            "iRailed", "lcco", "_k0ka", "mye", "_JustSimple_", "itally", "Addictq", "wMoonLight_",
+            "Argonn_", "Happyman7o7", "jojitrash", "Resident", "YAKO_l", "myro", "obsion",
+            "Shiftz", "dxvr", "Wispexe", "Clicks", "LanceCS", "daydreamingg", "CherrySodaYummy",
+            "GuVi0609", "Kenzi", "Disorder", "xrazeer", "hshai", "maiid", "kvtsu", "CreationMC",
+            "Kobraso", "Goldapfel", "Folkef1", "grassyterror10", "shel_x", "BangerLEBBYY", "OhSad",
+            "kotka23", "zLucaz", "BoogieHoodie_", "Shainty", "subsallaround", "Relief_II", "tethlus",
+            "SummerShqrk", "xJustRevengeS", "bottle_neck", "gradical", "HarryPhoenix", "drears",
+            "redsi", "Linahh", "Madji0o0", "djoxonN", "Legionqr", "WaldePvP", "NothingFound",
+            "Clouudy_", "GoBurn", "baebih", "dbxs", "Flete", "Kvwx", "Woze", "Zyro", "Vyke",
+            "Qyze", "Nyxo", "Ryve", "Tyzo", "Xyke", "Lyvo", "Wyze", "Kyro", "Zyke", "Qyro",
+            "Vyzo", "Myke", "Fyro", "Pyze", "Ryko", "Tyve", "Avex", "Kryx", "Zorv", "Vynx",
+            "Qevo", "Ryxo", "Trez", "Nyvz", "Kyzx", "Wexo", "Zenv", "Qrix", "Vyqx", "Xero",
+            "Kivo", "Jyro", "Lqvx", "Nexo", "Yvex", "Zyvx", "Kwze", "Twyx", "Qwex", "Pryx",
+            "Fyvx", "Cyzo", "Vexo", "Qyvx", "Rexo", "Nyro", "Kovy", "Zevy", "Qiro", "Vyro",
+            "Kyvo", "Rivo", "Tyro", "Luvo", "Nivo", "Zivo", "Axor", "Kyzen", "Vyzen", "Qyzen",
+            "Ryzen", "Tyzen", "Fyzen", "Lyzen", "Nyzen", "Wyzen", "Qvex", "Kvex", "Rvex",
+            "Tvex", "Lvex", "Pvex", "Mvex", "Nvex", "Wvex", "Zvex"
     );
 
     private final List<String> allNicks = new ArrayList<>();
@@ -75,12 +105,89 @@ public class DisguiseManager {
 
     public void updateTabName(Player player) {
         if (player == null) return;
-        player.setPlayerListName(null);
+        KaosCore core = KaosCore.getInstance();
+        if (core != null && core.getTagManager() != null) {
+            core.getTagManager().refreshTag(player);
+        }
+    }
 
-        if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
-            KaosCore core = KaosCore.getInstance();
-            if (core.getTagManager() != null) {
-                core.getTagManager().refreshTag(player);
+    private String getFormattedName(Player player) {
+        String baseName = DISGUISE_NICKS.getOrDefault(player.getUniqueId(), player.getName());
+        KaosCore core = KaosCore.getInstance();
+        if (core == null || core.getTagManager() == null) return baseName;
+
+        com.knowplugins.ysubz.kaoscore.utils.tag.Tag tag = core.getTagManager().getTag(player);
+        if (tag == null) return baseName;
+
+        String prefix = tag.getPrefix() == null ? "" : tag.getPrefix();
+        String suffix = tag.getSuffix() == null ? "" : tag.getSuffix();
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            try {
+                prefix = PlaceholderAPI.setPlaceholders(player, prefix);
+                suffix = PlaceholderAPI.setPlaceholders(player, suffix);
+            } catch (Exception ignored) {
+            }
+        }
+
+        prefix = prefix.replace(" %kaoscore_clan_tag%", "").replace("%kaoscore_clan_tag%", "");
+        suffix = suffix.replace(" %kaoscore_clan_tag%", "").replace("%kaoscore_clan_tag%", "");
+
+        prefix = org.bukkit.ChatColor.translateAlternateColorCodes('&', prefix);
+        suffix = org.bukkit.ChatColor.translateAlternateColorCodes('&', suffix);
+
+        String tailColor = "";
+        for (int i = prefix.length() - 2; i >= 0; i--) {
+            if (prefix.charAt(i) == org.bukkit.ChatColor.COLOR_CHAR) {
+                char code = Character.toLowerCase(prefix.charAt(i + 1));
+                if ((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f') || code == 'r') {
+                    tailColor = "" + org.bukkit.ChatColor.COLOR_CHAR + code;
+                    break;
+                }
+            }
+        }
+        return prefix + tailColor + baseName + suffix;
+    }
+
+    public void refreshApolloNametag(Player player) {
+        if (player == null) return;
+
+        TeamModule teamModule = Apollo.getModuleManager().getModule(TeamModule.class);
+        NametagModule nametagModule = Apollo.getModuleManager().getModule(NametagModule.class);
+
+        String activeName = DISGUISE_NICKS.get(player.getUniqueId());
+        String formattedName = getFormattedName(player);
+
+        if (nametagModule != null) {
+            Apollo.getPlayerManager().getPlayer(player.getUniqueId()).ifPresent(apolloPlayer -> {
+                if (activeName != null) {
+                    nametagModule.overrideNametag(Recipients.ofEveryone(), player.getUniqueId(), Nametag.builder()
+                            .lines(Collections.singletonList(LegacyComponentSerializer.legacySection().deserialize(formattedName)))
+                            .build()
+                    );
+                } else {
+                    nametagModule.resetNametag(Recipients.ofEveryone(), player.getUniqueId());
+                }
+            });
+        }
+
+        if (teamModule != null) {
+            List<TeamMember> teammates = new ArrayList<>();
+
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                String onlineDisplay = getFormattedName(online);
+
+                teammates.add(TeamMember.builder()
+                        .playerUuid(online.getUniqueId())
+                        .displayName(LegacyComponentSerializer.legacySection().deserialize(onlineDisplay))
+                        .build()
+                );
+            }
+
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                Apollo.getPlayerManager().getPlayer(online.getUniqueId()).ifPresent(apolloPlayer -> {
+                    teamModule.updateTeamMembers(apolloPlayer, teammates);
+                });
             }
         }
     }
@@ -91,8 +198,6 @@ public class DisguiseManager {
         if (nick != null) {
             DISGUISE_NICKS.put(player.getUniqueId(), nick);
         }
-
-        player.setPlayerListName(null);
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
@@ -105,6 +210,7 @@ public class DisguiseManager {
                 core.getTagManager().refreshTag(player);
             }
         }
+        refreshApolloNametag(player);
     }
 
     public void addInDisguise(UUID uuid) {
@@ -127,8 +233,6 @@ public class DisguiseManager {
         DISGUISE_NICKS.remove(player.getUniqueId());
         ORIGINAL_NAMES.remove(player.getUniqueId());
 
-        player.setPlayerListName(null);
-
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
             if (core.getTagTeamManager() != null) {
@@ -140,6 +244,7 @@ public class DisguiseManager {
                 core.getTagManager().refreshTag(player);
             }
         }
+        refreshApolloNametag(player);
     }
 
     public static boolean isDisguised(Player player) {
@@ -172,7 +277,7 @@ public class DisguiseManager {
                 List<String> extraNicks = Arrays.asList(
                         "Vexiity", "Zoltrus", "KyroPvP", "ImNotHack", "SlowMotion",
                         "Darkness_PT", "LethalGhost", "VortexNuker", "Swiftly", "FrostByte",
-                        "iZack_", "MysterioBR", "NightWalk", "ExoticPanda", "VelocityHits",
+                        "MysterioBR", "NightWalk", "ExoticPanda", "VelocityHits",
                         "SilentSteps", "HyperCombo", "ArcticFox_", "LunarPvP", "ShadowBound",
                         "GrizzlyBear", "IronWill", "SkyFaller", "Noxious", "ZenithPlayer", "pescador67"
                 );

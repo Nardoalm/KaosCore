@@ -28,13 +28,13 @@ public final class SetTagCommand extends Commands {
 
         if (!sender.hasPermission(PERMISSION)) {
             sender.sendMessage("§c§lSETTAG ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args == null || args.length < 2) {
             sender.sendMessage("§c§lSETTAG ➔ §cUso: /settag <jogador> <tag|off>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -76,20 +76,20 @@ public final class SetTagCommand extends Commands {
         Tag tag = plugin.getTagManager().getTagByNameOrId(tagArg);
         if (tag == null) {
             sender.sendMessage("§c§lSETTAG ➔ §cTag não encontrada.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (target != null && target.isOnline() && !plugin.getTagManager().canUse(target, tag)) {
             sender.sendMessage("§c§lSETTAG ➔ §cEsse jogador não possui permissão para usar essa tag.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         boolean ok = plugin.getTagManager().setTag(targetUuid, tag.getId());
         if (!ok) {
             sender.sendMessage("§c§lSETTAG ➔ §cNão foi possível setar a tag.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

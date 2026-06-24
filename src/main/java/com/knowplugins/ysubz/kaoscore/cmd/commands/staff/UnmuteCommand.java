@@ -20,20 +20,20 @@ public class UnmuteCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.mutar")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§cUsage: /unmute <player>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§cPunishment system unavailable.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -44,17 +44,17 @@ public class UnmuteCommand extends Commands {
         boolean removed = punishmentManager.clearActive(PunishmentType.MUTE, target.getUuid(), target.getName(), senderUuid, senderName, "Mute removido manualmente");
         if (!removed) {
             sender.sendMessage("§cThat player is not muted.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
-        sender.sendMessage("§a§lUNMUTE ➔ §aMute removed from " + target.getName() + ".");
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        sender.sendMessage("§aMute removed from " + target.getName() + ".");
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
 
         Player onlineTarget = target.getPlayer();
         if (onlineTarget != null && onlineTarget.isOnline()) {
-            onlineTarget.sendMessage("§a§lUNMUTE ➔ §aYour mute has been removed.");
-            onlineTarget.playSound(onlineTarget.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            onlineTarget.sendMessage("§aYour mute has been removed.");
+            onlineTarget.playSound(onlineTarget.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
         }
     }
 }

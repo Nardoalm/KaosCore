@@ -1,5 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import org.bukkit.ChatColor;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -42,6 +44,9 @@ public final class EffectivePermissions {
     }
 
     public String getPrefix() {
+        if(prefix == null){
+            return ChatColor.GRAY + "Member";
+        }
         return prefix;
     }
 

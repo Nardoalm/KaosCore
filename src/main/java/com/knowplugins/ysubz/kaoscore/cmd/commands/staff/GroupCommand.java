@@ -19,7 +19,7 @@ public final class GroupCommand extends Commands {
     private static final String PERMISSION = "kaoscore.staff.permissions";
 
     public GroupCommand() {
-        super("group", "rank");
+        super("group");
     }
 
     @Override
@@ -30,7 +30,7 @@ public final class GroupCommand extends Commands {
 
         if (!hasPerm(sender)) {
             sender.sendMessage("§cYou do not have permission to execute this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

@@ -24,6 +24,7 @@ public class Listeners {
          pm.registerEvents(new PlayerJoinListener(), plugin);
          // pm.registerEvents(new EntityListener(), plugin);
          pm.registerEvents(new ChatListener(), plugin);
+         pm.registerEvents(new JumpPadListener(plugin), plugin);
          pm.registerEvents(new WelcomeMessageMenuListener(), plugin);
          pm.registerEvents(new AnvilInputListener(), plugin);
          pm.registerEvents(new SkinMenuListener(), plugin);

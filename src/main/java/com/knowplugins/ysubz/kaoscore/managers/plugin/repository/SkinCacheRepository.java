@@ -1,6 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.managers.plugin;
+package com.knowplugins.ysubz.kaoscore.managers.plugin.repository;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;

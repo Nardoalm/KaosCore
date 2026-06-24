@@ -21,11 +21,11 @@ public class GamemodeCommand extends Commands {
 
          if (!player.hasPermission("kaoscore.staff.gamemode")) {
             player.sendMessage("§c§lGAMEMODE ➔ §cVocê não possui permissão para executar este comando.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else if (args.length == 0) {
             player.sendMessage("§c§lGAMEMODE ➔ §cUtilize /gamemode <modo> ou /gamemode <jogador> <modo>");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else {
             if (args.length == 1) {
@@ -38,7 +38,7 @@ public class GamemodeCommand extends Commands {
 
                } else {
                   player.sendMessage("§c§lGAMEMODE ➔ §cUtilize /gamemode <modo>");
-                  player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
                }
             } else {
@@ -47,7 +47,7 @@ public class GamemodeCommand extends Commands {
 
                if (target == null || !target.isOnline()) {
                   player.sendMessage("§c§lGAMEMODE ➔ §cJogador não encontrado.");
-                  player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                   return;
                }
 

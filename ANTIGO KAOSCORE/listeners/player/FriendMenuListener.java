@@ -67,7 +67,7 @@ public final class FriendMenuListener implements Listener {
                     AnvilInputMenu.open(player, "§8Adicionar Amigo", "Digite o nick...", (p, text) -> {
                         if (text == null || text.trim().isEmpty()) {
                             p.sendMessage("§cNick inválido.");
-                            p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                            p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                             return;
                         }
 
@@ -78,7 +78,7 @@ public final class FriendMenuListener implements Listener {
 
                         if (target == null || !target.isOnline()) {
                             p.sendMessage("§cJogador não encontrado (precisa estar online).");
-                            p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                            p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                             return;
                         }
 
@@ -114,7 +114,7 @@ public final class FriendMenuListener implements Listener {
                                 p.sendMessage("§cNão foi possível enviar o pedido de amizade.");
                                 break;
                         }
-                        p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                        p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     });
                     return;
                 default:
@@ -132,7 +132,7 @@ public final class FriendMenuListener implements Listener {
             if (event.isRightClick()) {
                 friendManager.denyRequest(player.getUniqueId(), requesterId);
                 player.sendMessage("§cPedido de amizade recusado.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 FriendMenu.openRequests(player);
                 return;
             }
@@ -140,7 +140,7 @@ public final class FriendMenuListener implements Listener {
             boolean ok = friendManager.acceptRequest(player.getUniqueId(), requesterId);
             if (!ok) {
                 player.sendMessage("§cNão foi possível aceitar o pedido de amizade.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 FriendMenu.openRequests(player);
                 return;
             }

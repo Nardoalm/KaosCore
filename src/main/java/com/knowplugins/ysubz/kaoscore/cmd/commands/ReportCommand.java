@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ReportCommand extends Commands {
+public class ReportCommand extends Commands {
 
     private static final String RECEIVE_PERMISSION = "kaoscore.staff.report";
     private static final long COOLDOWN_MS = 15_000L;
@@ -40,7 +40,7 @@ public final class ReportCommand extends Commands {
 
         if (args == null || args.length < 2) {
             reporter.sendMessage("§cUsage: /report <player> <reason>");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -48,7 +48,7 @@ public final class ReportCommand extends Commands {
         Long last = lastReportAt.get(reporter.getUniqueId());
         if (last != null && (now - last) < COOLDOWN_MS) {
             reporter.sendMessage("§cPlease wait a moment before sending another report.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -59,20 +59,20 @@ public final class ReportCommand extends Commands {
 
         if (target == null || !target.isOnline()) {
             reporter.sendMessage("§cPlayer not found: §f" + args[0]);
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (target.equals(reporter)) {
             reporter.sendMessage("§cYou cannot report yourself.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         String reason = join(args, 1).trim();
         if (reason.isEmpty()) {
             reporter.sendMessage("§cEnter a reason.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 

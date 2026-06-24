@@ -16,7 +16,7 @@ public class PingCommand extends Commands {
       if(args.length < 1){
          sender.sendMessage("§aYour ping is " + (sender instanceof Player ? ((CraftPlayer) sender).getHandle().ping : 0) + " §ams!");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
       } else {
          Player target = (args.length > 0) ? Bukkit.getPlayer(args[0]) : (sender instanceof Player ? (Player) sender : null);
 
@@ -24,7 +24,7 @@ public class PingCommand extends Commands {
             sender.sendMessage("§cPlayer not found.");
             if (sender instanceof Player) {
                Player p = (Player) sender;
-               p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+               p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
          }

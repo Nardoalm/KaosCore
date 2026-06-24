@@ -33,7 +33,7 @@ public class VanishCommand extends Commands {
       if (!(sender instanceof Player)) {
          sender.sendMessage("§c§lVANISH ➔ §cApenas jogadores podem utilizar este comando.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
 
@@ -41,7 +41,7 @@ public class VanishCommand extends Commands {
       if (!sender.hasPermission("kaoscore.staff.vanish")) {
          sender.sendMessage("§c§lVANISH ➔ §cVocê não possui permissão para executar este comando.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
 

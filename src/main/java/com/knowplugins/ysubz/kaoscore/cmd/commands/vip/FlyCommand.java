@@ -23,7 +23,7 @@ public class FlyCommand extends Commands {
                 sender.sendMessage("§cYou do not have permission to toggle flight for other players.");
                 if (sender instanceof Player) {
                     Player senderPlayer = (Player) sender;
-                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 }
                 return;
             }
@@ -33,7 +33,7 @@ public class FlyCommand extends Commands {
                 sender.sendMessage("§cPlayer not found.");
                 if (sender instanceof Player) {
                     Player senderPlayer = (Player) sender;
-                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 }
                 return;
             }
@@ -46,7 +46,7 @@ public class FlyCommand extends Commands {
 
             if (!target.hasPermission("kaoscore.member.fly")) {
                 sender.sendMessage("§cYou do not have permission to execute this command.");
-                target.playSound(target.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                target.playSound(target.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
         }
@@ -65,7 +65,7 @@ public class FlyCommand extends Commands {
             target.setFlying(false);
         }
 
-        String status = newStatus ? ChatColor.GREEN + "enabled" : ChatColor.GREEN + "disabled";
+        String status = newStatus ? "enabled" : "disabled";
 
         target.sendMessage("§aFlight has been " + status + ".");
 

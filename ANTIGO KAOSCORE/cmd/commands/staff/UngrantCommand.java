@@ -28,7 +28,7 @@ public final class UngrantCommand extends Commands {
 
         if (!hasPerm(sender)) {
             sender.sendMessage("§c§lUNGRANT ➔ §cVocê não possui permissão para executar este comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -71,7 +71,7 @@ public final class UngrantCommand extends Commands {
                 sender.sendMessage(ok
                         ? "§a§lUNGRANT ➔ §aGrant removido de §f" + finalResolvedName + " §a(" + groupName + ")."
                         : "§c§lUNGRANT ➔ §cNenhum grant ativo encontrado para remover.");
-                ModerationCommandUtil.play(sender, ok ? Sound.LEVEL_UP : Sound.VILLAGER_NO);
+                ModerationCommandUtil.play(sender, ok ? Sound.LEVEL_UP : Sound.CLICK);
             });
         });
     }

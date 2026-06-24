@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DiscordWebhookManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.PunishmentRepository;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
 import org.bukkit.entity.Player;

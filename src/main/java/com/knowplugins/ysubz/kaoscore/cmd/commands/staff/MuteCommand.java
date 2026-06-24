@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
 
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
@@ -22,34 +23,39 @@ public class MuteCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.mutar")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage("§cUsage: /mute <player> <duration|perm> [reason]");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§cPunishment system unavailable.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
+
+        if (target.getPlayer() == null) {
+            target.setPlayer(DisguiseManager.getOnlinePlayerByName(args[0]));
+        }
+
         if (target.getName().isEmpty()) {
             sender.sendMessage("§cInvalid player.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         long duration = PunishmentTime.parseDuration(args[1]);
         if (duration == Long.MIN_VALUE) {
             sender.sendMessage("§cInvalid duration. Example: 30d, 12h, 30m, or perm.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -61,17 +67,17 @@ public class MuteCommand extends Commands {
         PunishmentEntry punishment = punishmentManager.punish(PunishmentType.MUTE, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "MUTE");
         if (punishment == null) {
             sender.sendMessage("§cUnable to apply the mute.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
-        sender.sendMessage("§a§lMUTE ➔ §a" + target.getName() + " was muted" + (punishment.isPermanent() ? " permanently" : " for " + PunishmentTime.formatRemaining(punishment.getExpiresAt())) + ".");
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        sender.sendMessage("§a" + target.getName() + " was muted" + (punishment.isPermanent() ? " permanently" : " for " + PunishmentTime.formatRemaining(punishment.getExpiresAt())) + ".");
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
 
         Player onlineTarget = target.getPlayer();
         if (onlineTarget != null && onlineTarget.isOnline()) {
             onlineTarget.sendMessage(ModerationCommandUtil.buildMuteNotice(punishment));
-            onlineTarget.playSound(onlineTarget.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            onlineTarget.playSound(onlineTarget.getLocation(), Sound.CLICK, 1.0f, 1.0f);
         }
     }
 }

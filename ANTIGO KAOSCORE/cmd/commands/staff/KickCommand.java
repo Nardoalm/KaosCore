@@ -18,13 +18,13 @@ public class KickCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.kickar")) {
             sender.sendMessage("§c§lKICK ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§c§lKICK ➔ §cUso correto: /kick <jogador> [motivo]");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -32,13 +32,13 @@ public class KickCommand extends Commands {
         Player player = target.getPlayer();
         if (player == null || !player.isOnline()) {
             sender.sendMessage("§c§lKICK ➔ §cEsse jogador não está online.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (sender instanceof Player && player.getUniqueId().equals(((Player) sender).getUniqueId())) {
             sender.sendMessage("§c§lKICK ➔ §cVocê não pode se expulsar.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

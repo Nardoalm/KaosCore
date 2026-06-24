@@ -106,8 +106,8 @@ public class DiscordWebhookManager {
         embed.addProperty("timestamp", Instant.now().toString());
 
         JsonArray fields = new JsonArray();
-        fields.add(field("Autor", actorName + (actorUuid.isEmpty() ? "" : " (" + actorUuid + ")"), false));
-        fields.add(field("Comando", safe(fullCommandLine), false));
+        fields.add(field("Author", actorName + (actorUuid.isEmpty() ? "" : " (" + actorUuid + ")"), false));
+        fields.add(field("Command", safe(fullCommandLine), false));
         embed.add("fields", fields);
 
         JsonObject payload = new JsonObject();
@@ -124,39 +124,31 @@ public class DiscordWebhookManager {
 
         String cleanTargetName = resolveOriginalName(entry.getTargetUuid(), entry.getTargetName());
 
-        String actionText = "⚠️ PUNIÇÃO";
+        String actionText = "⚠️ PUNISHMENT";
         switch (entry.getType()) {
-            case BAN: actionText = "🚫 BANIDO"; break;
-            case MUTE: actionText = "🔇 MUTADO"; break;
-            case WARN: actionText = "⚠️ AVISADO"; break;
+            case BAN: actionText = "🔨 BANNED"; break;
+            case MUTE: actionText = "🔇 MUTED"; break;
+            case WARN: actionText = "⚠️ WARNED"; break;
         }
 
         JsonObject embed = new JsonObject();
         embed.addProperty("color", colorFor(entry.getType()));
         embed.addProperty("timestamp", Instant.now().toString());
 
-        // Topo: "🚫 BANIDO"
         JsonObject author = new JsonObject();
         author.addProperty("name", actionText);
         embed.add("author", author);
 
-        // Título Maior: Nick do Jogador
         embed.addProperty("title", cleanTargetName);
 
-        // Descrição: Motivo da punição destacado
-        embed.addProperty("description", "📢 **Motivo**\n" + stripMinecraftColors(entry.getReason()));
+        embed.addProperty("description", "📢 **Reason**\n" + stripMinecraftColors(entry.getReason()));
 
-        // Thumbnail (Rosto no canto direito igual a imagem)
         JsonObject thumbnail = new JsonObject();
         thumbnail.addProperty("url", "https://mc-heads.net/avatar/" + cleanTargetName + "/128");
         embed.add("thumbnail", thumbnail);
 
-        // Informações adicionais do Staff separadas de forma discreta
         JsonArray fields = new JsonArray();
-        fields.add(field("Staff", formatIdentityOriginal(entry.getPunisherName(), entry.getPunisherUuid()), true));
-        if (entry.getType() != PunishmentType.WARN) {
-            fields.add(field("Duração", entry.isPermanent() ? "Permanente" : PunishmentTime.formatRemaining(entry.getExpiresAt()), true));
-        }
+
         embed.add("fields", fields);
 
         JsonObject payload = new JsonObject();
@@ -177,12 +169,12 @@ public class DiscordWebhookManager {
 
         String cleanTargetName = resolveOriginalName(entry.getTargetUuid(), entry.getTargetName());
 
-        String actionText = "✅ PUNIÇÃO REVOGADA";
-        if (entry.getType() == PunishmentType.BAN) actionText = "✅ DESBANIDO";
-        if (entry.getType() == PunishmentType.MUTE) actionText = "🔊 DESMUTADO";
+        String actionText = "✅ PUNISHMENT REVOKED";
+        if (entry.getType() == PunishmentType.BAN) actionText = "✅ UNBANNED";
+        if (entry.getType() == PunishmentType.MUTE) actionText = "🔊 UNMUTED";
 
         JsonObject embed = new JsonObject();
-        embed.addProperty("color", 0x2ecc71); // Verde
+        embed.addProperty("color", 0x2ecc71);
         embed.addProperty("timestamp", Instant.now().toString());
 
         JsonObject author = new JsonObject();
@@ -190,14 +182,14 @@ public class DiscordWebhookManager {
         embed.add("author", author);
 
         embed.addProperty("title", cleanTargetName);
-        embed.addProperty("description", "📢 **Motivo da Remoção**\n" + stripMinecraftColors(entry.getRemovedReason()));
+        embed.addProperty("description", "📢 **Removal Reason**\n" + stripMinecraftColors(entry.getRemovedReason()));
 
         JsonObject thumbnail = new JsonObject();
         thumbnail.addProperty("url", "https://mc-heads.net/avatar/" + cleanTargetName + "/128");
         embed.add("thumbnail", thumbnail);
 
         JsonArray fields = new JsonArray();
-        fields.add(field("Motivo Original", stripMinecraftColors(entry.getReason()), true));
+        fields.add(field("Original Reason", stripMinecraftColors(entry.getReason()), true));
         embed.add("fields", fields);
 
         JsonObject payload = new JsonObject();
@@ -215,15 +207,15 @@ public class DiscordWebhookManager {
         String cleanTargetName = resolveOriginalName(entry.getTargetUuid(), entry.getTargetName());
 
         JsonObject embed = new JsonObject();
-        embed.addProperty("color", 0x95a5a6); // Cinza
+        embed.addProperty("color", 0x95a5a6);
         embed.addProperty("timestamp", Instant.now().toString());
 
         JsonObject author = new JsonObject();
-        author.addProperty("name", "⏰ PUNIÇÃO EXPIRADA");
+        author.addProperty("name", "⏰ PUNISHMENT EXPIRED");
         embed.add("author", author);
 
         embed.addProperty("title", cleanTargetName);
-        embed.addProperty("description", "📢 **Motivo Original**\n" + stripMinecraftColors(entry.getReason()));
+        embed.addProperty("description", "📢 **Original Reason**\n" + stripMinecraftColors(entry.getReason()));
 
         JsonObject thumbnail = new JsonObject();
         thumbnail.addProperty("url", "https://mc-heads.net/avatar/" + cleanTargetName + "/128");
@@ -244,15 +236,15 @@ public class DiscordWebhookManager {
         String cleanTargetName = resolveOriginalName(targetUuid, targetName);
 
         JsonObject embed = new JsonObject();
-        embed.addProperty("color", 0xe67e22); // Laranja
+        embed.addProperty("color", 0xe67e22);
         embed.addProperty("timestamp", Instant.now().toString());
 
         JsonObject author = new JsonObject();
-        author.addProperty("name", "🚪 KICKADO");
+        author.addProperty("name", "🚪 KICKED");
         embed.add("author", author);
 
         embed.addProperty("title", cleanTargetName);
-        embed.addProperty("description", "📢 **Motivo**\n" + stripMinecraftColors(reason));
+        embed.addProperty("description", "📢 **Reason**\n" + stripMinecraftColors(reason));
 
         JsonObject thumbnail = new JsonObject();
         thumbnail.addProperty("url", "https://mc-heads.net/avatar/" + cleanTargetName + "/128");
@@ -277,7 +269,7 @@ public class DiscordWebhookManager {
             try {
                 DiscordWebhookClient.postJson(webhook.url, GSON.toJson(payload), DEFAULT_TIMEOUT_MS);
             } catch (Exception e) {
-                plugin.getLogger().warning("[KaosCore] Falha ao enviar webhook (" + webhook.name + "): " + e.getMessage());
+                plugin.getLogger().warning("[KaosCore] Failed to send webhook (" + webhook.name + "): " + e.getMessage());
             }
         });
     }

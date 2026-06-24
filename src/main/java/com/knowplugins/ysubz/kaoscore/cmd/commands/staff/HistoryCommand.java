@@ -23,20 +23,20 @@ public class HistoryCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.history")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§cUsage: /history <player> [limit]");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§cPunishment system unavailable.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -47,7 +47,7 @@ public class HistoryCommand extends Commands {
                 limit = Math.max(1, Math.min(50, Integer.parseInt(args[1])));
             } catch (NumberFormatException ignored) {
                 sender.sendMessage("§cInvalid limit.");
-                ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+                ModerationCommandUtil.play(sender, Sound.CLICK);
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class HistoryCommand extends Commands {
     private void sendHistory(CommandSender sender, String targetName, List<PunishmentEntry> history) {
         if (history == null || history.isEmpty()) {
             sender.sendMessage("§e§lHISTORY ➔ §eNo punishments found for §f" + targetName + "§e.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -66,7 +66,7 @@ public class HistoryCommand extends Commands {
         for (PunishmentEntry entry : history) {
             sender.sendMessage(formatEntry(entry));
         }
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
     }
 
     private String formatEntry(PunishmentEntry entry) {

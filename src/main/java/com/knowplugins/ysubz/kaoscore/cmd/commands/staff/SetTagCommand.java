@@ -28,13 +28,13 @@ public final class SetTagCommand extends Commands {
 
         if (!sender.hasPermission(PERMISSION)) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args == null || args.length < 2) {
             sender.sendMessage("§cUsage: /settag <player> <tag|off>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -76,20 +76,20 @@ public final class SetTagCommand extends Commands {
         Tag tag = plugin.getTagManager().getTagByNameOrId(tagArg);
         if (tag == null) {
             sender.sendMessage("§cTag not found.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (target != null && target.isOnline() && !plugin.getTagManager().canUse(target, tag)) {
             sender.sendMessage("§cThat player does not have permission to use this tag.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         boolean ok = plugin.getTagManager().setTag(targetUuid, tag.getId());
         if (!ok) {
             sender.sendMessage("§cUnable to set the tag.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -97,6 +97,6 @@ public final class SetTagCommand extends Commands {
         if (target != null && target.isOnline()) {
             target.sendMessage("§aYour tag was set to §f" + tag.getName() + " §aby §f" + sender.getName() + "§a.");
         }
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
     }
 }

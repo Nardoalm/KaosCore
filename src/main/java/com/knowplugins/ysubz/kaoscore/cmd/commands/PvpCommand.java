@@ -18,7 +18,7 @@ public class PvpCommand extends Commands {
             sender.sendMessage("§c§lPVP ➔ §cYou do not have permission to use this command.");
             if (sender instanceof Player) {
                 Player p = (Player) sender;
-                p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }

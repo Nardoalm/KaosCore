@@ -26,7 +26,7 @@ public class SetSpawnCommand extends Commands {
         if (!player.hasPermission("kaoscore.admin.setspawn")) {
             player.sendMessage(ChatColor.RED + "§cYou do not have permission to use this command.");
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -44,6 +44,6 @@ public class SetSpawnCommand extends Commands {
         plugin.saveConfig();
 
         player.sendMessage(ChatColor.GREEN + "§a§lSPAWN ➔ §aSpawn set successfully!");
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 }

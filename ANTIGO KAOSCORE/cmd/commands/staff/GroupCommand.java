@@ -30,7 +30,7 @@ public final class GroupCommand extends Commands {
 
         if (!hasPerm(sender)) {
             sender.sendMessage("§c§lGROUP ➔ §cVocê não possui permissão para executar este comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

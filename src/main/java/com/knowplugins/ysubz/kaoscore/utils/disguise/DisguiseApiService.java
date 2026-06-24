@@ -3,8 +3,8 @@ package com.knowplugins.ysubz.kaoscore.utils.disguise;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.skin.MojangSkinFetcher;
 import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
@@ -64,6 +64,7 @@ public final class DisguiseApiService {
         deleteStoredSkin(player);
         refreshTag(player, previousEntry);
         new SkinApplier(player).applySkinForOthers();
+        new SkinApplier(player).applySkinForSelf();
         return true;
     }
 

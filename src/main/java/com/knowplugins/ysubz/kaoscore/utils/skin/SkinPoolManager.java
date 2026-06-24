@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.utils.skin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.mojang.authlib.GameProfile;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -116,7 +115,6 @@ public final class SkinPoolManager {
         long now = System.currentTimeMillis();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            // Apply cached premium skin if we have it.
             CachedSkin cached = loadCachedSkin(nick);
             if (cached != null && cached.isValid()) {
                 Bukkit.getScheduler().runTask(plugin, () -> applySkinIfOnline(player, cached));

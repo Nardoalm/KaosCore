@@ -17,12 +17,11 @@ public class VanishCommand extends Commands {
       if (VanishManager.isVanished(player)) {
          VanishManager.removeVanish(player);
          player.sendMessage("§aVanish mode disabled.");
-         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
-         WelcomeMessage.sendWelcomeMessage(player);
+         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
       } else {
          VanishManager.addVanish(player);
          player.sendMessage("§aVanish mode enabled.");
-         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
       }
    }
 
@@ -33,7 +32,7 @@ public class VanishCommand extends Commands {
       if (!(sender instanceof Player)) {
          sender.sendMessage("§cOnly players can use this command.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
 
@@ -41,7 +40,7 @@ public class VanishCommand extends Commands {
       if (!sender.hasPermission("kaoscore.staff.vanish")) {
          sender.sendMessage("§cYou do not have permission to use this command.");
          Player senderPlayer = (Player) sender;
-         senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+         senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
          return;
       }
 

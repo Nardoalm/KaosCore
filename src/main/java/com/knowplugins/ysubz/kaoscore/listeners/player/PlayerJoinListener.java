@@ -7,16 +7,16 @@ import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TabListManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.utils.title.TitleAPI;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.VanishRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.VanishRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
@@ -99,7 +99,7 @@ public class PlayerJoinListener implements Listener {
          }
       }, 40L);
 
-      player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+      player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
       if (plugin.getConfig().getBoolean("features.join-title.enabled", true)) {
          String title = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("features.join-title.title", "&b&lFREEP"));

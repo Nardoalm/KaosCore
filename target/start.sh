@@ -1,0 +1,1 @@
+java -Xms2G -Xmx8G -XX:+UseG1GC -jar -javaagent:slimeworldmanager-classmodifier-2.2.1.jar aetherspigot.jar nogui

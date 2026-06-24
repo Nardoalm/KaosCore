@@ -19,7 +19,7 @@ public class KaosCoreCommand extends Commands {
         if (!sender.hasPermission("kaoscore.staff.reload")) {
             sender.sendMessage("§c§lKAOSCORE ➔ §cVocê não tem permissão para usar esse comando.");
             if (sender instanceof org.bukkit.entity.Player) {
-                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }

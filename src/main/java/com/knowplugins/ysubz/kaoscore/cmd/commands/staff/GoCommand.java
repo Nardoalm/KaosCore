@@ -48,6 +48,6 @@ public class GoCommand extends Commands {
         staff.teleport(target.getLocation());
 
         String tagColor = PlaceholderAPI.setPlaceholders(target, "%kaoscore_tag_color%");
-        sender.sendMessage("§a§lGO ➔ §aYou were silently teleported to " + tagColor + target.getName() + ".");
+        sender.sendMessage("§aYou were silently teleported to " + tagColor + target.getName() + ".");
     }
 }

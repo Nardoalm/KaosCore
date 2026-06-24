@@ -4,9 +4,9 @@ import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
@@ -54,7 +54,7 @@ public class DisguiseCommand extends Commands {
         if (args.length >= 1 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("off"))) {
             if (!DisguiseManager.isDisguised(player)) {
                 player.sendMessage("§cYou are not disguised.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
             args = new String[0];
@@ -69,17 +69,19 @@ public class DisguiseCommand extends Commands {
                 GameProfile profile = ((CraftPlayer) player).getProfile();
                 changeName(profile, originalName);
 
-                SkinCommand.resetSkin(player);
+                SkinCommand.resetSkin(player, false);
                 player.setDisplayName(originalName);
 
                 disguiseManager.removeDisguise(player);
 
                 if (KaosCore.getInstance() != null && KaosCore.getInstance().getTagManager() != null) {
+                    KaosCore.getInstance().getTagManager().clearDisguiseTag(player.getUniqueId());
                     KaosCore.getInstance().getTagManager().refreshTag(player, previousEntry);
                 }
+
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§a§lDISGUISE ➔ §aYour disguise has been removed.";
+                String message = "§eYou're no longer disguised!";
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
 
@@ -93,9 +95,9 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        if (!player.hasPermission("kaoscore.member.disguise")) {
+        if (!player.hasPermission("kaoscore.vip.disguise")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -119,13 +121,18 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        if (hasJoinedBefore(newNick)) {
-            player.sendMessage("§cThat nickname belongs to a player who has already joined the server.");
-            return;
+        if(!player.hasPermission("kaoscore.admin")) {
+            if (hasJoinedBefore(newNick)) {
+                player.sendMessage("§cThat nickname belongs to a player who has already joined the server.");
+                return;
+            }
         }
 
         try {
-            String previousEntry = player.getName();
+            if (KaosCore.getInstance() != null && KaosCore.getInstance().getTagManager() != null) {
+                KaosCore.getInstance().getTagManager().clearDisguiseTag(player.getUniqueId());
+            }
+
             disguiseManager.recordOriginalName(player);
             GameProfile profile = ((CraftPlayer) player).getProfile();
             OriginalSkinManager.cache(player, profile);
@@ -147,8 +154,9 @@ public class DisguiseCommand extends Commands {
                 }
 
                 new SkinApplier(player).applySkinForOthers();
+                new SkinApplier(player).applySkinForSelf();
 
-                String message = "§a§lDISGUISE ➔ §aRandom disguise applied: §e" + newNick;
+                String message = "§eYou're now disguised as §7" + newNick + " §7(with a random skin).";
                 message = PlaceholderManager.replacePlaceholders(message, player);
                 player.sendMessage(message);
             } else {
@@ -159,14 +167,15 @@ public class DisguiseCommand extends Commands {
                     SkinCommand.setSkinForOthers(player, newNick);
                 } else {
                     new SkinApplier(player).applySkinForOthers();
+                    new SkinApplier(player).applySkinForSelf();
 
-                    String message = "§a§lDISGUISE ➔ §aYou are now: §e" + newNick;
+                    String message = "§eYou're now disguised as §7" + newNick + " §7(with a random skin).";
                     message = PlaceholderManager.replacePlaceholders(message, player);
                     player.sendMessage(message);
                 }
             }
 
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
             DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
             repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
@@ -219,7 +228,7 @@ public class DisguiseCommand extends Commands {
                 originalName = disguised.getName();
             }
 
-            viewer.sendMessage(" §7- §f" + fakeNick + " §8-> §e" + originalName);
+            viewer.sendMessage(" §7- §f" + fakeNick + " §8➔ §e" + originalName);
         }
     }
 

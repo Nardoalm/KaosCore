@@ -94,18 +94,18 @@ public final class ProxySyncListener implements PluginMessageListener {
     private void applyDisguise(Player player, String nick) {
         if (!DisguiseApiService.applyDisguise(player, nick)) {
             player.sendMessage("§c§lDISGUISE ➔ §cErro ao aplicar disfarce.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         player.sendMessage("§a§lDISGUISE ➔ §aVocê agora é: §e" + nick);
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
     private void applyDisguiseWithSkinName(Player player, String nick, String skinName) {
         if (!DisguiseApiService.applyDisguise(player, nick)) {
             player.sendMessage("§c§lDISGUISE ➔ §cErro ao aplicar disfarce.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -116,12 +116,12 @@ public final class ProxySyncListener implements PluginMessageListener {
     private void applyDisguiseWithTextures(Player player, String nick, String skinName, String value, String signature) {
         if (!DisguiseApiService.applyDisguiseWithTextures(player, nick, skinName, value, signature)) {
             player.sendMessage("§c§lDISGUISE ➔ §cErro ao aplicar disfarce.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         player.sendMessage("§a§lDISGUISE ➔ §aDisfarce aleatório aplicado: §e" + nick);
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
     private void removeDisguise(Player player) {
@@ -129,12 +129,12 @@ public final class ProxySyncListener implements PluginMessageListener {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     if (throwable != null || !Boolean.TRUE.equals(success)) {
                         player.sendMessage("§c§lDISGUISE ➔ §cOcorreu um erro ao remover o disfarce.");
-                        player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                         return;
                     }
 
                     player.sendMessage("§a§lDISGUISE ➔ §aSeu disfarce foi removido.");
-                    player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                 }));
     }
 }

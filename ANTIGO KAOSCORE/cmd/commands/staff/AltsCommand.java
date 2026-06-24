@@ -20,20 +20,20 @@ public class AltsCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.alts")) {
             sender.sendMessage("§c§lALTS ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§c§lALTS ➔ §cUso correto: /alts <jogador>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
         if (repository == null) {
             sender.sendMessage("§c§lALTS ➔ §cSistema de alts indisponível.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -44,7 +44,7 @@ public class AltsCommand extends Commands {
     private void sendResult(CommandSender sender, String targetName, List<String> alts) {
         if (alts == null || alts.isEmpty()) {
             sender.sendMessage("§e§lALTS ➔ §eNenhuma conta relacionada encontrada para §f" + targetName + "§e.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

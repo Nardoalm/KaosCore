@@ -22,7 +22,7 @@ public class TrollCommand extends Commands {
         if (sender instanceof Player && !sender.hasPermission(PERMISSION)) {
             sender.sendMessage("§c§lTROLL ➔ §cVocê não possui permissão para executar este comando.");
             if (sender instanceof Player) {
-                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }
@@ -30,7 +30,7 @@ public class TrollCommand extends Commands {
         if (args.length < 1) {
             sender.sendMessage("§c§lTROLL ➔ §cUso correto: /troll <jogador>");
             if (sender instanceof Player) {
-                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }
@@ -39,7 +39,7 @@ public class TrollCommand extends Commands {
         if (target == null || !target.isOnline()) {
             sender.sendMessage("§c§lTROLL ➔ §cJogador não encontrado.");
             if (sender instanceof Player) {
-                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }

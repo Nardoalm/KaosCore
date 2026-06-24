@@ -53,12 +53,12 @@ public class SitManager {
         }
 
         if (player.isInsideVehicle() || player.getPassenger() != null || player.isFlying()) {
-            player.sendMessage("§c§lSIT ➔ §cVocê não pode sentar agora.");
+            player.sendMessage("§cYou cannot sit right now.");
             return false;
         }
 
         if (!((Entity) player).isOnGround()) {
-            player.sendMessage("§c§lSIT ➔ §cVocê precisa estar no chão para sentar.");
+            player.sendMessage("§cYou need to be on the ground to sit.");
             return false;
         }
 
@@ -69,7 +69,7 @@ public class SitManager {
         loc.setY(player.getLocation().getY() + BASE_Y_OFFSET);
 
         if (isLocationOccupied(loc)) {
-            player.sendMessage("§c§lSIT ➔ §cAlguém já está sentado aqui.");
+            player.sendMessage("§cSomeone is already sitting here.");
             return false;
         }
 
@@ -99,7 +99,7 @@ public class SitManager {
         loc.add(0.0D, surface + BASE_Y_OFFSET, 0.0D);
 
         if (isLocationOccupied(loc)) {
-            player.sendMessage("§c§lSIT ➔ §cEste assento já está ocupado.");
+            player.sendMessage("§cThis seat is already occupied.");
             return false;
         }
 

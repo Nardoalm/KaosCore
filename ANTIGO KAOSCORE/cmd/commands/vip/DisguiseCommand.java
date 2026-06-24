@@ -54,7 +54,7 @@ public class DisguiseCommand extends Commands {
         if (args.length >= 1 && (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("off"))) {
             if (!DisguiseManager.isDisguised(player)) {
                 player.sendMessage("§c§lDISGUISE ➔ §cVocê não está disfarçado.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
             args = new String[0];
@@ -95,7 +95,7 @@ public class DisguiseCommand extends Commands {
 
         if (!player.hasPermission("kaoscore.member.disguise")) {
             player.sendMessage("§c§lDISGUISE ➔ §cVocê não possui permissão para executar este comando.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 

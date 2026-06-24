@@ -40,7 +40,7 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return "NardoDev";
+        return "ysubz";
     }
 
     @Override

@@ -23,7 +23,7 @@ public final class TpallCommand extends Commands {
 
         if (!sender.hasPermission("kaoscore.staff.tpall")) {
             sender.sendMessage("§c§lTPALL ➔ §cVocê não possui permissão para executar este comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -42,7 +42,7 @@ public final class TpallCommand extends Commands {
             }
             if (target == null || !target.isOnline()) {
                 sender.sendMessage("§c§lTPALL ➔ §cJogador não encontrado: §f" + args[0]);
-                ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+                ModerationCommandUtil.play(sender, Sound.CLICK);
                 return;
             }
         }

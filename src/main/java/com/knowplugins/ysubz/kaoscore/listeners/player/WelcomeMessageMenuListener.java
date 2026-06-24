@@ -47,11 +47,11 @@ public class WelcomeMessageMenuListener implements Listener {
             WelcomeMessageManager.Template template = manager.getTemplate(id);
             String name = template == null ? id : template.getName();
             player.sendMessage("§a§lWELCOME ➔ §aMensagem selecionada: §f" + name);
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
             player.closeInventory();
         } else {
             player.sendMessage("§c§lWELCOME ➔ §cVocê não pode selecionar essa mensagem.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
         }
     }
 }

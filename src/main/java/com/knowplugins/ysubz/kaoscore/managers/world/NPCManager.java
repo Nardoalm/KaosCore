@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.managers.world;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;

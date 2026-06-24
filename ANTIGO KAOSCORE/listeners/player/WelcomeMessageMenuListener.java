@@ -51,7 +51,7 @@ public class WelcomeMessageMenuListener implements Listener {
             player.closeInventory();
         } else {
             player.sendMessage("§c§lWELCOME ➔ §cVocê não pode selecionar essa mensagem.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
         }
     }
 }

@@ -36,20 +36,20 @@ public class DiscloseCommand extends Commands {
 
         if (!plugin.getConfig().getBoolean("divulgar.enabled", true)) {
             player.sendMessage("§c§lDIVULGAR ➔ §cEste comando está desativado.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         String permission = safe(plugin.getConfig().getString("divulgar.permission"));
         if (!permission.trim().isEmpty() && !player.hasPermission(permission)) {
             player.sendMessage("§c§lDIVULGAR ➔ §cVocê não tem permissão para divulgar.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (args == null || args.length < 1) {
             player.sendMessage("§c§lDIVULGAR ➔ §cUso: /divulgar <link>");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -57,7 +57,7 @@ public class DiscloseCommand extends Commands {
         link = sanitizeLink(link);
         if (link.isEmpty()) {
             player.sendMessage("§c§lDIVULGAR ➔ §cLink inválido.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -72,7 +72,7 @@ public class DiscloseCommand extends Commands {
                 if (remainingMs > 0) {
                     long remaining = Math.max(1, (remainingMs + 999) / 1000);
                     player.sendMessage("§c§lDIVULGAR ➔ §cAguarde §f" + remaining + "s §cpara divulgar novamente.");
-                    player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     return;
                 }
             }

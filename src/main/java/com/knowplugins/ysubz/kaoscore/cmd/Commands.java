@@ -50,6 +50,8 @@ public abstract class Commands extends Command {
    }
 
    public static void setupCommands(KaosCore plugin) {
+      new TellCommand();
+      new ReplyCommand();
       new GoCommand();
       new GamemodeCommand();
       new ClearChatCommand();
@@ -57,6 +59,7 @@ public abstract class Commands extends Command {
       new DiscordCommand();
       new PingCommand();
       // new CommandList();
+      new UnDisguiseCommand();
       new TeleportCommand();
       new TpallCommand();
       new CbanCommand();
@@ -88,7 +91,10 @@ public abstract class Commands extends Command {
       new DiscloseCommand();
       new ReportCommand();
       new MedalCommand(plugin);
+      new SetJumpPadCommand();
+      new StaffChatCommand();
       new FriendCommand();
+      new AdminChatCommand();
       new ClanCommand(plugin);
       new CcCommand();
       new SetTagCommand();

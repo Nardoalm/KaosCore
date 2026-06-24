@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
+import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.managers.player.FriendManager;
@@ -174,10 +175,7 @@ public class FriendCommand extends Commands {
         }
 
         FriendManager.RequestResult result = friendManager.createRequest(player, target);
-        String targetColorPrefix = PlaceholderAPI.setPlaceholders(
-                target,
-                "%kaoscore_tag_color%"
-        );
+        String targetColorPrefix = KaosCore.getInstance().getTagManager().getTag(target.getPlayer()).getColor();
         switch (result) {
             case SENT:
                 player.sendMessage("§aFriend request sent to §f" + targetColorPrefix + target.getDisplayName());

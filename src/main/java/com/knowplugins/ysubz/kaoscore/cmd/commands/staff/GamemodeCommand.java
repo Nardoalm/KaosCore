@@ -21,11 +21,11 @@ public class GamemodeCommand extends Commands {
 
          if (!player.hasPermission("kaoscore.staff.gamemode")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else if (args.length == 0) {
             player.sendMessage("§cUse /gamemode <mode> or /gamemode <player> <mode>");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else {
             if (args.length == 1) {
@@ -34,11 +34,11 @@ public class GamemodeCommand extends Commands {
                if (GameModeManager.isValidMode(gamemode)) {
                   GameModeManager.setGamemode(player, gamemode);
                   player.sendMessage("§aYour game mode has been changed to " + GameModeManager.getFrom(gamemode));
-                  player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
                } else {
                   player.sendMessage("§cUse /gamemode <mode>");
-                  player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
                }
             } else {
@@ -47,7 +47,7 @@ public class GamemodeCommand extends Commands {
 
                if (target == null || !target.isOnline()) {
                   player.sendMessage("§cPlayer not found.");
-                  player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                   return;
                }
 
@@ -61,10 +61,10 @@ public class GamemodeCommand extends Commands {
                if (GameModeManager.isValidMode(gamemode)) {
                   GameModeManager.setGamemode(target, gamemode);
                   target.sendMessage("§aYour game mode has been changed to " + GameModeManager.getFrom(gamemode));
-                  target.playSound(target.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                  target.playSound(target.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
                   player.sendMessage("§aThe game mode for " + target.getName() + " §ahas been changed to " + GameModeManager.getFrom(gamemode));
-                  player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                  player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                } else {
                   player.sendMessage("§cUse /gamemode <player> <mode>");
                }

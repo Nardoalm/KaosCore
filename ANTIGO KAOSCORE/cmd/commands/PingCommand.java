@@ -24,7 +24,7 @@ public class PingCommand extends Commands {
             sender.sendMessage("§a§lERRO ➔ §cJogador não encontrado.");
             if (sender instanceof Player) {
                Player p = (Player) sender;
-               p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+               p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
          }

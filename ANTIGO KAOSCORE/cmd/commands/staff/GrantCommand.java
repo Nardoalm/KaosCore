@@ -29,7 +29,7 @@ public final class GrantCommand extends Commands {
 
         if (!hasPerm(sender)) {
             sender.sendMessage("§c§lGRANT ➔ §cVocê não possui permissão para executar este comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -92,7 +92,7 @@ public final class GrantCommand extends Commands {
             } catch (Exception e) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     sender.sendMessage("§c§lGRANT ➔ §cErro ao aplicar grant.");
-                    ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+                    ModerationCommandUtil.play(sender, Sound.CLICK);
                 });
                 e.printStackTrace();
             }

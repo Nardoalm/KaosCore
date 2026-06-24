@@ -1,0 +1,25 @@
+# KaosCore - Discord Webhooks
+# Deixe "url" vazio para desativar o envio.
+
+staff:
+  enabled: true
+  url: "https://discord.com/api/webhooks/1517604138613997761/VD5-5ymwowrrJFSerWQn11MZ7rx4Dg9KF-gFMme4QsQfa2DPRt6jCajOlrN5EnvPF6WD"
+  username: "Staff Log"
+  avatar-url: "https://cdn.discordapp.com/attachments/1519160327554596895/1519206163315560579/PvP_Hard_logo_final.png?ex=6a3cb67e&is=6a3b64fe&hm=243494a7edb9b0aa976452ebc85cc9e0a8aac0dbc20bd018e1d915d551dcac84&"
+  # Loga comandos de staff/admin via webhook.
+  log-commands: true
+  # Lista de comandos (sem "/") que serao logados quando usados.
+  commands:
+    - kick
+    - unban
+    - unmute
+
+punishments:
+  enabled: true
+  url: "https://discord.com/api/webhooks/1517604431053586554/jXuM1enn7YQkKwTlFBgEME9Zpp33SP19O5bUVwLIpl8RJrQKV67laempLtQRw_LeJJuO"
+  username: "Punishment"
+  avatar-url: "https://cdn.discordapp.com/attachments/1519160327554596895/1519206163315560579/PvP_Hard_logo_final.png?ex=6a3cb67e&is=6a3b64fe&hm=243494a7edb9b0aa976452ebc85cc9e0a8aac0dbc20bd018e1d915d551dcac84&"
+  # Se true, loga punicoes expiradas automaticamente.
+  log-expired: false
+  # Se true, loga a remocao quando uma punicao e substituida por outra.
+  log-replaced: false

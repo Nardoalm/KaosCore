@@ -46,7 +46,7 @@ public class MenuClickListener implements Listener {
                                 Location loc = new Location(world, x, y, z, yaw, pitch);
                                 player.teleport(loc);
                                 player.sendMessage("§a§lMENU ➔ §aVocê foi teleportado para o spawn!");
-                                player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                             }
                         }
                     } catch (Exception e) {

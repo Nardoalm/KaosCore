@@ -13,17 +13,17 @@ ban:
     - ""
     - "&cReason: &7{reason}"
     - "&cExpires on: &7Permanent"
-    - "&ePurchase your unban at: &balleypvp.us"
+    - "&ePurchase your unban at: &bstore.pvphard.live"
     - "&cBanned unfairly? Contact us via"
-    - "&9discord.gg/alleypvp"
+    - "&9discord.gg/pvphard"
   temporary:
     - "&cYou have been temporarily banned."
     - ""
     - "&cReason: &7{reason}"
     - "&cExpires on: &7{expires}"
-    - "&ePurchase your unban at: &balleypvp.us"
+    - "&ePurchase your unban at: &bstore.pvphard.live"
     - "&cBanned unfairly? Contact us via"
-    - "&9discord.gg/alleypvp"
+    - "&9discord.gg/pvphard"
 
 kick:
   screen:

@@ -17,13 +17,13 @@ public class UnbanCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (args.length < 1) {
             sender.sendMessage(ChatColor.RED + "§c§lUNBAN ➔ §cUso correto: /unban <jogador>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (!sender.hasPermission("kaoscore.staff.banir")) {
             sender.sendMessage("§c§lUNBAN ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -42,7 +42,7 @@ public class UnbanCommand extends Commands {
 
         if (!removed && legacyBan == null) {
             sender.sendMessage( "§c§lUNBAN ➔ §cEsse jogador não está banido.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

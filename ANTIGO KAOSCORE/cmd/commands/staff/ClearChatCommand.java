@@ -24,7 +24,7 @@ public class ClearChatCommand extends Commands {
          if (!player.hasPermission("kaoscore.cmd.clearchat")) {
             player.sendMessage("§c§lCHAT ➔ §cVocê não tem permissão para executar este comando.");
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else {
             IntStream.range(0, 200).forEach((i) -> {

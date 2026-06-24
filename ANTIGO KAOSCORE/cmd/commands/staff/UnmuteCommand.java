@@ -20,20 +20,20 @@ public class UnmuteCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.mutar")) {
             sender.sendMessage("§c§lUNMUTE ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§c§lUNMUTE ➔ §cUso correto: /unmute <jogador>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§c§lUNMUTE ➔ §cSistema de punições indisponível.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -44,7 +44,7 @@ public class UnmuteCommand extends Commands {
         boolean removed = punishmentManager.clearActive(PunishmentType.MUTE, target.getUuid(), target.getName(), senderUuid, senderName, "Mute removido manualmente");
         if (!removed) {
             sender.sendMessage("§c§lUNMUTE ➔ §cEsse jogador não está mutado.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

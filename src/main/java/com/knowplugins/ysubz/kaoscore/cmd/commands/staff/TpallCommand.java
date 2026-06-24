@@ -23,7 +23,7 @@ public final class TpallCommand extends Commands {
 
         if (!sender.hasPermission("kaoscore.staff.tpall")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -42,7 +42,7 @@ public final class TpallCommand extends Commands {
             }
             if (target == null || !target.isOnline()) {
                 sender.sendMessage("§cPlayer not found: §f" + args[0]);
-                ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+                ModerationCommandUtil.play(sender, Sound.CLICK);
                 return;
             }
         }
@@ -62,6 +62,6 @@ public final class TpallCommand extends Commands {
         }
 
         sender.sendMessage("§a§lTPALL ➔ §aTeleported §f" + moved + " §aplayers to §f" + target.getName() + "§a.");
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
     }
 }

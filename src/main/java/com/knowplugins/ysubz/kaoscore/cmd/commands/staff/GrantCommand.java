@@ -18,7 +18,7 @@ public final class GrantCommand extends Commands {
     private static final String PERMISSION = "kaoscore.staff.permissions";
 
     public GrantCommand() {
-        super("grant", "atribuir", "setar", "conceder");
+        super("grant", "atribuir", "setar", "conceder", "rank");
     }
 
     @Override
@@ -29,7 +29,7 @@ public final class GrantCommand extends Commands {
 
         if (!hasPerm(sender)) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -40,7 +40,7 @@ public final class GrantCommand extends Commands {
         }
 
         if (args == null || args.length < 2) {
-            sender.sendMessage("§e§lGRANT ➔ §eUsage: /grant <player> <group> [duration] [reason]");
+            sender.sendMessage("§eUsage: /grant <player> <group> [duration] [reason]");
             return;
         }
 
@@ -86,13 +86,13 @@ public final class GrantCommand extends Commands {
             try {
                     permissions.grant(finalUuid, finalResolvedName, groupName, giverUuid, giverName, finalDurationMs, reason);
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                    sender.sendMessage("§a§lGRANT ➔ §aGrant applied to §f" + finalResolvedName + " §a(" + groupName + ").");
-                    ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+                    sender.sendMessage("§aGrant applied to §f" + finalResolvedName + " §a(" + groupName + ").");
+                    ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
                 });
             } catch (Exception e) {
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     sender.sendMessage("§cError applying the grant.");
-                    ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+                    ModerationCommandUtil.play(sender, Sound.CLICK);
                 });
                 e.printStackTrace();
             }

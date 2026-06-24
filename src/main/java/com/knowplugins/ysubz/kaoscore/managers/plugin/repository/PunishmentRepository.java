@@ -1,6 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.managers.plugin;
+package com.knowplugins.ysubz.kaoscore.managers.plugin.repository;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
 import com.mongodb.client.MongoCollection;

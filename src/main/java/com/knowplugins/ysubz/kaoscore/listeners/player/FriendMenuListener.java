@@ -7,6 +7,7 @@ import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.utils.menu.AnvilInputMenu;
 import com.knowplugins.ysubz.kaoscore.utils.menu.FriendMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,90 +41,99 @@ public final class FriendMenuListener implements Listener {
 
         event.setCancelled(true);
 
-        if (event.getCurrentItem() == null) {
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
             return;
         }
 
         FriendManager friendManager = Managers.getFriendManager();
         if (friendManager == null) {
-            player.sendMessage("§cSistema de amizade indisponível.");
+            player.sendMessage("§cFriend system is currently unavailable.");
             return;
         }
 
-        String action = FriendMenu.parseAction(event.getCurrentItem());
-        if (!action.isEmpty()) {
-            switch (action) {
-                case "close":
-                    player.closeInventory();
-                    return;
-                case "requests":
-                    FriendMenu.openRequests(player);
-                    return;
-                case "back":
-                    FriendMenu.open(player);
-                    return;
-                case "add":
-                    player.closeInventory();
-                    AnvilInputMenu.open(player, "§8Adicionar Amigo", "Digite o nick...", (p, text) -> {
-                        if (text == null || text.trim().isEmpty()) {
-                            p.sendMessage("§cNick inválido.");
-                            p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
-                            return;
-                        }
+        int slot = event.getRawSlot();
+        Material type = event.getCurrentItem().getType();
 
-                        Player target = Bukkit.getPlayerExact(text);
-                        if (target == null) {
-                            target = DisguiseManager.getOnlinePlayerByName(text);
-                        }
+        if (title.equals(FriendMenu.TITLE)) {
+            if (slot == 45 && type == Material.PAPER) {
+                FriendMenu.openRequests(player);
+                return;
+            }
 
-                        if (target == null || !target.isOnline()) {
-                            p.sendMessage("§cJogador não encontrado (precisa estar online).");
-                            p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
-                            return;
-                        }
+            if (slot == 49 && type == Material.NAME_TAG) {
+                player.closeInventory();
+                AnvilInputMenu.open(player, "§8Add Friend", "Type username...", (p, text) -> {
+                    if (text == null || text.trim().isEmpty()) {
+                        p.sendMessage("§cInvalid username.");
+                        p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                        return;
+                    }
 
-                        FriendManager.RequestResult result = friendManager.createRequest(p, target);
-                        switch (result) {
-                            case SENT: {
-                                p.sendMessage("§aPedido de amizade enviado para §f" + target.getDisplayName() + "§a.");
-                                FriendRequest req = friendManager.getRequest(target.getUniqueId(), p.getUniqueId());
-                                if (req != null) {
-                                    friendManager.sendRequestNotification(target, req);
-                                }
-                                p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-                                return;
+                    Player target = Bukkit.getPlayerExact(text);
+                    if (target == null) {
+                        target = DisguiseManager.getOnlinePlayerByName(text);
+                    }
+
+                    if (target == null || !target.isOnline()) {
+                        p.sendMessage("§cPlayer not found (must be online).");
+                        p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                        return;
+                    }
+
+                    FriendManager.RequestResult result = friendManager.createRequest(p, target);
+                    switch (result) {
+                        case SENT: {
+                            p.sendMessage("§aFriend request sent to §f" + target.getDisplayName() + "§a.");
+                            FriendRequest req = friendManager.getRequest(target.getUniqueId(), p.getUniqueId());
+                            if (req != null) {
+                                friendManager.sendRequestNotification(target, req);
                             }
-                            case AUTO_ACCEPTED:
-                                p.sendMessage("§aPedido mútuo detectado. Vocês agora são amigos!");
-                                target.sendMessage("§aPedido mútuo detectado. Vocês agora são amigos!");
-                                p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
-                                return;
-                            case ALREADY_FRIENDS:
-                                p.sendMessage("§cVocês já são amigos.");
-                                break;
-                            case ALREADY_REQUESTED:
-                                p.sendMessage("§cVocê já enviou um pedido para este jogador.");
-                                break;
-                            case LIMIT_REACHED:
-                                p.sendMessage("§cUma das contas atingiu o limite de amizades.");
-                                break;
-                            case SELF:
-                                p.sendMessage("§cVocê não pode enviar amizade para si mesmo.");
-                                break;
-                            default:
-                                p.sendMessage("§cNão foi possível enviar o pedido de amizade.");
-                                break;
+                            p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+                            return;
                         }
-                        p.playSound(p.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
-                    });
-                    return;
-                default:
-                    return;
+                        case AUTO_ACCEPTED:
+                            p.sendMessage("§aMutual request detected. You are now friends!");
+                            target.sendMessage("§aMutual request detected. You are now friends!");
+                            p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+                            return;
+                        case ALREADY_FRIENDS:
+                            p.sendMessage("§cYou are already friends.");
+                            break;
+                        case ALREADY_REQUESTED:
+                            p.sendMessage("§cYou have already sent a request to this player.");
+                            break;
+                        case LIMIT_REACHED:
+                            p.sendMessage("§cOne of the accounts has reached the friend limit.");
+                            break;
+                        case SELF:
+                            p.sendMessage("§cYou cannot add yourself.");
+                            break;
+                        default:
+                            p.sendMessage("§cCould not send friend request.");
+                            break;
+                    }
+                    p.playSound(p.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                });
+                return;
+            }
+
+            if (slot == 53 && type == Material.BARRIER) {
+                player.closeInventory();
+                return;
             }
         }
 
-        // Requests menu: accept/deny
         if (title.equals(FriendMenu.REQUESTS_TITLE)) {
+            if (slot == 49 && type == Material.ARROW) {
+                FriendMenu.open(player);
+                return;
+            }
+
+            if (slot == 53 && type == Material.BARRIER) {
+                player.closeInventory();
+                return;
+            }
+
             UUID requesterId = FriendMenu.parseUuid(event.getCurrentItem());
             if (requesterId == null) {
                 return;
@@ -131,30 +141,29 @@ public final class FriendMenuListener implements Listener {
 
             if (event.isRightClick()) {
                 friendManager.denyRequest(player.getUniqueId(), requesterId);
-                player.sendMessage("§cPedido de amizade recusado.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.sendMessage("§cFriend request denied.");
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 FriendMenu.openRequests(player);
                 return;
             }
 
             boolean ok = friendManager.acceptRequest(player.getUniqueId(), requesterId);
             if (!ok) {
-                player.sendMessage("§cNão foi possível aceitar o pedido de amizade.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.sendMessage("§cCould not accept friend request.");
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 FriendMenu.openRequests(player);
                 return;
             }
 
-            player.sendMessage("§aPedido de amizade aceito!");
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            player.sendMessage("§aFriend request accepted!");
+            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
             Player requester = Bukkit.getPlayer(requesterId);
             if (requester != null && requester.isOnline()) {
-                requester.sendMessage("§a" + player.getDisplayName() + " aceitou seu pedido de amizade!");
+                requester.sendMessage("§a" + player.getDisplayName() + " accepted your friend request!");
             }
 
             FriendMenu.openRequests(player);
         }
     }
 }
-

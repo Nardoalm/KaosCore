@@ -40,7 +40,7 @@ public final class ReportCommand extends Commands {
 
         if (args == null || args.length < 2) {
             reporter.sendMessage("§c§lREPORT ➔ §cUso: /report <jogador> <motivo>");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -48,7 +48,7 @@ public final class ReportCommand extends Commands {
         Long last = lastReportAt.get(reporter.getUniqueId());
         if (last != null && (now - last) < COOLDOWN_MS) {
             reporter.sendMessage("§c§lREPORT ➔ §cAguarde um pouco para enviar outro report.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -59,20 +59,20 @@ public final class ReportCommand extends Commands {
 
         if (target == null || !target.isOnline()) {
             reporter.sendMessage("§c§lREPORT ➔ §cJogador não encontrado: §f" + args[0]);
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (target.equals(reporter)) {
             reporter.sendMessage("§c§lREPORT ➔ §cVocê não pode reportar você mesmo.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         String reason = join(args, 1).trim();
         if (reason.isEmpty()) {
             reporter.sendMessage("§c§lREPORT ➔ §cInforme um motivo.");
-            reporter.playSound(reporter.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            reporter.playSound(reporter.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 

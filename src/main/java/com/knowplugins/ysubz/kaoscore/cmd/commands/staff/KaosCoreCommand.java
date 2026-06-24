@@ -19,7 +19,7 @@ public class KaosCoreCommand extends Commands {
         if (!sender.hasPermission("kaoscore.staff.reload")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
             if (sender instanceof org.bukkit.entity.Player) {
-                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.CLICK, 1.0f, 1.0f);
             }
             return;
         }
@@ -33,7 +33,7 @@ public class KaosCoreCommand extends Commands {
             plugin.reloadSystems();
             sender.sendMessage("§a§lKAOSCORE ➔ §aConfiguration reloaded successfully.");
             if (sender instanceof org.bukkit.entity.Player) {
-                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                ((org.bukkit.entity.Player) sender).playSound(((org.bukkit.entity.Player) sender).getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
             }
         } catch (Exception ex) {
             sender.sendMessage("§cFailed to reload configuration. Check the console.");

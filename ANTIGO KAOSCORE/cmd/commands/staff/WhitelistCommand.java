@@ -18,14 +18,14 @@ public class WhitelistCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.whitelist")) {
             sender.sendMessage("§c§lWHITELIST ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         WhitelistManager whitelist = Managers.getWhitelistManager();
         if (whitelist == null) {
             sender.sendMessage("§c§lWHITELIST ➔ §cSistema indisponível.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 

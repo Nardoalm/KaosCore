@@ -373,7 +373,7 @@ public class FriendManager {
 
             String color = resolveTagColor(player);
             String displayName = PlaceholderManager.getDisplayName(player);
-            friend.sendMessage("§a§lFRIEND ➔ §eYour friend " + color + displayName + " §ejoined the server.");
+            friend.sendMessage("§aYour friend " + color + displayName + " §ajoined the server.");
         }
     }
 

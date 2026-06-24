@@ -2,14 +2,14 @@ package com.knowplugins.ysubz.kaoscore.cmd.commands;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -51,6 +51,12 @@ public class TagCommand extends Commands {
             }
 
             plugin.getTagManager().setTag(player, selected.getId());
+
+            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            if (disguiseManager != null && DisguiseManager.isDisguised(player)) {
+                disguiseManager.refreshApolloNametag(player);
+            }
+
             player.sendMessage("§aTag changed to: " + format(selected.getColor()) + selected.getName());
             return;
         }

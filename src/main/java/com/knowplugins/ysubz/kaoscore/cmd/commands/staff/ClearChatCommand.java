@@ -23,7 +23,7 @@ public class ClearChatCommand extends Commands {
 
          if (!player.hasPermission("kaoscore.cmd.clearchat")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
 
          } else {
             IntStream.range(0, 200).forEach((i) -> {
@@ -37,7 +37,7 @@ public class ClearChatCommand extends Commands {
                consumer.spigot().sendMessage(component);
             });
 
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
          }
       }
    }

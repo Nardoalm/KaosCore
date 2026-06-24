@@ -48,7 +48,7 @@ public class DinnerboneCommand extends Commands {
         if (args.length == 1) {
             if (!player.hasPermission(PERM_OTHERS)) {
                 player.sendMessage("§c§lDINNERBONE ➔ §cVocê não possui permissão para executar este comando.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
 
@@ -65,7 +65,7 @@ public class DinnerboneCommand extends Commands {
 
         if (!player.hasPermission(PERM_SELF)) {
             player.sendMessage("§c§lDINNERBONE ➔ §cVocê não possui permissão para executar este comando.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 

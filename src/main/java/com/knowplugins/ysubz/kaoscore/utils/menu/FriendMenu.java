@@ -18,9 +18,8 @@ import java.util.UUID;
 
 public final class FriendMenu {
 
-    public static final String TITLE = "§8Amigos";
-    public static final String REQUESTS_TITLE = "§8Pedidos de Amizade";
-    private static final String LORE_ACTION_PREFIX = "§0ACTION:";
+    public static final String TITLE = "§8Friends";
+    public static final String REQUESTS_TITLE = "§8Friend Requests";
     private static final String LORE_UUID_PREFIX = "§0UUID:";
 
     private FriendMenu() {
@@ -46,23 +45,19 @@ public final class FriendMenu {
         }
 
         int requests = friendManager == null ? 0 : friendManager.getRequests(player.getUniqueId()).size();
-        inv.setItem(45, button(Material.PAPER, "§ePedidos §7(" + requests + ")", lore(
-                "§7Veja/aceite seus pedidos.",
+        inv.setItem(45, button(Material.PAPER, "§eRequests §7(" + requests + ")", lore(
+                "§7View/accept your requests.",
                 "",
-                "§eClique para abrir.",
-                LORE_ACTION_PREFIX + "requests"
+                "§eClick to open."
         )));
 
-        inv.setItem(49, button(Material.NAME_TAG, "§aAdicionar Amigo", lore(
-                "§7Envie um pedido para um jogador online.",
+        inv.setItem(49, button(Material.NAME_TAG, "§aAdd Friend", lore(
+                "§7Send a request to an online player.",
                 "",
-                "§eClique para digitar o nick.",
-                LORE_ACTION_PREFIX + "add"
+                "§eClick to type username."
         )));
 
-        inv.setItem(53, button(Material.BARRIER, "§cFechar", lore(
-                LORE_ACTION_PREFIX + "close"
-        )));
+        inv.setItem(53, button(Material.BARRIER, "§cClose", lore()));
 
         player.openInventory(inv);
     }
@@ -89,22 +84,10 @@ public final class FriendMenu {
             }
         }
 
-        inv.setItem(49, button(Material.ARROW, "§aVoltar", lore(LORE_ACTION_PREFIX + "back")));
-        inv.setItem(53, button(Material.BARRIER, "§cFechar", lore(LORE_ACTION_PREFIX + "close")));
+        inv.setItem(49, button(Material.ARROW, "§aBack", lore()));
+        inv.setItem(53, button(Material.BARRIER, "§cClose", lore()));
 
         player.openInventory(inv);
-    }
-
-    public static String parseAction(ItemStack stack) {
-        if (stack == null || !stack.hasItemMeta() || stack.getItemMeta() == null || stack.getItemMeta().getLore() == null) {
-            return "";
-        }
-        for (String line : stack.getItemMeta().getLore()) {
-            if (line != null && line.startsWith(LORE_ACTION_PREFIX)) {
-                return line.substring(LORE_ACTION_PREFIX.length()).trim().toLowerCase();
-            }
-        }
-        return "";
     }
 
     public static UUID parseUuid(ItemStack stack) {
@@ -131,7 +114,7 @@ public final class FriendMenu {
         }
 
         SkullMeta skull = (SkullMeta) meta;
-        String name = friendManager == null ? "Desconhecido" : friendManager.getFriendAccountName(friendId);
+        String name = friendManager == null ? "Unknown" : friendManager.getFriendAccountName(friendId);
         skull.setDisplayName("§f" + name);
         skull.setOwner(name);
 
@@ -152,10 +135,9 @@ public final class FriendMenu {
         }
 
         SkullMeta skull = (SkullMeta) meta;
-        String name = request.getRequesterName() == null ? "Desconhecido" : request.getRequesterName();
+        String name = request.getRequesterName() == null ? "Unknown" : request.getRequesterName();
         skull.setDisplayName("§e" + name);
 
-        // try set owner for skin (only works if name is valid)
         String owner = name;
         OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
         if (offline != null && offline.getName() != null) {
@@ -164,8 +146,8 @@ public final class FriendMenu {
         skull.setOwner(owner);
 
         List<String> lore = new ArrayList<>();
-        lore.add("§aClique para aceitar");
-        lore.add("§cClique direito para recusar");
+        lore.add("§aLeft-click to accept");
+        lore.add("§cRight-click to deny");
         lore.add(LORE_UUID_PREFIX + request.getRequesterId().toString());
         skull.setLore(lore);
         head.setItemMeta(skull);

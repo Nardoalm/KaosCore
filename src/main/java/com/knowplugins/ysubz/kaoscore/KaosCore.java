@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.api.KaosCoreAPIImpl;
 import com.knowplugins.ysubz.kaoscore.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.cmd.commands.TagCommand;
+import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.listeners.Listeners;
 import com.knowplugins.ysubz.kaoscore.listeners.proxy.ProxySyncListener;
 import com.knowplugins.ysubz.kaoscore.managers.player.ClanManager;
@@ -15,10 +16,12 @@ import com.knowplugins.ysubz.kaoscore.managers.player.TagManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.SitManager;
 import com.knowplugins.ysubz.kaoscore.managers.player.TagTeamManager;
+import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
 import com.knowplugins.ysubz.kaoscore.utils.placeholder.KaosCoreExpansion;
 import com.knowplugins.ysubz.kaoscore.utils.skin.SkinPoolManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -57,31 +60,6 @@ public class KaosCore extends JavaPlugin {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
-
-        /* String key = getConfig().getString("license");
-
-        Bukkit.getConsoleSender().sendMessage("§e[KaosCore] Verificando licença...");
-
-        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            carregarSistemas();
-            LicenseManager license = new LicenseManager(key);
-
-            if (license.isValid()) {
-                Bukkit.getScheduler().runTask(this, () -> {
-                    Bukkit.getConsoleSender().sendMessage("§a[KaosCore] Licença validada com sucesso!");
-                    carregarSistemas();
-                });
-            } else {
-                Bukkit.getScheduler().runTask(this, () -> {
-                    getLogger().severe("§c---------------------------------------");
-                    getLogger().severe("§c     LICENCA INVALIDA OU EXPIRADA       ");
-                    getLogger().severe("§c   Adquira com o ysubz para usar este plugin!   ");
-                    getLogger().severe("§c---------------------------------------");
-                    saveDefaultConfig();
-                    Bukkit.getPluginManager().disablePlugin(this);
-                });
-            }
-        }); */
         loadSystem();
     }
 
@@ -207,6 +185,18 @@ public class KaosCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        try {
+            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            if (disguiseManager != null) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    if (DisguiseManager.isDisguised(online)) {
+                        disguiseManager.removeDisguise(online);
+                        SkinCommand.resetSkin(online);
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+
         try {
             if (getClanManager() != null) getClanManager().saveClans();
             if (tagTeamManager != null) tagTeamManager.stop();

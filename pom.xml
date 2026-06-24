@@ -7,7 +7,7 @@
 
     <groupId>me.ysubz</groupId>
     <artifactId>KaosCore</artifactId>
-    <version>7.4</version>
+    <version>13.2</version>
     <packaging>jar</packaging>
 
     <name>KaosCore</name>
@@ -19,6 +19,16 @@
     </properties>
 
     <repositories>
+        <repository>
+            <id>lunarclient-public</id>
+            <url>https://repo.lunarclient.dev</url>
+        </repository>
+
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/nms/</url>
+        </repository>
+
         <repository>
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
@@ -44,6 +54,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.lunarclient</groupId>
+            <artifactId>apollo-api</artifactId>
+            <version>1.2.7</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -125,8 +141,6 @@
 
     <build>
         <plugins>
-
-            <!-- Compilador Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -165,5 +179,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

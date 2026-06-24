@@ -30,12 +30,12 @@ public class SitCommand extends Commands {
 
         if (!sitManager.hasPermission(player)) {
             player.sendMessage("§c§lSIT ➔ §cVocê não tem permissão para executar esse comando.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (!sitManager.sit(player)) {
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
         } else {
             player.sendMessage("§e§lSIT ➔ §eVocê sentou. Pressiona §6SHIFT §epara levantar.");
         }

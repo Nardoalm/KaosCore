@@ -25,7 +25,7 @@ public class BuildCommand extends Commands {
         if (!player.hasPermission("kaoscore.admin")) {
             player.sendMessage("§c§lBUILD ➔ §cYou do not have permission to use this command.");
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -34,13 +34,13 @@ public class BuildCommand extends Commands {
             player.setGameMode(GameMode.SURVIVAL);
             player.sendMessage("§a§lBUILD ➔ §aBuild mode disabled.");
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
         } else {
             BuildManager.addBuilder(player);
             player.setGameMode(GameMode.CREATIVE);
             player.sendMessage("§a§lBUILD ➔ §aBuild mode enabled.");
             Player senderPlayer = (Player) sender;
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
         }
     }
 }

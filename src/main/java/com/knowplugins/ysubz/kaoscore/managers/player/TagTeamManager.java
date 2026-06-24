@@ -13,12 +13,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -218,9 +214,13 @@ public class TagTeamManager {
             return;
         }
 
-        String currentEntry = safe(player.getName());
+        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
+                ? safe(disguiseManager.getDisguiseNick(player))
+                : safe(player.getName());
+
         if (currentEntry.isEmpty()) {
-            return;
+            currentEntry = safe(player.getName());
         }
 
         Team team = getOrCreateTeam(scoreboard, style);
@@ -245,6 +245,9 @@ public class TagTeamManager {
                         if (otherTeam.hasEntry(currentEntry)) {
                             otherTeam.removeEntry(currentEntry);
                         }
+                        if (otherTeam.hasEntry(player.getName())) {
+                            otherTeam.removeEntry(player.getName());
+                        }
                     } catch (IllegalStateException ignored) {
                     }
                 }
@@ -254,17 +257,14 @@ public class TagTeamManager {
                 team.addEntry(currentEntry);
             }
 
-            if (player.getUniqueId().equals(Bukkit.getPlayer(currentEntry) != null ? Bukkit.getPlayer(currentEntry).getUniqueId() : null)) {
-                player.setPlayerListName(null);
-                String coloredName = newPrefix + currentEntry + newSuffix;
+            String coloredName = newPrefix + currentEntry + newSuffix;
+            if (coloredName.length() > 16) {
+                coloredName = newPrefix + currentEntry;
                 if (coloredName.length() > 16) {
-                    coloredName = newPrefix + currentEntry;
-                    if (coloredName.length() > 16) {
-                        coloredName = currentEntry;
-                    }
+                    coloredName = currentEntry;
                 }
-                player.setPlayerListName(coloredName);
             }
+            player.setPlayerListName(coloredName);
 
         } catch (IllegalStateException ignored) {
         } catch (Exception e) {
@@ -310,7 +310,44 @@ public class TagTeamManager {
             return new NametagStyle(teamKey, prefix, suffix, priority);
         }
 
-        Tag tag = tagManager == null ? null : tagManager.getTag(player);
+        Tag tag = null;
+
+        if (DisguiseManager.isDisguised(player) && tagManager != null) {
+            try {
+                Field selectedTagsField = tagManager.getClass().getDeclaredField("selectedTags");
+                selectedTagsField.setAccessible(true);
+                Map<UUID, String> selectedTags = (Map<UUID, String>) selectedTagsField.get(tagManager);
+                String chosenTagId = selectedTags.get(player.getUniqueId());
+
+                if (chosenTagId != null) {
+                    tag = tagManager.getTagByNameOrId(chosenTagId);
+                }
+            } catch (Exception ignored) {
+            }
+
+            if (tag == null) {
+                Field tagsByIdField = null;
+                try {
+                    tagsByIdField = tagManager.getClass().getDeclaredField("tagsById");
+                    tagsByIdField.setAccessible(true);
+                    Map<String, Tag> tagsById = (Map<String, Tag>) tagsByIdField.get(tagManager);
+
+                    Tag lowestTag = null;
+                    int highestPosition = -1;
+                    for (Tag t : tagsById.values()) {
+                        if (t != null && t.getPosition() > highestPosition) {
+                            highestPosition = t.getPosition();
+                            lowestTag = t;
+                        }
+                    }
+                    tag = lowestTag;
+                } catch (Exception ignored) {
+                }
+            }
+        } else if (tagManager != null) {
+            tag = tagManager.getTag(player);
+        }
+
         if (tag == null) {
             return null;
         }
@@ -385,7 +422,6 @@ public class TagTeamManager {
                         team.removeEntry(entry);
                     }
                 } catch (IllegalStateException ignored) {
-                    // Player não está no time ou já foi removido - ignorar
                 } catch (Exception e) {
                     plugin.getLogger().warning("Error removing entry " + entry + " from team " + team.getName() + ": " + e.getMessage());
                 }
@@ -533,7 +569,6 @@ public class TagTeamManager {
                     team.unregister();
                 }
             } catch (IllegalStateException ignored) {
-                // Team já foi desregistrado
             } catch (Exception e) {
                 plugin.getLogger().warning("Error cleaning up team " + name + ": " + e.getMessage());
             }
@@ -559,7 +594,6 @@ public class TagTeamManager {
             try {
                 team.unregister();
             } catch (IllegalStateException ignored) {
-                // Team já foi desregistrado
             } catch (Exception e) {
                 plugin.getLogger().warning("Error clearing team " + name + ": " + e.getMessage());
             }
@@ -616,6 +650,8 @@ public class TagTeamManager {
             }
         }
 
+        text = text.replace(" %kaoscore_clan_tag%", "").replace("%kaoscore_clan_tag%", "");
+
         return format(text);
     }
 
@@ -645,6 +681,95 @@ public class TagTeamManager {
         }
 
         return "";
+    }
+
+    public void applyLowestValueTag(Player player) {
+        if (player == null || tagManager == null) {
+            return;
+        }
+
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(plugin, () -> applyLowestValueTag(player));
+            return;
+        }
+
+        Tag lowestTag = null;
+        int highestPosition = -1;
+
+        try {
+            Field tagsByIdField = tagManager.getClass().getDeclaredField("tagsById");
+            tagsByIdField.setAccessible(true);
+            Map<String, Tag> tagsById = (Map<String, Tag>) tagsByIdField.get(tagManager);
+
+            for (Tag tag : tagsById.values()) {
+                if (tag == null) continue;
+                if (tag.getPosition() > highestPosition) {
+                    highestPosition = tag.getPosition();
+                    lowestTag = tag;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (lowestTag == null) {
+            return;
+        }
+
+        String tagPrefix = resolveText(player, lowestTag.getPrefix());
+        String tagColor = resolveText(player, lowestTag.getColor());
+        String tagSuffix = resolveText(player, lowestTag.getSuffix());
+
+        String tailColor = lastResettingColor(tagColor);
+        if (tailColor.isEmpty()) {
+            tailColor = lastResettingColor(tagPrefix);
+        }
+
+        String prefix;
+        if (!tailColor.isEmpty()) {
+            int available = 16 - tailColor.length();
+            String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
+            prefix = trimTeamPart(trimmedBody + tailColor);
+        } else {
+            prefix = trimTeamPart(tagPrefix);
+        }
+
+        String suffix = trimTeamPart(tagSuffix);
+        NametagStyle lowestStyle = new NametagStyle("lowest_disguise_" + lowestTag.getId(), prefix, suffix, lowestTag.getPosition());
+
+        Set<String> entries = collectEntries(player);
+        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
+                ? safe(disguiseManager.getDisguiseNick(player))
+                : player.getName();
+
+        player.setDisplayName(prefix + currentEntry + suffix);
+
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = resolveScoreboard(viewer);
+            if (scoreboard == null) continue;
+
+            removeEntries(scoreboard, entries);
+            Team team = getOrCreateTeam(scoreboard, lowestStyle);
+            if (team == null) continue;
+
+            try {
+                if (!prefix.equals(team.getPrefix())) team.setPrefix(prefix);
+                if (!suffix.equals(team.getSuffix())) team.setSuffix(suffix);
+
+                for (Team otherTeam : scoreboard.getTeams()) {
+                    if (otherTeam != null && otherTeam != team && otherTeam.getName() != null && otherTeam.getName().startsWith(TEAM_PREFIX)) {
+                        if (otherTeam.hasEntry(currentEntry)) {
+                            otherTeam.removeEntry(currentEntry);
+                        }
+                    }
+                }
+
+                if (!team.hasEntry(currentEntry)) {
+                    team.addEntry(currentEntry);
+                }
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private static final class NametagStyle {

@@ -25,20 +25,20 @@ public class WelcomeMessageCommand extends Commands {
         KaosCore plugin = KaosCore.getInstance();
         if (plugin == null || !plugin.getConfig().getBoolean("features.welcome-messages.enabled", true)) {
             player.sendMessage("§c§lWELCOME ➔ §cWelcome messages are disabled.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         if (!player.hasPermission("kaoscore.member.welcomeMessage")) {
             player.sendMessage("§c§lWELCOME ➔ §cYou do not have permission to use this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         WelcomeMessageManager manager = Managers.getWelcomeMessageManager();
         if (manager == null) {
             player.sendMessage("§c§lWELCOME ➔ §cSystem unavailable.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 

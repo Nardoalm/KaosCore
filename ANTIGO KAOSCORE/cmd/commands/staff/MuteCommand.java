@@ -22,34 +22,34 @@ public class MuteCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.mutar")) {
             sender.sendMessage("§c§lMUTE ➔ §cVocê não tem permissão para usar esse comando.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 2) {
             sender.sendMessage("§c§lMUTE ➔ §cUso correto: /mute <jogador> <tempo|perm> [motivo]");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PunishmentManager punishmentManager = Managers.getPunishmentManager();
         if (punishmentManager == null) {
             sender.sendMessage("§c§lMUTE ➔ §cSistema de punições indisponível.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         ModerationCommandUtil.Target target = ModerationCommandUtil.resolveTarget(args[0]);
         if (target.getName().isEmpty()) {
             sender.sendMessage("§c§lMUTE ➔ §cJogador inválido.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         long duration = PunishmentTime.parseDuration(args[1]);
         if (duration == Long.MIN_VALUE) {
             sender.sendMessage("§c§lMUTE ➔ §cTempo inválido. Ex: 30d, 12h, 30m ou perm.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -61,7 +61,7 @@ public class MuteCommand extends Commands {
         PunishmentEntry punishment = punishmentManager.punish(PunishmentType.MUTE, target.getUuid(), target.getName(), punisherUuid, punisherName, reason, expiresAt, "MUTE");
         if (punishment == null) {
             sender.sendMessage("§c§lMUTE ➔ §cNão foi possível aplicar o mute.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -71,7 +71,7 @@ public class MuteCommand extends Commands {
         Player onlineTarget = target.getPlayer();
         if (onlineTarget != null && onlineTarget.isOnline()) {
             onlineTarget.sendMessage(ModerationCommandUtil.buildMuteNotice(punishment));
-            onlineTarget.playSound(onlineTarget.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            onlineTarget.playSound(onlineTarget.getLocation(), Sound.CLICK, 1.0f, 1.0f);
         }
     }
 }

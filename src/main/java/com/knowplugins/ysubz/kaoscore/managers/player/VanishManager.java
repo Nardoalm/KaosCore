@@ -1,7 +1,5 @@
 package com.knowplugins.ysubz.kaoscore.managers.player;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -52,7 +50,7 @@ public class VanishManager {
                Player player = Bukkit.getPlayer(uuid);
                if (player == null) continue;
 
-               sendActionBar(player, "§aVanish enabled");
+               sendActionBar(player, "§dYou are in vanish.");
 
                updateVanishState(player);
             }

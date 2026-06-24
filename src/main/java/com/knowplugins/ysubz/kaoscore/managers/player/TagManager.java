@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerTagRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.PlayerTagRepository;
 import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,6 +27,7 @@ public class TagManager {
     private final Map<String, Tag> tagsById;
     private final Map<String, Tag> tagsByName;
     private final Map<UUID, String> selectedTags;
+    private final Map<UUID, String> disguiseTags;
     private FileConfiguration tagsConfig;
     private final PlayerTagRepository playerTagRepository;
 
@@ -35,6 +36,7 @@ public class TagManager {
         this.tagsById = new LinkedHashMap<>();
         this.tagsByName = new ConcurrentHashMap<>();
         this.selectedTags = new ConcurrentHashMap<>();
+        this.disguiseTags = new ConcurrentHashMap<>();
         this.playerTagRepository = new PlayerTagRepository(plugin, Managers.getDatabaseManager());
         loadTags();
         loadSelectedTags();
@@ -110,8 +112,29 @@ public class TagManager {
             return null;
         }
 
+        if (DisguiseManager.isDisguised(player)) {
+            String disguiseId = disguiseTags.get(player.getUniqueId());
+            if (disguiseId != null) {
+                Tag t = resolveTag(disguiseId);
+                if (t != null) {
+                    return t;
+                }
+            }
+
+            Tag lowestTag = null;
+            int highestPosition = -1;
+            for (Tag t : tagsById.values()) {
+                if (t != null && t.getPosition() > highestPosition) {
+                    highestPosition = t.getPosition();
+                    lowestTag = t;
+                }
+            }
+            return lowestTag;
+        }
+
         String selectedId = selectedTags.get(player.getUniqueId());
         Tag selectedTag = resolveTag(selectedId);
+
         if (selectedTag != null && canUse(player, selectedTag)) {
             return selectedTag;
         }
@@ -135,7 +158,17 @@ public class TagManager {
         }
 
         Tag tag = resolveTag(tagNameOrId);
-        if (tag == null || !canUse(player, tag)) {
+        if (tag == null) {
+            return false;
+        }
+
+        if (DisguiseManager.isDisguised(player)) {
+            disguiseTags.put(player.getUniqueId(), tag.getId());
+            refreshTag(player);
+            return true;
+        }
+
+        if (!canUse(player, tag)) {
             return false;
         }
 
@@ -163,6 +196,12 @@ public class TagManager {
             refreshTag(online);
         }
         return true;
+    }
+
+    public void clearDisguiseTag(UUID uuid) {
+        if (uuid != null) {
+            disguiseTags.remove(uuid);
+        }
     }
 
     public boolean clearTag(UUID uuid) {
@@ -195,8 +234,10 @@ public class TagManager {
         }
 
         List<Tag> list = new ArrayList<>();
+        boolean isDisguised = DisguiseManager.isDisguised(player);
+
         for (Tag tag : tagsById.values()) {
-            if (tag != null && canUse(player, tag)) {
+            if (tag != null && (isDisguised || canUse(player, tag))) {
                 list.add(tag);
             }
         }

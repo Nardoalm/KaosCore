@@ -47,7 +47,7 @@ public class DinnerboneCommand extends Commands {
         if (args.length == 1) {
             if (!player.hasPermission(PERM_OTHERS)) {
                 player.sendMessage("§cYou do not have permission to execute this command.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
 
@@ -64,13 +64,13 @@ public class DinnerboneCommand extends Commands {
 
         if (!player.hasPermission(PERM_SELF)) {
             player.sendMessage("§cYou do not have permission to execute this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
         boolean enabled = toggle(player);
         player.sendMessage("§a" + (enabled ? "You are now upside down." : "You are back to normal."));
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
     private boolean toggle(Player player) {
@@ -91,14 +91,14 @@ public class DinnerboneCommand extends Commands {
 
     private void changeProfileNameAndRefresh(Player player, String newProfileName, String realName) {
         try {
-            EntityPlayer ep = ((CraftPlayer) player).getHandle();
+            EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
             boolean turningDinnerbone = newProfileName.equals("Dinnerbone");
 
             String currentTabName = player.getPlayerListName();
             if (currentTabName == null) currentTabName = realName;
 
-            PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep);
-            PacketPlayOutEntityDestroy destroyEntity = new PacketPlayOutEntityDestroy(ep.getId());
+            PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer);
+            PacketPlayOutEntityDestroy destroyEntity = new PacketPlayOutEntityDestroy(entityPlayer.getId());
 
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (!online.equals(player)) {
@@ -108,16 +108,16 @@ public class DinnerboneCommand extends Commands {
                 }
             }
 
-            GameProfile profile = ep.getProfile();
+            GameProfile profile = entityPlayer.getProfile();
             Field nameField = GameProfile.class.getDeclaredField("name");
             nameField.setAccessible(true);
             nameField.set(profile, newProfileName);
 
-            IChatBaseComponent originalList = ep.listName;
-            ep.listName = CraftChatMessage.fromString(currentTabName)[0];
+            IChatBaseComponent originalList = entityPlayer.listName;
+            entityPlayer.listName = CraftChatMessage.fromString(currentTabName)[0];
 
-            PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep);
-            PacketPlayOutNamedEntitySpawn spawnEntity = new PacketPlayOutNamedEntitySpawn(ep);
+            PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer);
+            PacketPlayOutNamedEntitySpawn spawnEntity = new PacketPlayOutNamedEntitySpawn(entityPlayer);
 
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (!online.equals(player)) {
@@ -128,15 +128,15 @@ public class DinnerboneCommand extends Commands {
             }
 
             if (turningDinnerbone) {
-                ep.listName = CraftChatMessage.fromString("§f" + realName)[0];
+                entityPlayer.listName = CraftChatMessage.fromString("§f" + realName)[0];
             } else {
-                ep.listName = CraftChatMessage.fromString(currentTabName)[0];
+                entityPlayer.listName = CraftChatMessage.fromString(currentTabName)[0];
             }
 
-            PacketPlayOutPlayerInfo personalTabPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, ep);
-            ep.playerConnection.sendPacket(personalTabPacket);
+            PacketPlayOutPlayerInfo personalTabPacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, entityPlayer);
+            entityPlayer.playerConnection.sendPacket(personalTabPacket);
 
-            ep.listName = originalList;
+            entityPlayer.listName = originalList;
 
         } catch (Exception e) {
             e.printStackTrace();

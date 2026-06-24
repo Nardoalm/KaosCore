@@ -22,7 +22,7 @@ public class FlyCommand extends Commands {
             if (!sender.hasPermission("kaoscore.staff.fly")) {
                 sender.sendMessage("§c§lFLY ➔ §cVocê não tem permissão para dar fly em outros jogadores.");
                 Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
 
@@ -30,7 +30,7 @@ public class FlyCommand extends Commands {
             if (target == null) {
                 sender.sendMessage("§c§lFLY ➔ §cJogador não encontrado.");
                 Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
         } else {
@@ -43,7 +43,7 @@ public class FlyCommand extends Commands {
             if (!target.hasPermission("kaoscore.member.fly")) {
                 sender.sendMessage(ChatColor.RED + "§c§lFLY ➔ §cVocê não possui permissão para executar este comando.");
                 Player senderPlayer = (Player) sender;
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
         }

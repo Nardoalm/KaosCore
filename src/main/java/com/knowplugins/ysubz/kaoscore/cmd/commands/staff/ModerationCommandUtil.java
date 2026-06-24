@@ -14,12 +14,12 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-final class ModerationCommandUtil {
+public final class ModerationCommandUtil {
 
     private ModerationCommandUtil() {
     }
 
-    static Target resolveTarget(String input) {
+    public static Target resolveTarget(String input) {
         if (input == null || input.trim().isEmpty()) {
             return new Target(null, "", null);
         }
@@ -73,7 +73,7 @@ final class ModerationCommandUtil {
         return reason.isEmpty() ? fallback : reason;
     }
 
-    static void play(CommandSender sender, Sound sound) {
+    public static void play(CommandSender sender, Sound sound) {
         if (!(sender instanceof Player) || sound == null) {
             return;
         }
@@ -128,10 +128,10 @@ final class ModerationCommandUtil {
         return value == null ? "" : value;
     }
 
-    static final class Target {
+    public static final class Target {
         private final UUID uuid;
         private final String name;
-        private final Player player;
+        private Player player;
 
         private Target(UUID uuid, String name, Player player) {
             this.uuid = uuid;
@@ -149,6 +149,10 @@ final class ModerationCommandUtil {
 
         Player getPlayer() {
             return player;
+        }
+
+        void setPlayer(Player player){
+            this.player = player;
         }
     }
 }

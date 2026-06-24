@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.PlayerAddressRepository;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -20,20 +20,20 @@ public class AltsCommand extends Commands {
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.staff.alts")) {
             sender.sendMessage("§cYou do not have permission to use this command.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         if (args.length < 1) {
             sender.sendMessage("§cUsage: /alts <player>");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
         PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
         if (repository == null) {
             sender.sendMessage("§cAlt system unavailable.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
@@ -43,12 +43,12 @@ public class AltsCommand extends Commands {
 
     private void sendResult(CommandSender sender, String targetName, List<String> alts) {
         if (alts == null || alts.isEmpty()) {
-            sender.sendMessage("§eNo related accounts found for §f" + targetName + "§e.");
-            ModerationCommandUtil.play(sender, Sound.VILLAGER_NO);
+            sender.sendMessage("§cNo related accounts found for " + KaosCore.getInstance().getTagManager().getTag(Bukkit.getPlayer(targetName)).getColor() + targetName + "§c.");
+            ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }
 
-        sender.sendMessage("§eRelated accounts for §f" + targetName + "§e: §f" + String.join("§7, §f", alts));
-        ModerationCommandUtil.play(sender, Sound.LEVEL_UP);
+        sender.sendMessage("§aRelated accounts for " + KaosCore.getInstance().getTagManager().getTag(Bukkit.getPlayer(sender.getName())).getColor() + targetName + "§a: \n§f ➔ §f" + String.join("§7, \n ➔ §f", alts));
+        ModerationCommandUtil.play(sender, Sound.NOTE_PLING);
     }
 }

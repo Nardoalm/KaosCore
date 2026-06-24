@@ -3,8 +3,8 @@ package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.knowplugins.ysubz.kaoscore.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.utils.menu.SkinMenu;
@@ -40,7 +40,7 @@ public class SkinCommand extends Commands {
 
         if (!player.hasPermission("kaoscore.member.skin")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -52,7 +52,7 @@ public class SkinCommand extends Commands {
 
         if (args.length != 1) {
             player.sendMessage("§cCorrect usage: \n* /skin <nick> \n* /skin reset \n* /skin gui");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
@@ -79,7 +79,7 @@ public class SkinCommand extends Commands {
             String cleanTarget = targetSkin == null ? "" : targetSkin.trim();
             if (cleanTarget.isEmpty() || cleanTarget.length() > 16) {
                 player.sendMessage("§cInvalid nickname.");
-                player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                 return;
             }
 
@@ -111,7 +111,7 @@ public class SkinCommand extends Commands {
                     if (textures == null || textures.getValue() == null || textures.getValue().trim().isEmpty()) {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             player.sendMessage("§cSkin not found (non-original nickname) or API error.");
-                            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                         });
                         return;
                     }
@@ -147,11 +147,11 @@ public class SkinCommand extends Commands {
                                     : "§aDisguise skin applied for other players: " + cleanTarget;
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
-                            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
                         } catch (Exception exception) {
                             player.sendMessage("§cAn error occurred while applying the skin texture.");
-                            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                             exception.printStackTrace();
                         }
                     });
@@ -160,19 +160,23 @@ public class SkinCommand extends Commands {
                     plugin.getLogger().warning("[KaosCore] Error fetching skin '" + cleanTarget + "': " + exception.getMessage());
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         player.sendMessage("§cSkin not found or API error.");
-                        player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     });
                 }
             });
 
         } catch (Exception exception) {
             player.sendMessage("§cAn internal error occurred.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             exception.printStackTrace();
         }
     }
 
     public static void resetSkin(Player player) {
+        resetSkin(player, true);
+    }
+
+    public static void resetSkin(Player player, boolean sendMessage) {
         try {
             UUID id = player.getUniqueId();
             Property originalProperty = OriginalSkinManager.get(id);
@@ -183,10 +187,12 @@ public class SkinCommand extends Commands {
 
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§aYour skin has been reset to the original.";
-                message = PlaceholderManager.replacePlaceholders(message, player);
-                player.sendMessage(message);
-                player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                if (sendMessage) {
+                    String message = "§aYour skin has been reset to the original.";
+                    message = PlaceholderManager.replacePlaceholders(message, player);
+                    player.sendMessage(message);
+                }
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
                 if (Managers.getDatabaseManager() != null) {
                     SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
@@ -231,7 +237,7 @@ public class SkinCommand extends Commands {
                                     core.getSkinPoolManager().applyJoinSkin(player);
                                 } else {
                                     player.sendMessage("§cYour original skin was not found.");
-                                    player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                                 }
                                 return;
                             }
@@ -242,10 +248,12 @@ public class SkinCommand extends Commands {
 
                             new SkinApplier(player).applySkinForSelf();
 
-                            String message = "§aYour skin has been reset to the original.";
-                            message = PlaceholderManager.replacePlaceholders(message, player);
-                            player.sendMessage(message);
-                            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+                            if (sendMessage) {
+                                String message = "§aYour skin has been reset to the original.";
+                                message = PlaceholderManager.replacePlaceholders(message, player);
+                                player.sendMessage(message);
+                            }
+                            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
                             if (Managers.getDatabaseManager() != null) {
                                 SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
@@ -253,21 +261,21 @@ public class SkinCommand extends Commands {
                             }
                         } catch (Exception ex) {
                             player.sendMessage("§cAn error occurred while resetting the skin.");
-                            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                         }
                     });
 
                 } catch (Exception exception) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         player.sendMessage("§cAn error occurred while resetting the skin.");
-                        player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     });
                 }
             });
 
         } catch (Exception exception) {
             player.sendMessage("§cAn error occurred while resetting the skin.");
-            player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1.0f, 1.0f);
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             exception.printStackTrace();
         }
     }
