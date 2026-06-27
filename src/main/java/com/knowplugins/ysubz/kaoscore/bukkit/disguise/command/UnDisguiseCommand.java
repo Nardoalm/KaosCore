@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.disguise.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;

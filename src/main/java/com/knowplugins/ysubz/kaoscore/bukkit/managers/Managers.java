@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.manager.AuthManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.AutoBroadcastManager;

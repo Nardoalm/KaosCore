@@ -23,6 +23,7 @@ public class SitManager {
     private static final String SEAT_CUSTOM_NAME = "KaosCoreSeat";
     private static final String SEAT_METADATA_KEY = "kaoscore_seat";
     private static final double BASE_Y_OFFSET = -1.7D;
+    private static final String PERMISSION = "kaoscore.sit";
 
     public static final ThreadLocal<Boolean> SPAWNING_SEAT = ThreadLocal.withInitial(() -> false);
 
@@ -38,14 +39,8 @@ public class SitManager {
         cleanupOrphanSeats();
     }
 
-    public boolean hasPermission(Player player) {
-        return player != null && (player.hasPermission("kaoscore.vip.sit") ||
-                player.hasPermission("kaoscore.vip.sit") ||
-                player.hasPermission("kaoscore.member.vip"));
-    }
-
     public boolean sit(Player player) {
-        if (!hasPermission(player) || !canUseMechanic(player)) return false;
+        if (!player.hasPermission(PERMISSION) || !canUseMechanic(player)) return false;
 
         if (isSitting(player)) {
             unsit(player);
@@ -79,7 +74,7 @@ public class SitManager {
     }
 
     public boolean sitOnBlock(Player player, Block clickedBlock) {
-        if (!hasPermission(player) || !canUseMechanic(player)) return false;
+        if (!player.hasPermission("kaoscore.sit") || !canUseMechanic(player)) return false;
         if (player == null || clickedBlock == null) return false;
 
         if (isSitting(player)) unsit(player);
@@ -109,14 +104,14 @@ public class SitManager {
     }
 
     public boolean carry(Player carrier, Player target) {
-        if (!hasPermission(carrier) || !canInteract(carrier, target)) return false;
+        if (!carrier.hasPermission(PERMISSION) || !canInteract(carrier, target)) return false;
         boolean mounted = carrier.setPassenger(target);
         if (!mounted) mounted = mount(carrier, target);
         return mounted;
     }
 
     public boolean ride(Player rider, Player target) {
-        if (!hasPermission(rider) || !canInteract(rider, target)) return false;
+        if (!rider.hasPermission(PERMISSION) || !canInteract(rider, target)) return false;
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (rider.isOnline() && target.isOnline() && !rider.isDead() && !target.isDead()) {
@@ -129,7 +124,7 @@ public class SitManager {
     }
 
     public boolean launch(Player carrier) {
-        if (!hasPermission(carrier)) return false;
+        if (!carrier.hasPermission(PERMISSION)) return false;
         if (!(carrier.getPassenger() instanceof Player)) return false;
         if (!canUseMechanic(carrier)) return false;
 
@@ -217,7 +212,7 @@ public class SitManager {
             } else {
                 seat.remove();
             }
-        }, 2L);
+        }, 1L);
     }
 
     private boolean isLocationOccupied(Location location) {

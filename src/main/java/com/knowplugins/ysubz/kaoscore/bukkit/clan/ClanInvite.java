@@ -1,7 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.clan;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class ClanInvite {
 
     public static final long EXPIRATION_MILLIS = 7L * 24L * 60L * 60L * 1000L;
@@ -20,22 +23,6 @@ public class ClanInvite {
         this.inviter = inviter;
         this.target = target;
         this.timestamp = timestamp;
-    }
-
-    public String getClanName() {
-        return clanName;
-    }
-
-    public UUID getInviter() {
-        return inviter;
-    }
-
-    public UUID getTarget() {
-        return target;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
     }
 
     public boolean isExpired() {

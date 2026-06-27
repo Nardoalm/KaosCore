@@ -2,8 +2,10 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listeners;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.listener.FriendMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.listeners.player.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.sit.SitListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 

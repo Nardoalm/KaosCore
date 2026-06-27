@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -64,10 +65,10 @@ public class ClanManager {
         tagColors.addAll(plugin.getConfig().getStringList("clan.tag-colors"));
         if (tagColors.isEmpty()) {
             tagColors.addAll(Arrays.asList(
-                    "§0Preto", "§1Azul Escuro", "§2Verde Escuro", "§3Azul Turquesa",
-                    "§4Vermelho Escuro", "§5Roxo", "§6Dourado", "§7Cinza",
-                    "§8Cinza Escuro", "§9Azul", "§aVerde", "§bAzul Claro",
-                    "§cVermelho", "§dRosa", "§eAmarelo", "§fBranco"
+                    "§0Black", "§1Dark blue", "§2Dark green", "§3Dark aqua",
+                    "§4Dark red", "§5Purple", "§6Gold", "§7Gray",
+                    "§8Dark gray", "§9Blue", "§aGreen", "§bAqua",
+                    "§cRed", "§dLight purple", "§eYellow", "§fWhite"
             ));
         }
     }
@@ -439,7 +440,7 @@ public class ClanManager {
         if (current == ClanRole.RECRUIT) {
             newRole = ClanRole.MEMBER;
         } else if (current == ClanRole.MEMBER) {
-            newRole = ClanRole.MOD;
+            newRole = ClanRole.ADMIN;
         } else {
             return;
         }
@@ -455,7 +456,7 @@ public class ClanManager {
         }
 
         ClanRole newRole;
-        if (current == ClanRole.MOD) {
+        if (current == ClanRole.ADMIN) {
             newRole = ClanRole.MEMBER;
         } else if (current == ClanRole.MEMBER) {
             newRole = ClanRole.RECRUIT;
@@ -473,7 +474,7 @@ public class ClanManager {
         }
 
         UUID oldLeader = clan.getLeader();
-        clan.getMembers().put(oldLeader, ClanRole.MOD);
+        clan.getMembers().put(oldLeader, ClanRole.ADMIN);
         clan.setLeader(newLeader);
         saveClan(clan);
     }

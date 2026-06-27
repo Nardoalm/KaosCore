@@ -21,8 +21,12 @@ public class AuthManager {
     private final AuthRepository repository;
     private final Map<UUID, AuthSession> pendingPlayers = new ConcurrentHashMap<>();
     private final Map<UUID, AuthProfile> cachedProfiles = new ConcurrentHashMap<>();
-    private Location authLocation;
 
+    // Sincronia perfeita entre ProtocolLib e Bukkit Event
+    private final Map<String, UUID> verifiedPremiumPlayers = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> mojangPremiumCache = new ConcurrentHashMap<>();
+
+    private Location authLocation;
     private static final int TIMEOUT_SECONDS = 60;
 
     public AuthManager(KaosCore plugin) {
@@ -34,6 +38,22 @@ public class AuthManager {
     }
 
     public AuthRepository getRepository() { return repository; }
+
+    public void addVerifiedPremium(String name, UUID uuid) {
+        verifiedPremiumPlayers.put(name.toLowerCase(), uuid);
+    }
+
+    public UUID consumeVerifiedPremium(String name) {
+        return verifiedPremiumPlayers.remove(name.toLowerCase());
+    }
+
+    public void cacheMojangStatus(String name, boolean isPremium) {
+        mojangPremiumCache.put(name.toLowerCase(), isPremium);
+    }
+
+    public Boolean consumeMojangStatus(String name) {
+        return mojangPremiumCache.remove(name.toLowerCase());
+    }
 
     public void cacheProfile(AuthProfile profile) {
         cachedProfiles.put(profile.getUuid(), profile);
@@ -67,11 +87,11 @@ public class AuthManager {
         AuthProfile profile = cachedProfiles.get(player.getUniqueId());
 
         if (profile == null) {
-            player.kickPlayer("§cProfile failed to load.");
+            player.kickPlayer("§cFailed to load authentication profile.");
             return;
         }
 
-        // Auto-Login inquebrável: Só executa se o ProtocolLib comprovou a assinatura RSA da Mojang.
+        // Blindagem Suprema: Se o UUID injetado pelo Netty for versão 4 (Premium), loga automático.
         if (profile.isPremium() && player.getUniqueId().version() == 4) {
             player.sendMessage("§a§lKaosCore §8» §aPremium Authentication verified. Welcome!");
             return;
@@ -92,9 +112,9 @@ public class AuthManager {
         if (authLocation != null) player.teleport(authLocation);
 
         if (profile.isRegistered()) {
-            player.sendMessage("§eAuthenticate using: §b/login <password>");
+            player.sendMessage("§ePlease authenticate using: §b/login <password>");
         } else {
-            player.sendMessage("§eRegister your account using: §b/register <password> <password>");
+            player.sendMessage("§eSecure your account using: §b/register <password> <password>");
         }
     }
 

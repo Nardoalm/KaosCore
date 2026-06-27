@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.listeners.proxy;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.FriendMenu;

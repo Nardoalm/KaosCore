@@ -7,8 +7,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.netty.channel.NettyChannelInjector;
-import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
+import com.comphenix.protocol.reflect.FuzzyReflection;
 import com.comphenix.protocol.reflect.accessors.Accessors;
 import com.comphenix.protocol.reflect.accessors.FieldAccessor;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -17,11 +16,11 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.security.EncryptionUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.util.MojangAPI;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.crypto.SecretKey;
+import java.lang.reflect.Method;
 import java.security.KeyPair;
 import java.util.Arrays;
 import java.util.Map;
@@ -35,8 +34,6 @@ public class AuthPacketListener {
     private final KeyPair serverKey;
 
     private final Map<String, PendingLogin> pendingLogins = new ConcurrentHashMap<>();
-    public final Map<String, UUID> verifiedPremiumPlayers = new ConcurrentHashMap<>();
-    public final Map<String, Boolean> bypassedPlayers = new ConcurrentHashMap<>();
 
     public AuthPacketListener(KaosCore plugin) {
         this.plugin = plugin;
@@ -46,30 +43,38 @@ public class AuthPacketListener {
     }
 
     private void registerListeners() {
-        protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.HIGHEST, PacketType.Login.Client.START) {
+        protocolManager.addPacketListener(new PacketAdapter(this.plugin, ListenerPriority.HIGHEST, PacketType.Login.Client.START) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
-                String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
-                String username = event.getPacket().getGameProfiles().read(0).getName();
-
-                if (bypassedPlayers.containsKey(ip)) {
-                    bypassedPlayers.remove(ip);
+                KaosCore core = KaosCore.getInstance();
+                if (core == null || core.getAuthManager() == null || core.getAuthManager().getRepository() == null) {
                     return;
                 }
 
+                PacketContainer packet = event.getPacket();
+                WrappedGameProfile gameProfile = packet.getGameProfiles().read(0);
+                if (gameProfile == null || gameProfile.getName() == null) return;
+
+                String username = gameProfile.getName();
+
                 event.setCancelled(true);
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    AuthProfile profile = Managers.getAuthManager().getRepository().loadProfile(null, username).join();
+                Bukkit.getScheduler().runTaskAsynchronously(core, () -> {
+                    KaosCore asyncCore = KaosCore.getInstance();
+                    if (asyncCore == null || asyncCore.getAuthManager() == null) return;
 
-                    boolean isPremium = profile.isPremium();
-                    if (!profile.isRegistered()) {
+                    AuthProfile profile = asyncCore.getAuthManager().getRepository().loadProfile(null, username).join();
+
+                    boolean isPremium = profile != null && profile.isPremium();
+
+                    if (profile != null && !profile.isRegistered() && !isPremium) {
                         isPremium = MojangAPI.isPremium(username);
+                        asyncCore.getAuthManager().cacheMojangStatus(username, isPremium);
                     }
 
                     if (isPremium) {
                         byte[] verifyToken = EncryptionUtil.generateVerifyToken();
-                        pendingLogins.put(ip, new PendingLogin(username, verifyToken));
+                        pendingLogins.put(username.toLowerCase(), new PendingLogin(username, verifyToken));
 
                         PacketContainer request = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
                         request.getStrings().write(0, "");
@@ -82,55 +87,77 @@ public class AuthPacketListener {
                             e.printStackTrace();
                         }
                     } else {
-                        bypassedPlayers.put(ip, true);
                         injectFakeStart(event.getPlayer(), username);
                     }
                 });
             }
         });
 
-        protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.HIGHEST, PacketType.Login.Client.ENCRYPTION_BEGIN) {
+        protocolManager.addPacketListener(new PacketAdapter(this.plugin, ListenerPriority.HIGHEST, PacketType.Login.Client.ENCRYPTION_BEGIN) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 event.setCancelled(true);
-                String ip = event.getPlayer().getAddress().getAddress().getHostAddress();
-                PendingLogin pending = pendingLogins.remove(ip);
 
-                if (pending == null) {
-                    kick(event, "§cInvalid login session.");
+                // O SEGREDO: Pegar o NetworkManager de forma SÍNCRONA antes que o ProtocolLib jogue fora.
+                Object networkManager;
+                try {
+                    networkManager = getNetworkManager(event.getPlayer());
+                } catch (Exception e) {
+                    plugin.getLogger().severe("Failed to resolve NetworkManager synchronously!");
+                    e.printStackTrace();
                     return;
                 }
 
                 byte[] sharedSecretEncrypted = event.getPacket().getByteArrays().read(0);
                 byte[] verifyTokenEncrypted = event.getPacket().getByteArrays().read(1);
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                KaosCore core = KaosCore.getInstance();
+                if (core == null) return;
+
+                // Agora passamos o objeto de conexão vivo para a Thread assíncrona
+                Bukkit.getScheduler().runTaskAsynchronously(core, () -> {
+                    KaosCore asyncCore = KaosCore.getInstance();
+                    if (asyncCore == null || asyncCore.getAuthManager() == null) return;
+
                     try {
                         byte[] decryptedToken = EncryptionUtil.decryptVerifyToken(serverKey.getPrivate(), verifyTokenEncrypted);
-                        if (!Arrays.equals(pending.verifyToken, decryptedToken)) {
+
+                        PendingLogin validSession = null;
+                        String validSessionKey = null;
+
+                        for (Map.Entry<String, PendingLogin> entry : pendingLogins.entrySet()) {
+                            if (Arrays.equals(entry.getValue().verifyToken, decryptedToken)) {
+                                validSession = entry.getValue();
+                                validSessionKey = entry.getKey();
+                                break;
+                            }
+                        }
+
+                        if (validSession == null) {
                             kick(event, "§cSecurity token mismatch.");
                             return;
                         }
 
+                        pendingLogins.remove(validSessionKey);
+
                         SecretKey sharedSecret = EncryptionUtil.decryptSharedSecret(serverKey.getPrivate(), sharedSecretEncrypted);
                         String serverHash = EncryptionUtil.getServerIdHash("", serverKey.getPublic(), sharedSecret);
 
-                        UUID premiumUUID = MojangAPI.hasJoined(pending.username, serverHash);
+                        UUID premiumUUID = MojangAPI.hasJoined(validSession.username, serverHash);
 
                         if (premiumUUID != null) {
-                            verifiedPremiumPlayers.put(pending.username, premiumUUID);
-                            bypassedPlayers.put(ip, true);
+                            // Ativamos a criptografia usando a referência estática extraída
+                            enableNettyEncryption(networkManager, sharedSecret);
+                            injectPremiumUUID(networkManager, premiumUUID);
 
-                            // A INJEÇÃO SUPREMA: Engana o Spigot para assumir o UUID Original.
-                            injectPremiumUUID(event.getPlayer(), premiumUUID);
-
-                            injectFakeStart(event.getPlayer(), pending.username);
+                            asyncCore.getAuthManager().addVerifiedPremium(validSession.username, premiumUUID);
+                            injectFakeStart(event.getPlayer(), validSession.username);
                         } else {
-                            kick(event, "§cAuthentication with Mojang failed.");
+                            kick(event, "§cAuthentication with Mojang servers failed.");
                         }
 
                     } catch (Exception e) {
-                        kick(event, "§cEncryption error.");
+                        kick(event, "§cEncryption processing error.");
                         e.printStackTrace();
                     }
                 });
@@ -138,34 +165,67 @@ public class AuthPacketListener {
         });
     }
 
-    private void injectPremiumUUID(Player player, UUID premiumUUID) {
+    private void enableNettyEncryption(Object networkManager, SecretKey secretKey) {
         try {
-            // Puxa o injetor de canal temporário do ProtocolLib
-            NettyChannelInjector injectorContainer = (NettyChannelInjector) Accessors.getMethodAccessorOrNull(
-                    TemporaryPlayerFactory.class, "getInjectorFromPlayer", Player.class
-            ).invoke(null, player);
+            Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
+                    .getMethodByParameters("a", SecretKey.class);
+            encryptMethod.invoke(networkManager, secretKey);
+        } catch (Exception exc) {
+            plugin.getLogger().severe("Failed to enable Netty encryption pipeline!");
+            exc.printStackTrace();
+        }
+    }
 
-            // Acessa a variável networkManager (onde a conexão reside)
-            FieldAccessor managerAccessor = Accessors.getFieldAccessorOrNull(
-                    NettyChannelInjector.class, "networkManager", Object.class
-            );
-            Object networkManager = managerAccessor.get(injectorContainer);
-
-            // Seta o "spoofedUUID" que o Spigot lê caso o servidor tenha o bungeecord=true na spigot.yml
-            Class<?> managerClass = networkManager.getClass();
-            FieldAccessor uuidAccessor = Accessors.getFieldAccessorOrNull(managerClass, "spoofedUUID", UUID.class);
-            uuidAccessor.set(networkManager, premiumUUID);
-
+    private void injectPremiumUUID(Object networkManager, UUID premiumUUID) {
+        try {
+            FieldAccessor uuidAccessor = Accessors.getFieldAccessorOrNull(networkManager.getClass(), "spoofedUUID", UUID.class);
+            if (uuidAccessor != null) {
+                uuidAccessor.set(networkManager, premiumUUID);
+            }
         } catch (Exception exc) {
             plugin.getLogger().severe("Failed to inject premium UUID into NetworkManager!");
             exc.printStackTrace();
         }
     }
 
-    private void injectFakeStart(Player connection, String username) {
-        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
-        startPacket.getGameProfiles().write(0, new WrappedGameProfile(UUID.randomUUID(), username));
+    private Object getNetworkManager(Player player) throws Exception {
+        Object injector = null;
+
+        // Abordagem 1: ProtocolLib TemporaryPlayerFactory
         try {
+            injector = Class.forName("com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory")
+                    .getMethod("getInjectorFromPlayer", Player.class).invoke(null, player);
+        } catch (Exception ignored) {}
+
+        // Abordagem 2: Tentar buscar o campo direto da classe caso o factory falhe
+        if (injector == null) {
+            try {
+                injector = Accessors.getFieldAccessorOrNull(player.getClass(), "injector", Object.class).get(player);
+            } catch (Exception ignored) {}
+        }
+
+        if (injector == null) {
+            throw new IllegalStateException("Failed to extract network injector from TemporaryPlayer.");
+        }
+
+        return Accessors.getFieldAccessorOrNull(injector.getClass(), "networkManager", Object.class).get(injector);
+    }
+
+    private void injectFakeStart(Player connection, String username) {
+        // O Spigot 1.8.8 precisa do IP real ou um IP fake válido para aceitar o IP Forwarding
+        // Usamos 127.0.0.1 para forçar a confiança do Spigot no pacote injetado
+        String fakeIp = "127.0.0.1";
+
+        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
+        WrappedGameProfile profile = new WrappedGameProfile(UUID.randomUUID(), username);
+
+        // Adicionamos a propriedade de IP Forwarding dentro do profile, se necessário
+        // Mas a injeção via NetworkManager (spoofedUUID) já faz a maior parte do trabalho
+        startPacket.getGameProfiles().write(0, profile);
+
+        try {
+            // Em vez de receber apenas o START, vamos simular a injeção completa
+            // que o nLogin/FastLogin faz para enganar o Handshake do Spigot
             protocolManager.receiveClientPacket(connection, startPacket, false);
         } catch (Exception e) {
             e.printStackTrace();

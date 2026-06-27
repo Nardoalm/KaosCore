@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class AuthPreLoginListener implements Listener {
@@ -22,33 +23,46 @@ public class AuthPreLoginListener implements Listener {
     public void processPreLogin(AsyncPlayerPreLoginEvent event) {
         String name = event.getName();
 
-        // Se o player passou pela verificação RSA da Mojang com sucesso,
-        // o Spigot JÁ VAI ter puxado o UUID correto devido à injeção "spoofedUUID" no Netty.
-        UUID finalUUID = event.getUniqueId();
+        UUID premiumUUID = null;
+        Boolean cachedMojangStatus = null;
 
-        // Remove do cache de verificação (limpeza de segurança)
-        UUID premiumUUID = plugin.getAuthPacketListener().verifiedPremiumPlayers.remove(name);
+        if (plugin.getAuthManager() != null) {
+            premiumUUID = plugin.getAuthManager().consumeVerifiedPremium(name);
+            cachedMojangStatus = plugin.getAuthManager().consumeMojangStatus(name);
+        }
+
+        UUID finalUUID = event.getUniqueId();
+        if (finalUUID == null) {
+            if (premiumUUID != null) {
+                finalUUID = premiumUUID;
+            } else {
+                finalUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+            }
+        }
 
         try {
-            AuthProfile profile = plugin.getAuthManager().getRepository().loadProfile(finalUUID, name).join();
-
-            // Marca o perfil como premium internamente baseado na autenticação criptográfica que fizemos no pacote.
-            if (premiumUUID != null) {
-                profile.setPremium(true);
-            } else if (!profile.isRegistered()) {
-                // Prevenção extra para não registrar piratas com nome de original
-                boolean isMojangPremium = MojangAPI.isPremium(name);
-                if (isMojangPremium) {
-                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                            "§c§lNICK PROTEGIDO\n\n§cEsse nick pertence a um jogador original.\n§cEscolha outro nome ou use um launcher premium.");
-                    return;
-                }
+            if (plugin.getAuthManager() == null || plugin.getAuthManager().getRepository() == null) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§cServer is still starting up...");
+                return;
             }
 
-            plugin.getAuthManager().cacheProfile(profile);
+            AuthProfile profile = plugin.getAuthManager().getRepository().loadProfile(finalUUID, name).join();
+
+            if (profile != null) {
+                if (premiumUUID != null) {
+                    profile.setPremium(true);
+                } else if (!profile.isRegistered()) {
+                    if (cachedMojangStatus != null && cachedMojangStatus) {
+                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                                "§c§lPROTECTED NICKNAME\n\n§cThis username belongs to a Premium account.\n§cPlease choose another name or use a premium launcher.");
+                        return;
+                    }
+                }
+                plugin.getAuthManager().cacheProfile(profile);
+            }
 
         } catch (Exception e) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§cFalha na comunicação com o banco de dados. Tente novamente.");
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§cDatabase communication failed. Please try again.");
             e.printStackTrace();
         }
     }

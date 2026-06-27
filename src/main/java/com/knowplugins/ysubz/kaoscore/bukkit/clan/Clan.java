@@ -106,7 +106,7 @@ public class Clan {
 
     public boolean isMod(UUID playerId) {
         ClanRole role = members.get(playerId);
-        return role == ClanRole.LEADER || role == ClanRole.MOD;
+        return role == ClanRole.LEADER || role == ClanRole.ADMIN;
     }
 
     public boolean isMember(UUID playerId) {

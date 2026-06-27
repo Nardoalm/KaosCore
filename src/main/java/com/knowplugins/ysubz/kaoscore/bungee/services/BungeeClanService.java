@@ -70,7 +70,7 @@ public final class BungeeClanService {
                 }
 
                 if (!clan.getMembers().containsKey(leader)) {
-                    clan.getMembers().put(leader, ClanRole.LEADER);
+                    clan.getMembers().put(leader, ClanRole.OWNER);
                     loadedPlayerClans.put(leader, name);
                 }
 
@@ -237,14 +237,14 @@ public final class BungeeClanService {
             clan.getMembers().put(playerId, ClanRole.MEMBER);
             saveClan(clan);
         } else if (current == ClanRole.MEMBER) {
-            clan.getMembers().put(playerId, ClanRole.MOD);
+            clan.getMembers().put(playerId, ClanRole.ADMIN);
             saveClan(clan);
         }
     }
 
     public void demote(Clan clan, UUID playerId) {
         ClanRole current = clan == null ? null : clan.getRole(playerId);
-        if (current == ClanRole.MOD) {
+        if (current == ClanRole.ADMIN) {
             clan.getMembers().put(playerId, ClanRole.MEMBER);
             saveClan(clan);
         } else if (current == ClanRole.MEMBER) {
@@ -258,7 +258,7 @@ public final class BungeeClanService {
             return;
         }
         UUID oldLeader = clan.getLeader();
-        clan.getMembers().put(oldLeader, ClanRole.MOD);
+        clan.getMembers().put(oldLeader, ClanRole.ADMIN);
         clan.setLeader(newLeader);
         saveClan(clan);
     }

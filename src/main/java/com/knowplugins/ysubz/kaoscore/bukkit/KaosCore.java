@@ -7,7 +7,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.auth.manager.AuthManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPreLoginListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPacketListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.listeners.Listeners;
 import com.knowplugins.ysubz.kaoscore.bukkit.listeners.proxy.ProxySyncListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.ClanManager;
@@ -250,11 +250,6 @@ public class KaosCore extends JavaPlugin {
 
         if (Managers.getSitManager() != null) {
             Managers.getSitManager().cleanupAll();
-        }
-
-        if (authPacketListener != null) {
-            authPacketListener.verifiedPremiumPlayers.clear();
-            authPacketListener.bypassedPlayers.clear();
         }
 
         Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cThe plugin has been disabled.");

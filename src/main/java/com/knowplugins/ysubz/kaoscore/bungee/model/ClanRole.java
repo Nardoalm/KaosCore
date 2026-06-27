@@ -1,10 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.bungee.model;
 
 public enum ClanRole {
-    LEADER("§4§lLIDER", 100),
-    MOD("§c§lMOD", 80),
-    MEMBER("§7Membro", 60),
-    RECRUIT("§8Recruta", 40);
+    OWNER("§4Owner", 100),
+    ADMIN("§cAdmin", 80),
+    MEMBER("§7Member", 60),
+    RECRUIT("§8Recruit", 40);
 
     private final String display;
     private final int power;

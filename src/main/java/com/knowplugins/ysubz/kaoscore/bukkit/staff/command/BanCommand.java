@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.staff.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff.ModerationCommandUtil;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff.ModerationCommandUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;

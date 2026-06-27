@@ -2,8 +2,8 @@ package com.knowplugins.ysubz.kaoscore.bukkit.clan;
 
 public enum ClanRole {
 
-    LEADER("§4§lLIDER", 100),
-    MOD("§c§lMOD", 80),
+    LEADER("§4Owner", 100),
+    ADMIN("§cAdmin", 80),
     MEMBER("§7Membro", 60),
     RECRUIT("§8Recruta", 40);
 

@@ -22,7 +22,7 @@ public final class Clan {
         this.tag = tag == null ? "" : tag.toUpperCase(Locale.ROOT);
         this.leader = leader;
         if (leader != null) {
-            members.put(leader, ClanRole.LEADER);
+            members.put(leader, ClanRole.OWNER);
         }
     }
 
@@ -57,7 +57,7 @@ public final class Clan {
     public void setLeader(UUID leader) {
         this.leader = leader;
         if (leader != null) {
-            members.put(leader, ClanRole.LEADER);
+            members.put(leader, ClanRole.OWNER);
         }
     }
 
@@ -75,7 +75,7 @@ public final class Clan {
 
     public boolean isMod(UUID playerId) {
         ClanRole role = members.get(playerId);
-        return role == ClanRole.LEADER || role == ClanRole.MOD;
+        return role == ClanRole.OWNER || role == ClanRole.ADMIN;
     }
 
     public boolean isMember(UUID playerId) {

@@ -11,7 +11,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.PlayerAd
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;

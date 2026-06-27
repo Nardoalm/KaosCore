@@ -1,6 +1,6 @@
 name: KaosCore
-version: 13.2
-main: com.knowplugins.ysubz.kaoscore.KaosCore
+version: 14.1
+main: com.knowplugins.ysubz.kaoscore.bukkit.KaosCore
 api-version: 1.8
 author: ysubz
 description: Plugin de core com sistema completo.
