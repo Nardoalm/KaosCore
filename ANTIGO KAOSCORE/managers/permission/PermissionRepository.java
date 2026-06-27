@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.managers.permission;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.permission;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

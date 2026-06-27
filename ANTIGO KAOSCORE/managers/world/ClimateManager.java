@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.managers.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.world;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;

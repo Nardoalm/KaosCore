@@ -1,8 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.utils.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.menu;
 
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.FriendManager;
-import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.FriendManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

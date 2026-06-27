@@ -1,9 +1,9 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionGroup;
-import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionGroup;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;

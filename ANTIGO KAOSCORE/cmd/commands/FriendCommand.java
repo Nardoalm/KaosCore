@@ -1,13 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
-import com.knowplugins.ysubz.kaoscore.managers.player.FriendManager;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.utils.menu.FriendMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.FriendManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.FriendMenu;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

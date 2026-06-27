@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;

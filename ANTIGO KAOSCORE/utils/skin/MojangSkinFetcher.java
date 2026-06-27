@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.skin;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.skin;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -1,11 +1,11 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
-import com.knowplugins.ysubz.kaoscore.utils.welcome.WelcomeMessage;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.welcome.WelcomeMessage;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
 
 public class VanishCommand extends Commands {
 

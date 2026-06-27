@@ -1,9 +1,9 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentType;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import java.util.UUID;

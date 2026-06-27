@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.disguise;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise;
 
 import java.util.ArrayList;
 import java.util.List;

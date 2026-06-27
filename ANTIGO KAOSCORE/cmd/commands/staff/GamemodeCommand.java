@@ -1,12 +1,12 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.player.GameModeManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.GameModeManager;
 
 public class GamemodeCommand extends Commands {
    public GamemodeCommand() {

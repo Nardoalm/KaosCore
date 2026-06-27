@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.discord;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.discord;
 
 import java.io.IOException;
 import java.io.InputStream;

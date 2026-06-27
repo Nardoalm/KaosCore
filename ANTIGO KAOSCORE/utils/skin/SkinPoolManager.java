@@ -1,10 +1,10 @@
-package com.knowplugins.ysubz.kaoscore.utils.skin;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.skin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.SkinMatrix;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;

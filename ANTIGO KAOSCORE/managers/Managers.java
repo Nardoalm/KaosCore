@@ -1,17 +1,17 @@
-package com.knowplugins.ysubz.kaoscore.managers;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.player.*;
-import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.AutoBroadcastManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentRepository;
-import com.knowplugins.ysubz.kaoscore.managers.world.ClimateManager;
-import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
-import com.knowplugins.ysubz.kaoscore.managers.world.SpawnLimitsManager;
-import com.knowplugins.ysubz.kaoscore.managers.world.WhitelistManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.AutoBroadcastManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PunishmentRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.ClimateManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.NPCManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.SpawnLimitsManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.WhitelistManager;
 
 import java.util.Map;
 import java.util.UUID;

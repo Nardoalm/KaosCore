@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.listeners.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.player;
 
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.world.WhitelistManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.WhitelistManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

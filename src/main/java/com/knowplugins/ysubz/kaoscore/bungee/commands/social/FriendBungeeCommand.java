@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.proxy.ProxySyncChannel;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
 import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeFriendService;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 final class FriendBungeeCommand extends BaseBungeeCommand {

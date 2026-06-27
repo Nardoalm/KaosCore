@@ -1,8 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.managers.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerWelcomeMessageRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PlayerWelcomeMessageRepository;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

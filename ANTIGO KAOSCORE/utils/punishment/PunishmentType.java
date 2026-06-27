@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.punishment;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment;
 
 public enum PunishmentType {
     BAN("banimento", "banido"),

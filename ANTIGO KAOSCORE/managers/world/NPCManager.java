@@ -1,13 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.managers.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinCacheRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinData;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
-import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;
-import com.knowplugins.ysubz.kaoscore.utils.skin.MojangSkinFetcher;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.SkinMatrix;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.MenuUtils;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.MojangSkinFetcher;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_8_R3.EntityPlayer;

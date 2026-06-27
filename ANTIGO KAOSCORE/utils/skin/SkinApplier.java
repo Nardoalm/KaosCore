@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.utils.skin;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.skin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutRespawn;

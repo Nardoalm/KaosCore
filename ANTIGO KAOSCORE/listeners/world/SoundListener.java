@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.listeners.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import com.comphenix.protocol.PacketType;

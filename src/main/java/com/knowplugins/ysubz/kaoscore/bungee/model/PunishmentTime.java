@@ -70,19 +70,19 @@ public final class PunishmentTime {
 
     public static String formatDate(long timestamp) {
         if (timestamp <= 0L) {
-            return "Nunca";
+            return "Never";
         }
         return new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date(timestamp));
     }
 
     public static String formatRemaining(long expiresAt) {
         if (expiresAt <= 0L) {
-            return "Permanente";
+            return "Permanent";
         }
 
         long remaining = expiresAt - System.currentTimeMillis();
         if (remaining <= 0L) {
-            return "Expirado";
+            return "Expired";
         }
 
         long days = remaining / 86_400_000L;

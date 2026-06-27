@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.cmd;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.knowplugins.ysubz.kaoscore.clan.cmds.CcCommand;
-import com.knowplugins.ysubz.kaoscore.clan.cmds.ClanCommand;
-import com.knowplugins.ysubz.kaoscore.cmd.commands.*;
-import com.knowplugins.ysubz.kaoscore.cmd.commands.staff.*;
-import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.cmds.CcCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.cmds.ClanCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

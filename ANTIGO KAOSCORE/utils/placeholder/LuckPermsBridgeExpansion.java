@@ -1,11 +1,11 @@
-package com.knowplugins.ysubz.kaoscore.utils.placeholder;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.permission.EffectivePermissions;
-import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionGroup;
-import com.knowplugins.ysubz.kaoscore.managers.permission.PermissionManager;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.EffectivePermissions;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionGroup;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

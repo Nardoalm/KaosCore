@@ -1,10 +1,10 @@
-package com.knowplugins.ysubz.kaoscore.managers.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.friend.FriendRequest;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
-import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

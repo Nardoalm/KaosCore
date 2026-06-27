@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.listeners.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.player;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

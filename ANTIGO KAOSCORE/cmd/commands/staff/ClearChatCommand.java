@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 
 public class ClearChatCommand extends Commands {
    public ClearChatCommand() {

@@ -1,11 +1,11 @@
-package com.knowplugins.ysubz.kaoscore.clan.cmds;
+package com.knowplugins.ysubz.kaoscore.bukkit.clan.cmds;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.clan.Clan;
-import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;

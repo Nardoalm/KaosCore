@@ -1,0 +1,53 @@
+package com.knowplugins.ysubz.kaoscore.bukkit.staff.command;
+
+import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class GoCommand extends Commands {
+
+    public GoCommand() {
+        super("go", "goto");
+    }
+
+    @Override
+    public void perform(CommandSender sender, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("§cOnly players can use this command.");
+            return;
+        }
+
+        if (!sender.hasPermission("kaoscore.staff")){
+            sender.sendMessage("§cYou do not have permission to use this command.");
+            return;
+        }
+
+        if(args.length != 1) {
+            sender.sendMessage("§cUsage: /go <player>");
+            return;
+        }
+
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+            target = DisguiseManager.getOnlinePlayerByName(args[0]);
+        }
+        if (target == null) {
+            sender.sendMessage("§cPlayer not found.");
+            return;
+        }
+
+        Player staff = (Player) sender;
+        VanishManager.addVanish(staff);
+
+        staff.playSound(staff.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+        staff.teleport(target.getLocation());
+
+        String tagColor = KaosCore.getInstance().getTagManager().getTag(target).getColor();
+        sender.sendMessage("§aYou were silently teleported to " + tagColor + target.getName() + ".");
+    }
+}

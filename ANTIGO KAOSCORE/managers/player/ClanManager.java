@@ -1,10 +1,10 @@
-package com.knowplugins.ysubz.kaoscore.managers.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.clan.Clan;
-import com.knowplugins.ysubz.kaoscore.clan.ClanInvite;
-import com.knowplugins.ysubz.kaoscore.clan.ClanRole;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanInvite;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

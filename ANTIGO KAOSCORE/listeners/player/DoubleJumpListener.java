@@ -1,6 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.listeners.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.player;
 
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;

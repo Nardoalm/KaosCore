@@ -1,6 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import net.minecraft.server.v1_8_R3.PacketPlayOutGameStateChange;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;

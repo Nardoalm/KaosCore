@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.friend;
+package com.knowplugins.ysubz.kaoscore.bukkit.friend;
 
 import java.util.UUID;
 

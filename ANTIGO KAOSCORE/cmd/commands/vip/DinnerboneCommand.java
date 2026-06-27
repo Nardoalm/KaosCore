@@ -1,6 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;

@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.medal;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.medal;
 
 import java.util.List;
 

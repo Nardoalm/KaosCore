@@ -1,16 +1,16 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerAddressRepository;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.SkinRepository;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.SkinMatrix;
-import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
-import com.knowplugins.ysubz.kaoscore.utils.skin.OriginalSkinManager;
-import com.knowplugins.ysubz.kaoscore.utils.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.SkinMatrix;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.OriginalSkinManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;

@@ -1,13 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.managers.plugin;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentType;
-import com.knowplugins.ysubz.kaoscore.utils.discord.DiscordWebhookClient;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.discord.DiscordWebhookClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

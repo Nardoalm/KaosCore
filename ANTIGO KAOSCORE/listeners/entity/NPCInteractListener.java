@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.listeners.entity;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.entity;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,8 +6,8 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.world.NPCManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.NPCManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

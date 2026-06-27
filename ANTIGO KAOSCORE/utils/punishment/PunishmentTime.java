@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.punishment;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

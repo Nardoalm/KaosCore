@@ -1,9 +1,9 @@
-package com.knowplugins.ysubz.kaoscore.managers.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PlayerTagRepository;
-import com.knowplugins.ysubz.kaoscore.utils.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PlayerTagRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.tag.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

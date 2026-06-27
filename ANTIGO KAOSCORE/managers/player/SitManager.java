@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.managers.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

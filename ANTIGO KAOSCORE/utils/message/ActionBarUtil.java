@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.message;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.message;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

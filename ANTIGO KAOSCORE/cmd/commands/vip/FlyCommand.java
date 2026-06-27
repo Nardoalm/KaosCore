@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.vip;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.utils.menu.MenuUtils;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.MenuUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

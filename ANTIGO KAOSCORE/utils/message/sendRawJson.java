@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.message;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.message;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;

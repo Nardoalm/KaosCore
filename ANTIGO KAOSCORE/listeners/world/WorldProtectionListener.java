@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.listeners.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.world.BuildManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.BuildManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

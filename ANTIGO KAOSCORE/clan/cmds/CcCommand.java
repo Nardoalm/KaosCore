@@ -1,8 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.clan.cmds;
+package com.knowplugins.ysubz.kaoscore.bukkit.clan.cmds;
 
-import com.knowplugins.ysubz.kaoscore.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.clan.Clan;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

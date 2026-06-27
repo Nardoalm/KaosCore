@@ -1,13 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.utils.welcome;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.welcome;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.TagManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.WelcomeMessageManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.TagManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.WelcomeMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.DisguiseApiService;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

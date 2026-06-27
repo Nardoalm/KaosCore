@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.managers.plugin;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin;
 
 public class SkinData {
     public final String name;

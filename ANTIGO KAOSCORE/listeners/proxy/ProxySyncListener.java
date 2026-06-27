@@ -1,11 +1,11 @@
-package com.knowplugins.ysubz.kaoscore.listeners.proxy;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.proxy;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.cmd.commands.vip.SkinCommand;
-import com.knowplugins.ysubz.kaoscore.integration.proxy.ProxySyncChannel;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.utils.menu.FriendMenu;
-import com.knowplugins.ysubz.kaoscore.utils.menu.SkinMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.FriendMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.SkinMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

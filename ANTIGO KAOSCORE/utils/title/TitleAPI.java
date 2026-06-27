@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.title;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.title;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

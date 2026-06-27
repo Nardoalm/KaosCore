@@ -1,14 +1,14 @@
-package com.knowplugins.ysubz.kaoscore.listeners;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.listeners.entity.EntityListener;
-import com.knowplugins.ysubz.kaoscore.listeners.entity.MenuClickListener;
-import com.knowplugins.ysubz.kaoscore.listeners.entity.NPCInteractListener;
-import com.knowplugins.ysubz.kaoscore.listeners.player.*;
-import com.knowplugins.ysubz.kaoscore.listeners.world.SoundListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.TimeListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.WeatherListener;
-import com.knowplugins.ysubz.kaoscore.listeners.world.WorldProtectionListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.entity.EntityListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.entity.MenuClickListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.entity.NPCInteractListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.player.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.SoundListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.TimeListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.WeatherListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.WorldProtectionListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 

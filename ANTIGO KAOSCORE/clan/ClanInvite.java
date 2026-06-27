@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.clan;
+package com.knowplugins.ysubz.kaoscore.bukkit.clan;
 
 import java.util.UUID;
 

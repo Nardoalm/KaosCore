@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.utils.tag;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.tag;
 
 public class Tag {
 

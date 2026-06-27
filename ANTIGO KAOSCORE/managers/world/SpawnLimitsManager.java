@@ -1,7 +1,7 @@
-package com.knowplugins.ysubz.kaoscore.managers.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.integration.practice.KaosPracticeBridge;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.KaosPracticeBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

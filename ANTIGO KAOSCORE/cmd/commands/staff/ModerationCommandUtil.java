@@ -1,11 +1,11 @@
-package com.knowplugins.ysubz.kaoscore.cmd.commands.staff;
+package com.knowplugins.ysubz.kaoscore.bukkit.cmd.commands.staff;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
-import com.knowplugins.ysubz.kaoscore.managers.player.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.utils.disguise.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.disguise.DisguiseApiService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;

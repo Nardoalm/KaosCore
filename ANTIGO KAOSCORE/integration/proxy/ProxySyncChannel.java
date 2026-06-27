@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.integration.proxy;
+package com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy;
 
 public final class ProxySyncChannel {
 

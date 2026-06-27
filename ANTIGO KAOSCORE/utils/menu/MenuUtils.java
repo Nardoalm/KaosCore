@@ -1,6 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.utils.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.utils.menu;
 
-import com.knowplugins.ysubz.kaoscore.integration.practice.PracticeModeBlocker;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

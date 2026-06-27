@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.managers.world;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.world;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
 import org.bukkit.ChatColor;

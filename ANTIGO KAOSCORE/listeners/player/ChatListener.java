@@ -1,13 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.listeners.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.KaosCore;
-import com.knowplugins.ysubz.kaoscore.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.managers.player.PunishmentManager;
-import com.knowplugins.ysubz.kaoscore.managers.plugin.PunishmentMessageManager;
-import com.knowplugins.ysubz.kaoscore.utils.message.ActionBarUtil;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.utils.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.message.ActionBarUtil;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

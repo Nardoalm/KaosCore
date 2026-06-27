@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.managers.permission;
+package com.knowplugins.ysubz.kaoscore.bukkit.managers.permission;
 
 public final class GroupGrant {
 
