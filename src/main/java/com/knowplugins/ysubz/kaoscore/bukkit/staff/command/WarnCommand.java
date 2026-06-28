@@ -4,7 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff.ModerationCommandUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

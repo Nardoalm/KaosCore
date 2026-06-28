@@ -8,7 +8,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.FriendMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.FriendMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

@@ -2,14 +2,14 @@ package com.knowplugins.ysubz.kaoscore.bukkit.api;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.ClanManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.clan.manager.ClanManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.TagManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import org.bukkit.entity.Player;
 

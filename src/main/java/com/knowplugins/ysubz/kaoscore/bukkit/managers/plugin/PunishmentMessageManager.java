@@ -1,8 +1,8 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

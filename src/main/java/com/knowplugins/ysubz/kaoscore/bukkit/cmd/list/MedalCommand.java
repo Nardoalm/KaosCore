@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.MedalManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.medal.Medal;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.Medal;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

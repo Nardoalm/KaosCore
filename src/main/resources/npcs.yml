@@ -19,6 +19,6 @@ npcs:
     z: 10.5
     yaw: 90.0
     pitch: 0.0
-    skin-nick: "Heeph"
+    skin-nick: "ysubz"
     commands:
       - "menu"

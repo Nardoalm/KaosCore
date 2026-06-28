@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static com.knowplugins.ysubz.kaoscore.bukkit.utils.message.ActionBarUtil.sendActionBar;
+import static com.knowplugins.ysubz.kaoscore.bukkit.util.message.ActionBarUtil.sendActionBar;
 
 public class VanishManager {
 

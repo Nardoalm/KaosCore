@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.auth.repository;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;

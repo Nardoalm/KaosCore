@@ -7,11 +7,11 @@ import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinRepo
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.SkinMenu;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.OriginalSkinManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.MojangSkinFetcher;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.SkinMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.MojangSkinFetcher;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;

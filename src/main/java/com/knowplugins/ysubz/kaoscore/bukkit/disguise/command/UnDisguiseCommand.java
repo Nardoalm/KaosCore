@@ -6,7 +6,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.mojang.authlib.GameProfile;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;

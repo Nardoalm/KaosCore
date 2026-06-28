@@ -1,8 +1,8 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.listeners.player;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.AnvilInputMenu;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.SkinMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.AnvilInputMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.SkinMenu;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

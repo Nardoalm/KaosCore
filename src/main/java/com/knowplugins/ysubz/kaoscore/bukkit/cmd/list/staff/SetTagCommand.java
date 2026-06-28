@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;

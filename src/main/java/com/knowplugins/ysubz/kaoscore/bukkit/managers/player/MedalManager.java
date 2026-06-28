@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.PlayerMedalRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.medal.Medal;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.Medal;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

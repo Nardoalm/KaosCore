@@ -13,18 +13,18 @@ import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinRepo
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.NPCManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.title.TitleAPI;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.title.TitleAPI;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.VanishRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.OriginalSkinManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PunishmentMessageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.welcome.WelcomeMessage;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.welcome.WelcomeMessage;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -93,6 +93,16 @@ public class PlayerJoinListener implements Listener {
       UUID uuid = player.getUniqueId();
       KaosCore plugin = KaosCore.getInstance();
       if (plugin == null) return;
+
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         if (player.isOnline() && Managers.getPermissionManager() != null) {
+            try {
+               Managers.getPermissionManager().handleLogin(player);
+            } catch (Throwable t) {
+               plugin.getLogger().warning("Could not inject permissions for " + player.getName());
+            }
+         }
+      }, 20L);
 
       FileConfiguration config = plugin.getConfig();
       AccountController accounts = plugin.getAccountController();
@@ -241,7 +251,7 @@ public class PlayerJoinListener implements Listener {
       event.setCancelled(true);
    }
 
-   @EventHandler
+   @EventHandler(priority = EventPriority.HIGHEST)
    public void onPreLogin(AsyncPlayerPreLoginEvent e) {
       PlayerAddressRepository addressRepository = Managers.getPlayerAddressRepository();
       if (addressRepository != null && e.getUniqueId() != null && e.getAddress() != null) {
@@ -250,7 +260,7 @@ public class PlayerJoinListener implements Listener {
 
       KaosCore plugin = KaosCore.getInstance();
 
-      if (plugin != null && plugin.getAuthManager() != null) {
+      if (plugin != null && plugin.getAuthPreLoginListener() != null) {
          plugin.getAuthPreLoginListener().processPreLogin(e);
          if (e.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
@@ -351,9 +361,9 @@ public class PlayerJoinListener implements Listener {
       return "§c" + title + "\n\n" +
               "  §cReason: §7" + reason + "\n" +
               "  §cExpires in: §7" + expires + "\n" +
-              "  §eBuy your unban at: §bwww.freepmc.com.br\n" +
+              "  §eBuy your unban at: §bstore.pvphard.live\n" +
               "  §cBanned unfairly? Contact us via\n" +
-              "  §9§ndiscord.gg/freepmc";
+              "  §9§ndc.pvphard.live";
    }
 
    private void applyJoinSkin(Player player) {

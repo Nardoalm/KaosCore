@@ -2,8 +2,8 @@ package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DiscordWebhookManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.PunishmentRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentEntry;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.punishment.PunishmentType;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
 import org.bukkit.entity.Player;
 
 import java.util.List;

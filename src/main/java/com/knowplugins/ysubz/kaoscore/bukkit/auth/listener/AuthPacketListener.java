@@ -21,12 +21,28 @@ import org.bukkit.entity.Player;
 
 import javax.crypto.SecretKey;
 import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * IMPORTANTE - Histórico do bug do NetworkManager resolvido:
+ *
+ * AetherSpigot and other high-performance forks alter the Netty pipeline,
+ * making Channel injection extremely volatile. Furthermore, comparing IPs via
+ * .toString() causes mismatches (e.g., "/127.0.0.1" vs "127.0.0.1").
+ *
+ * SOLUÇÃO SUPREMA:
+ * We bypass the Netty pipeline entirely and access Minecraft's native
+ * `ServerConnection.h` (which is a synchronized List of all active NetworkManagers).
+ * We then compare the InetSocketAddress host and port natively, ensuring a 100%
+ * accurate match regardless of string formatting or fork optimizations.
+ */
 public class AuthPacketListener {
 
     private final KaosCore plugin;
@@ -40,6 +56,7 @@ public class AuthPacketListener {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.serverKey = EncryptionUtil.generateKeyPair();
         this.registerListeners();
+        this.startPendingLoginCleanupTask();
     }
 
     private void registerListeners() {
@@ -74,7 +91,7 @@ public class AuthPacketListener {
 
                     if (isPremium) {
                         byte[] verifyToken = EncryptionUtil.generateVerifyToken();
-                        pendingLogins.put(username.toLowerCase(), new PendingLogin(username, verifyToken));
+                        pendingLogins.put(username.toLowerCase(), new PendingLogin(username, verifyToken, event.getPlayer()));
 
                         PacketContainer request = protocolManager.createPacket(PacketType.Login.Server.ENCRYPTION_BEGIN);
                         request.getStrings().write(0, "");
@@ -84,10 +101,11 @@ public class AuthPacketListener {
                         try {
                             protocolManager.sendServerPacket(event.getPlayer(), request);
                         } catch (Exception e) {
+                            plugin.getLogger().severe("Failed to send ENCRYPTION_BEGIN to " + username);
                             e.printStackTrace();
                         }
                     } else {
-                        injectFakeStart(event.getPlayer(), username);
+                        injectFakeStart(event.getPlayer(), username, null);
                     }
                 });
             }
@@ -98,23 +116,32 @@ public class AuthPacketListener {
             public void onPacketReceiving(PacketEvent event) {
                 event.setCancelled(true);
 
-                // O SEGREDO: Pegar o NetworkManager de forma SÍNCRONA antes que o ProtocolLib jogue fora.
-                Object networkManager;
+                final Object networkManager;
                 try {
                     networkManager = getNetworkManager(event.getPlayer());
-                } catch (Exception e) {
-                    plugin.getLogger().severe("Failed to resolve NetworkManager synchronously!");
+                } catch (Throwable e) {
+                    plugin.getLogger().severe("Failed to resolve NetworkManager - falling back to cracked login (no premium verification) for this connection.");
                     e.printStackTrace();
+
+                    String fallbackUsername = findPendingUsernameForPlayer(event.getPlayer());
+                    if (fallbackUsername != null) {
+                        KaosCore fallbackCore = KaosCore.getInstance();
+                        if (fallbackCore != null) {
+                            Bukkit.getScheduler().runTaskAsynchronously(fallbackCore, () ->
+                                    injectFakeStart(event.getPlayer(), fallbackUsername, null));
+                        }
+                    } else {
+                        kick(event, "§cInternal authentication error. Please reconnect.");
+                    }
                     return;
                 }
 
-                byte[] sharedSecretEncrypted = event.getPacket().getByteArrays().read(0);
-                byte[] verifyTokenEncrypted = event.getPacket().getByteArrays().read(1);
+                final byte[] sharedSecretEncrypted = event.getPacket().getByteArrays().read(0);
+                final byte[] verifyTokenEncrypted = event.getPacket().getByteArrays().read(1);
 
                 KaosCore core = KaosCore.getInstance();
                 if (core == null) return;
 
-                // Agora passamos o objeto de conexão vivo para a Thread assíncrona
                 Bukkit.getScheduler().runTaskAsynchronously(core, () -> {
                     KaosCore asyncCore = KaosCore.getInstance();
                     if (asyncCore == null || asyncCore.getAuthManager() == null) return;
@@ -146,12 +173,12 @@ public class AuthPacketListener {
                         UUID premiumUUID = MojangAPI.hasJoined(validSession.username, serverHash);
 
                         if (premiumUUID != null) {
-                            // Ativamos a criptografia usando a referência estática extraída
                             enableNettyEncryption(networkManager, sharedSecret);
                             injectPremiumUUID(networkManager, premiumUUID);
 
                             asyncCore.getAuthManager().addVerifiedPremium(validSession.username, premiumUUID);
-                            injectFakeStart(event.getPlayer(), validSession.username);
+
+                            injectFakeStart(event.getPlayer(), validSession.username, premiumUUID);
                         } else {
                             kick(event, "§cAuthentication with Mojang servers failed.");
                         }
@@ -169,6 +196,7 @@ public class AuthPacketListener {
         try {
             Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
                     .getMethodByParameters("a", SecretKey.class);
+            encryptMethod.setAccessible(true);
             encryptMethod.invoke(networkManager, secretKey);
         } catch (Exception exc) {
             plugin.getLogger().severe("Failed to enable Netty encryption pipeline!");
@@ -188,48 +216,106 @@ public class AuthPacketListener {
         }
     }
 
+    /**
+     * Resolve o NetworkManager iterando a lista nativa do Minecraft Server.
+     * Isso bypassa qualquer modificação maluca que forks (AetherSpigot) façam
+     * no Netty, além de comparar o IP de forma estruturada.
+     */
     private Object getNetworkManager(Player player) throws Exception {
-        Object injector = null;
+        String nmsPkg = getNmsPackage();
 
-        // Abordagem 1: ProtocolLib TemporaryPlayerFactory
-        try {
-            injector = Class.forName("com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory")
-                    .getMethod("getInjectorFromPlayer", Player.class).invoke(null, player);
-        } catch (Exception ignored) {}
+        Class<?> minecraftServerClass = Class.forName(nmsPkg + ".MinecraftServer");
+        Class<?> serverConnectionClass = Class.forName(nmsPkg + ".ServerConnection");
+        Class<?> networkManagerClass = Class.forName(nmsPkg + ".NetworkManager");
 
-        // Abordagem 2: Tentar buscar o campo direto da classe caso o factory falhe
-        if (injector == null) {
-            try {
-                injector = Accessors.getFieldAccessorOrNull(player.getClass(), "injector", Object.class).get(player);
-            } catch (Exception ignored) {}
+        Method getServerMethod = minecraftServerClass.getMethod("getServer");
+        Object minecraftServer = getServerMethod.invoke(null);
+
+        Object serverConnection = null;
+        for (Method m : minecraftServerClass.getMethods()) {
+            if (m.getParameterCount() == 0
+                    && !java.lang.reflect.Modifier.isStatic(m.getModifiers())
+                    && m.getReturnType().equals(serverConnectionClass)) {
+                Object result = m.invoke(minecraftServer);
+                if (result != null) {
+                    serverConnection = result;
+                    break;
+                }
+            }
         }
 
-        if (injector == null) {
-            throw new IllegalStateException("Failed to extract network injector from TemporaryPlayer.");
+        if (serverConnection == null) {
+            throw new IllegalStateException("Unable to retrieve ServerConnection instance from MinecraftServer.");
         }
 
-        return Accessors.getFieldAccessorOrNull(injector.getClass(), "networkManager", Object.class).get(injector);
+        List<?> networkManagers = null;
+        for (java.lang.reflect.Field f : serverConnectionClass.getDeclaredFields()) {
+            if (List.class.isAssignableFrom(f.getType())) {
+                if (f.getGenericType().getTypeName().contains("NetworkManager")) {
+                    f.setAccessible(true);
+                    networkManagers = (List<?>) f.get(serverConnection);
+                    break;
+                }
+            }
+        }
+
+        if (networkManagers == null) {
+            throw new IllegalStateException("Could not locate the NetworkManager list on ServerConnection.");
+        }
+
+        InetSocketAddress targetAddr = player.getAddress();
+        if (targetAddr == null) {
+            throw new IllegalStateException("Player address is null, cannot match NetworkManager.");
+        }
+
+        synchronized (networkManagers) {
+            for (Object nm : networkManagers) {
+                Method getSocketMethod = null;
+                for (Method m : networkManagerClass.getMethods()) {
+                    if (m.getReturnType().equals(SocketAddress.class) && m.getParameterCount() == 0) {
+                        getSocketMethod = m;
+                        break;
+                    }
+                }
+                if (getSocketMethod == null) continue;
+
+                SocketAddress sa = (SocketAddress) getSocketMethod.invoke(nm);
+                if (sa instanceof InetSocketAddress) {
+                    InetSocketAddress inetSa = (InetSocketAddress) sa;
+
+                    // COMPARAÇÃO NATIVA INFALÍVEL: Host numérico e Porta exata.
+                    if (inetSa.getAddress().getHostAddress().equals(targetAddr.getAddress().getHostAddress()) &&
+                            inetSa.getPort() == targetAddr.getPort()) {
+                        return nm;
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("Could not match NetworkManager by address for " + targetAddr.toString());
     }
 
-    private void injectFakeStart(Player connection, String username) {
-        // O Spigot 1.8.8 precisa do IP real ou um IP fake válido para aceitar o IP Forwarding
-        // Usamos 127.0.0.1 para forçar a confiança do Spigot no pacote injetado
-        String fakeIp = "127.0.0.1";
+    private String getNmsPackage() {
+        return "net.minecraft.server.v1_8_R3";
+    }
+
+    private void injectFakeStart(Player connection, String username, UUID forcedUUID) {
+        UUID uuidToUse = (forcedUUID != null) ? forcedUUID : offlineUuid(username);
 
         PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
-        WrappedGameProfile profile = new WrappedGameProfile(UUID.randomUUID(), username);
-
-        // Adicionamos a propriedade de IP Forwarding dentro do profile, se necessário
-        // Mas a injeção via NetworkManager (spoofedUUID) já faz a maior parte do trabalho
+        WrappedGameProfile profile = new WrappedGameProfile(uuidToUse, username);
         startPacket.getGameProfiles().write(0, profile);
 
         try {
-            // Em vez de receber apenas o START, vamos simular a injeção completa
-            // que o nLogin/FastLogin faz para enganar o Handshake do Spigot
             protocolManager.receiveClientPacket(connection, startPacket, false);
         } catch (Exception e) {
+            plugin.getLogger().severe("Failed to reinject START packet for " + username);
             e.printStackTrace();
         }
+    }
+
+    private UUID offlineUuid(String username) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     private void kick(PacketEvent event, String reason) {
@@ -240,12 +326,33 @@ public class AuthPacketListener {
         } catch (Exception ignored) {}
     }
 
+    private void startPendingLoginCleanupTask() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            long now = System.currentTimeMillis();
+            pendingLogins.entrySet().removeIf(entry -> (now - entry.getValue().createdAt) > 30_000L);
+        }, 20L * 30, 20L * 30);
+    }
+
     private static class PendingLogin {
         String username;
         byte[] verifyToken;
-        PendingLogin(String username, byte[] verifyToken) {
+        long createdAt;
+        Player player;
+
+        PendingLogin(String username, byte[] verifyToken, Player player) {
             this.username = username;
             this.verifyToken = verifyToken;
+            this.createdAt = System.currentTimeMillis();
+            this.player = player;
         }
+    }
+
+    private String findPendingUsernameForPlayer(Player player) {
+        for (PendingLogin pending : pendingLogins.values()) {
+            if (pending.player != null && pending.player.equals(player)) {
+                return pending.username;
+            }
+        }
+        return null;
     }
 }

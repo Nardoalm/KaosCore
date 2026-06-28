@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.managers.player;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

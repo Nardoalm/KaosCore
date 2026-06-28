@@ -121,7 +121,7 @@ public class DisguiseManager {
         KaosCore core = KaosCore.getInstance();
         if (core == null || core.getTagManager() == null) return baseName;
 
-        com.knowplugins.ysubz.kaoscore.bukkit.utils.tag.Tag tag = core.getTagManager().getTag(player);
+        com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag tag = core.getTagManager().getTag(player);
         if (tag == null) return baseName;
 
         String prefix = tag.getPrefix() == null ? "" : tag.getPrefix();

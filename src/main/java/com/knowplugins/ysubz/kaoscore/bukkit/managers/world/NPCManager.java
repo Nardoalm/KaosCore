@@ -2,12 +2,12 @@ package com.knowplugins.ysubz.kaoscore.bukkit.managers.world;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.menu.MenuUtils;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.MojangSkinFetcher;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.MenuUtils;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.MojangSkinFetcher;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;

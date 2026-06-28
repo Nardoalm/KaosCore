@@ -1,0 +1,113 @@
+tags:
+  owner:
+    name: "Owner"
+    prefix: "§4§lOWNER §4"
+    color: "§4"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.owner"
+    position: 10
+  manager:
+    name: "Manager"
+    prefix: "§4§lMANAGER §4"
+    color: "§4"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.manager"
+    position: 20
+  admin:
+    name: "Admin"
+    prefix: "§c§lADMIN §c"
+    color: "§c"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.admin"
+    position: 30
+  mod:
+    name: "Moderator"
+    prefix: "§5§lMOD §5"
+    color: "§5"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.mod"
+    position: 40
+  helper:
+    name: "Helper"
+    prefix: "§e§lHELPER §e"
+    color: "§e"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.helper"
+    position: 50
+  studio:
+    name: "Studio"
+    prefix: "§a§lSTUDIO §a"
+    color: "§a"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.studio"
+    position: 55
+  builder:
+    name: "Builder"
+    prefix: "§2§lBUILDER §2"
+    color: "§2"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.builder"
+    position: 60
+  partner:
+    name: "Partner"
+    prefix: "§d§lPARTNER §d"
+    color: "§d"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.partner"
+    position: 70
+  famous:
+    name: "Famous"
+    prefix: "§6§lFAMOUS §6"
+    color: "§6"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.famous"
+    position: 80
+  media:
+    name: "Media"
+    prefix: "§9§lMEDIA §9"
+    color: "§9"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.media"
+    position: 90
+  hardplus:
+    name: "Hard+"
+    prefix: "§9§lHARD§6+ §9"
+    color: "§9"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.hardplus"
+    position: 95
+  ace:
+    name: "Ace"
+    prefix: "§3§lACE §3"
+    color: "§3"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.ace"
+    position: 100
+  mvp:
+    name: "Mvp"
+    prefix: "§b§lMVP §b"
+    color: "§b"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.mvp"
+    position: 110
+  pro:
+    name: "Pro"
+    prefix: "§d§lPRO §d"
+    color: "§d"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.pro"
+    position: 120
+  vip:
+    name: "Vip"
+    prefix: "§2§lVIP §2"
+    color: "§2"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.vip"
+    position: 130
+  member:
+    name: "Member"
+    prefix: "§7"
+    color: "§7"
+    suffix: " %kaoscore_clan_tag%"
+    permission: ""
+    position: 140

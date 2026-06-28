@@ -1,9 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.bukkit;
 
 public enum Constant {
-    NO_PERMISSION("§cYou cannot use this command.");
+    NO_PERMISSION_COMMAND("§cYou do not have permission to use this command."),
+    NO_PERMISSION("You do not have permission.");
 
-    public String message;
+    public final String message;
 
     Constant(String message) {
         this.message = message;

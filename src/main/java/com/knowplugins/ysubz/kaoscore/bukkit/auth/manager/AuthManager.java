@@ -91,9 +91,8 @@ public class AuthManager {
             return;
         }
 
-        // Blindagem Suprema: Se o UUID injetado pelo Netty for versão 4 (Premium), loga automático.
         if (profile.isPremium() && player.getUniqueId().version() == 4) {
-            player.sendMessage("§a§lKaosCore §8» §aPremium Authentication verified. Welcome!");
+            player.sendMessage("§aPremium Authentication verified. Welcome!");
             return;
         }
 
@@ -165,7 +164,7 @@ public class AuthManager {
         if (session.getPreviousLocation() != null && authLocation != null) {
             player.teleport(session.getPreviousLocation());
         }
-        player.sendMessage("§a§lKaosCore §8» §aAuthentication successful.");
+        player.sendMessage("§aAuthentication successful.");
     }
 
     private void startTimeoutTask() {

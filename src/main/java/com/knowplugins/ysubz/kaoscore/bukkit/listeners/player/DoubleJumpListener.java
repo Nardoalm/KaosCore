@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 
 public class DoubleJumpListener implements Listener {
 
-    private static final String FLY_PERMISSION = "kaoscore.member.fly";
+    private static final String FLY_PERMISSION = "kaoscore.fly";
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {

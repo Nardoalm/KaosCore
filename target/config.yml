@@ -10,5 +10,5 @@ kick:
 
 # Toggle if the server should message someone for using CheatBreaker
 auth-message:
-  enabled: true
+  enabled: false
   message: "&aYou are now verified using &r&c&lCheat&r&f&lBreaker"

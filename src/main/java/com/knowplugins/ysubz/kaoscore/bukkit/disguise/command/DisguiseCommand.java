@@ -9,9 +9,9 @@ import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseReposit
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.placeholder.PlaceholderManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.OriginalSkinManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.utils.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
