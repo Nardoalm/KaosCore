@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.listeners.world.WorldProtectionListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.listener.world.WorldProtectionListener;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

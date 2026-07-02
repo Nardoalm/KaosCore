@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.lunarclient.apollo.Apollo;
@@ -93,7 +93,7 @@ public class ReportCommand extends Commands {
         String targetDisplay = target.getName();
         String reporterDisplay = reporter.getName();
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager != null) {
             if (DisguiseManager.isDisguised(target)) {
                 String originalTarget = disguiseManager.getOriginalName(target);

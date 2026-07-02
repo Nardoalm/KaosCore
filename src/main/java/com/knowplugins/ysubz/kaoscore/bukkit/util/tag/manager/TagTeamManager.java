@@ -5,9 +5,9 @@ import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.manager.ClanManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.KaosPracticeBridge;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.MedalManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -217,7 +217,7 @@ public class TagTeamManager {
             return;
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
                 ? safe(disguiseManager.getDisguiseNick(player))
                 : safe(player.getName());
@@ -367,7 +367,7 @@ public class TagTeamManager {
         }
 
         Clan clan = null;
-        ClanManager clanManager = Managers.getClanManager();
+        ClanManager clanManager = MainManager.getClanManager();
         if (clanManager != null && !DisguiseManager.isDisguised(player)) {
             clan = clanManager.getClan(player);
         }
@@ -448,7 +448,7 @@ public class TagTeamManager {
         if (player != null) {
             entries.add(safe(player.getName()));
 
-            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
                 entries.add(safe(disguiseManager.getDisguiseNick(player)));
                 entries.add(safe(disguiseManager.getOriginalName(player)));
@@ -751,7 +751,7 @@ public class TagTeamManager {
         NametagStyle lowestStyle = new NametagStyle("lowest_disguise_" + lowestTag.getId(), prefix, suffix, lowestTag.getPosition());
 
         Set<String> entries = collectEntries(player);
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
                 ? safe(disguiseManager.getDisguiseNick(player))
                 : player.getName();

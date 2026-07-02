@@ -159,18 +159,11 @@ public class DisguiseManager {
 
         NametagModule nametagModule = Apollo.getModuleManager().getModule(NametagModule.class);
         if (nametagModule != null) {
-            if (reset || !DISGUISED.contains(target.getUniqueId())) {
-                // Se for reset ou o jogador não estiver disfarçado, limpa a tag forçada.
-                // O Lunar vai voltar a exibir a tag normal gerada pelo Scoreboard do Bukkit
-                nametagModule.resetNametag(Recipients.ofEveryone(), target.getUniqueId());
-            } else {
-                // Caso contrário, injetamos o nome formatado forçado usando a API moderna.
-                String formattedName = getFormattedName(target);
-                nametagModule.overrideNametag(Recipients.ofEveryone(), target.getUniqueId(), Nametag.builder()
-                        .lines(Collections.singletonList(LegacyComponentSerializer.legacySection().deserialize(formattedName)))
-                        .build()
-                );
-            }
+            String formattedName = getFormattedName(target);
+            nametagModule.overrideNametag(Recipients.ofEveryone(), target.getUniqueId(), Nametag.builder()
+                    .lines(Collections.singletonList(LegacyComponentSerializer.legacySection().deserialize(formattedName)))
+                    .build()
+            );
         }
     }
 

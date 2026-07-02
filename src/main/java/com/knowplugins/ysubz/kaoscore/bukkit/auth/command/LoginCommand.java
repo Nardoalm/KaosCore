@@ -2,8 +2,14 @@ package com.knowplugins.ysubz.kaoscore.bukkit.auth.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.alleypvp.practice.AlleyPractice;
+import us.alleypvp.practice.feature.hotbar.HotbarService;
+import us.alleypvp.practice.feature.spawn.SpawnService;
+import us.alleypvp.practice.feature.spawn.command.SpawnCommand;
+import us.alleypvp.practice.feature.spawn.internal.SpawnServiceImpl;
 
 public class LoginCommand extends Commands {
 
@@ -31,6 +37,15 @@ public class LoginCommand extends Commands {
 
         if (!plugin.getAuthManager().login(player, args[0])) {
             player.sendMessage("§cIncorrect password or you are not registered.");
+        }
+
+        plugin.getAuthManager().login(player,  args[0]);
+
+        if(!plugin.getAuthManager().isPending(player.getUniqueId())) {
+            if(Bukkit.getServer().getPluginManager().getPlugin("AlleyPractice") != null) {
+                AlleyPractice.getInstance().getService(SpawnService.class).teleportToSpawn(player);
+                AlleyPractice.getInstance().getService(HotbarService.class).applyHotbarItems(player);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -141,7 +141,7 @@ public class ClanCommand extends Commands {
             }
 
             if (Arrays.asList("accept", "deny", "info", "members").contains(subCommand)) {
-                return Managers.getClanManager().getAllClans().stream()
+                return MainManager.getClanManager().getAllClans().stream()
                         .map(Clan::getName)
                         .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
                         .collect(Collectors.toList());
@@ -189,12 +189,12 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().isInClan(player.getUniqueId())) {
+        if (MainManager.getClanManager().isInClan(player.getUniqueId())) {
             player.sendMessage("§cYou are already in a clan!");
             return;
         }
 
-        if (Managers.getClanManager().createClan(name, tag, player)) {
+        if (MainManager.getClanManager().createClan(name, tag, player)) {
             player.sendMessage("§aClan §f" + name + " §a[" + tag + "] §acreated successfully!");
             return;
         }
@@ -205,7 +205,7 @@ public class ClanCommand extends Commands {
     private void cmdDelete(Player player) {
         if (!requirePermission(player, "delete")) return;
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -216,7 +216,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().deleteClan(clan.getName(), player)) {
+        if (MainManager.getClanManager().deleteClan(clan.getName(), player)) {
             player.sendMessage("§cClan deleted successfully!");
         }
     }
@@ -224,7 +224,7 @@ public class ClanCommand extends Commands {
     private void cmdLeave(Player player) {
         if (!requirePermission(player, "leave")) return;
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -235,7 +235,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().removeMember(clan, player.getUniqueId());
+        MainManager.getClanManager().removeMember(clan, player.getUniqueId());
         player.sendMessage("§aYou left the clan!");
     }
 
@@ -247,7 +247,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -274,20 +274,20 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().isInClan(target.getUniqueId())) {
+        if (MainManager.getClanManager().isInClan(target.getUniqueId())) {
             player.sendMessage("§cThat player is already in a clan!");
             return;
         }
 
-        Managers.getClanManager().sendInvite(clan, player.getUniqueId(), target.getUniqueId());
+        MainManager.getClanManager().sendInvite(clan, player.getUniqueId(), target.getUniqueId());
         String targetColorPrefix = PlaceholderAPI.setPlaceholders(target, "%kaoscore_tag_color%");
         player.sendMessage("§aInvite sent to §f" + targetColorPrefix + target.getDisplayName());
-        Managers.getClanManager().sendInviteNotification(target, clan, player.getUniqueId());
+        MainManager.getClanManager().sendInviteNotification(target, clan, player.getUniqueId());
     }
 
     private void cmdInvites(Player player) {
         if (!requirePermission(player, "invites")) return;
-        Managers.getClanManager().sendInviteList(player, true, false);
+        MainManager.getClanManager().sendInviteList(player, true, false);
     }
 
     private void cmdAccept(Player player, String[] args) {
@@ -298,25 +298,25 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().isInClan(player.getUniqueId())) {
+        if (MainManager.getClanManager().isInClan(player.getUniqueId())) {
             player.sendMessage("§cYou are already in a clan!");
             return;
         }
 
         String clanIdentifier = joinArgs(args, 1);
-        if (!Managers.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
+        if (!MainManager.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
             player.sendMessage("§cYou do not have an invite for this clan!");
             return;
         }
 
-        Clan clan = Managers.getClanManager().getClan(clanIdentifier);
+        Clan clan = MainManager.getClanManager().getClan(clanIdentifier);
         if (clan == null) {
-            Managers.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
+            MainManager.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
             player.sendMessage("§cThis clan no longer exists. The invite was removed.");
             return;
         }
 
-        Managers.getClanManager().addMember(clan, player.getUniqueId(), ClanRole.RECRUIT);
+        MainManager.getClanManager().addMember(clan, player.getUniqueId(), ClanRole.RECRUIT);
         player.sendMessage("§aYou joined the clan §f" + clan.getName() + " §a" + clan.getFormattedTag());
 
         for (UUID memberId : clan.getMembers().keySet()) {
@@ -336,12 +336,12 @@ public class ClanCommand extends Commands {
         }
 
         String clanIdentifier = joinArgs(args, 1);
-        if (!Managers.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
+        if (!MainManager.getClanManager().hasInvite(player.getUniqueId(), clanIdentifier)) {
             player.sendMessage("§cYou do not have an invite for this clan!");
             return;
         }
 
-        Managers.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
+        MainManager.getClanManager().removeInvite(player.getUniqueId(), clanIdentifier);
         player.sendMessage("§cInvite declined.");
     }
 
@@ -353,7 +353,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -382,7 +382,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().removeMember(clan, target.getUniqueId());
+        MainManager.getClanManager().removeMember(clan, target.getUniqueId());
         player.sendMessage("§c" + target.getDisplayName() + " was kicked from the clan!");
         target.sendMessage("§cYou were kicked from the clan §f" + clan.getName());
     }
@@ -395,7 +395,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -417,7 +417,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().promote(clan, target.getUniqueId());
+        MainManager.getClanManager().promote(clan, target.getUniqueId());
         player.sendMessage("§a" + target.getDisplayName() + " has been promoted!");
         target.sendMessage("§aYou have been promoted in the clan!");
     }
@@ -430,7 +430,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -452,7 +452,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().demote(clan, target.getUniqueId());
+        MainManager.getClanManager().demote(clan, target.getUniqueId());
         player.sendMessage("§c" + target.getDisplayName() + " has been demoted!");
         target.sendMessage("§cYou have been demoted in the clan!");
     }
@@ -465,7 +465,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -492,7 +492,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().transfer(clan, target.getUniqueId());
+        MainManager.getClanManager().transfer(clan, target.getUniqueId());
         player.sendMessage("§cLeadership transferred to §f" + target.getDisplayName());
         target.sendMessage("§aYou are now the clan leader!");
     }
@@ -500,7 +500,7 @@ public class ClanCommand extends Commands {
     private void cmdColorTag(Player player, String[] args) {
         if (!requirePermission(player, "color")) return;
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -549,7 +549,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Managers.getClanManager().setTagColor(clan, selected.colorCode);
+        MainManager.getClanManager().setTagColor(clan, selected.colorCode);
         player.sendMessage("§aTag color changed to: " + selected.preview());
     }
 
@@ -561,7 +561,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getPlayerClan(player.getUniqueId());
+        Clan clan = MainManager.getClanManager().getPlayerClan(player.getUniqueId());
         if (clan == null) {
             player.sendMessage("§cYou are not in a clan!");
             return;
@@ -578,13 +578,13 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        if (Managers.getClanManager().isTagTaken(newTag, clan.getName())) {
+        if (MainManager.getClanManager().isTagTaken(newTag, clan.getName())) {
             player.sendMessage("§cThis tag is already being used by another clan!");
             return;
         }
 
         clan.setTag(newTag);
-        Managers.getClanManager().saveClan(clan);
+        MainManager.getClanManager().saveClan(clan);
         player.sendMessage("§aTag changed to " + clan.getFormattedTag() + "§a.");
     }
 
@@ -596,7 +596,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getClan(joinArgs(args, 1));
+        Clan clan = MainManager.getClanManager().getClan(joinArgs(args, 1));
         if (clan == null) {
             player.sendMessage("§cClan not found!");
             return;
@@ -619,7 +619,7 @@ public class ClanCommand extends Commands {
             return;
         }
 
-        Clan clan = Managers.getClanManager().getClan(joinArgs(args, 1));
+        Clan clan = MainManager.getClanManager().getClan(joinArgs(args, 1));
         if (clan == null) {
             player.sendMessage("§cClan not found!");
             return;
@@ -636,7 +636,7 @@ public class ClanCommand extends Commands {
     private void cmdList(Player player, String[] args) {
         if (!requirePermission(player, "list")) return;
 
-        Collection<Clan> clans = Managers.getClanManager().getAllClans();
+        Collection<Clan> clans = MainManager.getClanManager().getAllClans();
         if (clans.isEmpty()) {
             player.sendMessage("§cNo clans found.");
             return;
@@ -676,7 +676,7 @@ public class ClanCommand extends Commands {
     private void cmdChat(Player player) {
         if (!requirePermission(player, "chat")) return;
 
-        if (!Managers.getClanManager().isInClan(player.getUniqueId())) {
+        if (!MainManager.getClanManager().isInClan(player.getUniqueId())) {
             player.sendMessage("§cYou are not in a clan!");
             return;
         }
@@ -715,7 +715,7 @@ public class ClanCommand extends Commands {
         TagColorOption animated = TagColorOption.animated();
         if (hasPermission(player, animated.permission)) colors.add(animated);
 
-        for (String raw : Managers.getClanManager().getTagColors()) {
+        for (String raw : MainManager.getClanManager().getTagColors()) {
             TagColorOption option = parseTagColor(raw);
             if (option != null && hasPermission(player, option.permission)) colors.add(option);
         }

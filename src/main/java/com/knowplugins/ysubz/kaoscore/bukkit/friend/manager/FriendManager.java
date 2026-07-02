@@ -3,8 +3,8 @@ package com.knowplugins.ysubz.kaoscore.bukkit.friend.manager;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.account.Account;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.mongodb.client.MongoCollection;
@@ -61,11 +61,11 @@ public class FriendManager {
     }
 
     private boolean isMongo() {
-        return Managers.getDatabaseManager() != null && Managers.getDatabaseManager().isMongo();
+        return MainManager.getDatabaseManager() != null && MainManager.getDatabaseManager().isMongo();
     }
 
     private MongoCollection<Document> getCollection(String name) {
-        return Managers.getDatabaseManager().getMongoDatabase().getCollection(name);
+        return MainManager.getDatabaseManager().getMongoDatabase().getCollection(name);
     }
 
     public void loadFriends() {
@@ -92,7 +92,7 @@ public class FriendManager {
         }
 
         String sql = "SELECT player_uuid, friend_uuid FROM friends";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
@@ -399,8 +399,8 @@ public class FriendManager {
             return PlaceholderManager.getAccountName(online);
         }
 
-        if (Managers.getDisguiseManager() != null) {
-            String originalName = Managers.getDisguiseManager().getOriginalName(friendId);
+        if (MainManager.getDisguiseManager() != null) {
+            String originalName = MainManager.getDisguiseManager().getOriginalName(friendId);
             if (originalName != null && !originalName.trim().isEmpty()) {
                 return originalName;
             }
@@ -508,7 +508,7 @@ public class FriendManager {
         }
 
         String sql = "SELECT requester_uuid, requester_name, target_uuid, created_at FROM friend_requests WHERE target_uuid = ? ORDER BY created_at DESC";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, targetId.toString());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -566,7 +566,7 @@ public class FriendManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friend_requests WHERE created_at < ?")) {
             stmt.setLong(1, threshold);
             stmt.executeUpdate();
@@ -605,7 +605,7 @@ public class FriendManager {
         }
 
         String sql = "REPLACE INTO friends (player_uuid, friend_uuid, friend_name, since) VALUES (?, ?, ?, ?)";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, playerId.toString());
             stmt.setString(2, friendId.toString());
@@ -635,7 +635,7 @@ public class FriendManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friends WHERE (player_uuid = ? AND friend_uuid = ?) OR (player_uuid = ? AND friend_uuid = ?)")) {
             stmt.setString(1, playerId.toString());
             stmt.setString(2, friendId.toString());
@@ -671,7 +671,7 @@ public class FriendManager {
 
         String sql = "INSERT INTO friend_requests (requester_uuid, requester_name, target_uuid, created_at) VALUES (?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE requester_name = VALUES(requester_name), created_at = VALUES(created_at)";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, request.getRequesterId().toString());
             stmt.setString(2, request.getRequesterName());
@@ -712,7 +712,7 @@ public class FriendManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM friend_requests WHERE requester_uuid = ? AND target_uuid = ?")) {
             stmt.setString(1, requesterId.toString());
             stmt.setString(2, targetId.toString());
@@ -749,6 +749,6 @@ public class FriendManager {
     }
 
     private boolean hasDatabase() {
-        return Managers.getDatabaseManager() != null;
+        return MainManager.getDatabaseManager() != null;
     }
 }

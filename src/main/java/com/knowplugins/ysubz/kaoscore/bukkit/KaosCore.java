@@ -7,19 +7,19 @@ import com.knowplugins.ysubz.kaoscore.bukkit.auth.manager.AuthManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPreLoginListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPacketListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
-import com.knowplugins.ysubz.kaoscore.bukkit.listeners.Listeners;
-import com.knowplugins.ysubz.kaoscore.bukkit.listeners.proxy.ProxySyncListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.listener.Listeners;
+import com.knowplugins.ysubz.kaoscore.bukkit.listener.proxy.ProxySyncListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.manager.ClanManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.DiscordWebhookManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.DiscordWebhookManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.SitManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.sit.SitManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagTeamManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.PunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.KaosCoreExpansion;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinPoolManager;
 import org.bukkit.Bukkit;
@@ -31,7 +31,7 @@ public class KaosCore extends JavaPlugin {
 
     private static KaosCore instance;
     private AccountController accountController;
-    private Managers managers;
+    private MainManager mainManager;
     private TagManager tagManager;
     private MedalManager medalManager;
     private TagTeamManager tagTeamManager;
@@ -59,7 +59,7 @@ public class KaosCore extends JavaPlugin {
     }
     public TagManager getTagManager() { return tagManager; }
     public MedalManager getMedalManager() { return medalManager; }
-    public ClanManager getClanManager() { return Managers.getClanManager(); }
+    public ClanManager getClanManager() { return MainManager.getClanManager(); }
     public TagTeamManager getTagTeamManager() { return tagTeamManager; }
     public AccountController getAccountController() { return accountController; }
     public DiscordWebhookManager getWebhookManager() { return webhookManager; }
@@ -99,7 +99,7 @@ public class KaosCore extends JavaPlugin {
             return;
         }
 
-        Managers.setDatabaseManager(db);
+        MainManager.setDatabaseManager(db);
 
         this.authManager = new AuthManager(this);
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
@@ -109,8 +109,8 @@ public class KaosCore extends JavaPlugin {
 
         skinPoolManager = new SkinPoolManager(this, db);
         skinPoolManager.preloadPoolAsync();
-        managers = new Managers(this);
-        managers.loadAll();
+        mainManager = new MainManager(this);
+        mainManager.loadAll();
 
         tagManager = new TagManager(this);
         medalManager = new MedalManager(this);
@@ -134,8 +134,8 @@ public class KaosCore extends JavaPlugin {
             new KaosCoreExpansion(this).register();
         }
 
-        if (Managers.getDisguiseManager() != null) {
-            Managers.getDisguiseManager().loadNicksFile(this);
+        if (MainManager.getDisguiseManager() != null) {
+            MainManager.getDisguiseManager().loadNicksFile(this);
         }
 
         getLogger().info("All systems have been loaded.");
@@ -166,11 +166,11 @@ public class KaosCore extends JavaPlugin {
             punishmentMessageManager.reload();
         }
 
-        if (managers == null) {
-            managers = new Managers(this);
-            managers.loadAll();
+        if (mainManager == null) {
+            mainManager = new MainManager(this);
+            mainManager.loadAll();
         } else {
-            managers.reloadAll();
+            mainManager.reloadAll();
         }
 
         if (tagManager == null) {
@@ -197,8 +197,8 @@ public class KaosCore extends JavaPlugin {
             tagManager.refreshAll();
         }
 
-        if (Managers.getDisguiseManager() != null) {
-            Managers.getDisguiseManager().loadNicksFile(this);
+        if (MainManager.getDisguiseManager() != null) {
+            MainManager.getDisguiseManager().loadNicksFile(this);
         }
 
         getLogger().info("Configuration reloaded successfully.");
@@ -207,7 +207,7 @@ public class KaosCore extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
-            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     if (DisguiseManager.isDisguised(online)) {
@@ -223,16 +223,16 @@ public class KaosCore extends JavaPlugin {
             if (tagTeamManager != null) tagTeamManager.stop();
 
             try {
-                if (Managers.getAutoBroadcastManager() != null) {
-                    Managers.getAutoBroadcastManager().stop();
+                if (MainManager.getAutoBroadcastManager() != null) {
+                    MainManager.getAutoBroadcastManager().stop();
                 }
-                if (Managers.getSpawnLimitsManager() != null) {
-                    Managers.getSpawnLimitsManager().stop();
+                if (MainManager.getSpawnLimitsManager() != null) {
+                    MainManager.getSpawnLimitsManager().stop();
                 }
             } catch (Exception ignored) {
             }
 
-            SitManager sitManager = Managers.getSitManager();
+            SitManager sitManager = MainManager.getSitManager();
             if (sitManager != null) sitManager.cleanupAll();
 
             Bukkit.getServicesManager().unregisterAll(this);
@@ -240,7 +240,7 @@ public class KaosCore extends JavaPlugin {
                 proxySyncListener.unregister();
             }
 
-            DatabaseManager db = Managers.getDatabaseManager();
+            DatabaseManager db = MainManager.getDatabaseManager();
             if (db != null) db.disconnect();
         } catch (Exception ignored) {}
 
@@ -248,8 +248,8 @@ public class KaosCore extends JavaPlugin {
             accountController.clear();
         }
 
-        if (Managers.getSitManager() != null) {
-            Managers.getSitManager().cleanupAll();
+        if (MainManager.getSitManager() != null) {
+            MainManager.getSitManager().cleanupAll();
         }
 
         Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cThe plugin has been disabled.");

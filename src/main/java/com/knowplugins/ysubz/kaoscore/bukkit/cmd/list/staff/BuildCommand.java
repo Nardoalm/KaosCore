@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.world.BuildManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.world.BuildManager;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;

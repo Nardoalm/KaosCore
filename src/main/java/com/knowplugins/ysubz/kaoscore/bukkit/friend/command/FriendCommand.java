@@ -4,9 +4,9 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.FriendMenu;
 import org.bukkit.Bukkit;
@@ -91,7 +91,7 @@ public class FriendCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager == null) {
             return Collections.emptyList();
         }
@@ -162,7 +162,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager == null) {
             player.sendMessage("§cFriend system unavailable.");
             return;
@@ -209,7 +209,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager != null) {
             friendManager.sendRequestList(player, true, false);
         }
@@ -225,7 +225,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         FriendRequest request = friendManager == null ? null : friendManager.findRequest(player.getUniqueId(), joinArgs(args, 1));
         if (request == null) {
             player.sendMessage("§cYou do not have a pending request from this player.");
@@ -254,7 +254,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         FriendRequest request = friendManager == null ? null : friendManager.findRequest(player.getUniqueId(), joinArgs(args, 1));
         if (request == null) {
             player.sendMessage("§cYou do not have a pending request from this player.");
@@ -275,7 +275,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         UUID friendId = friendManager == null ? null : friendManager.findFriend(player.getUniqueId(), joinArgs(args, 1));
         if (friendId == null) {
             player.sendMessage("§cThis player is not in your friends list.");
@@ -297,7 +297,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager == null) {
             player.sendMessage("§cFriend system unavailable.");
             return;
@@ -348,7 +348,7 @@ public class FriendCommand extends Commands {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager == null) {
             player.sendMessage("§cFriend system unavailable.");
             return;

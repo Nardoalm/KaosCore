@@ -2,9 +2,9 @@ package com.knowplugins.ysubz.kaoscore.bukkit.disguise.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.mojang.authlib.GameProfile;
@@ -30,7 +30,7 @@ public class UnDisguiseCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager == null) {
             player.sendMessage("§cDisguise system unavailable.");
             return;
@@ -67,7 +67,7 @@ public class UnDisguiseCommand extends Commands {
 
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
-            DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+            DisguiseRepository repo = new DisguiseRepository(org.bukkit.plugin.java.JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
             repo.saveAsync(player.getUniqueId(), false, null, null);
 
         } catch (Exception exception) {

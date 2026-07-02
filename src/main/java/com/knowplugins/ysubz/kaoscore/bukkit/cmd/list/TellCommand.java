@@ -3,6 +3,12 @@ package com.knowplugins.ysubz.kaoscore.bukkit.cmd.list;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.PunishmentRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -12,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff.ModerationCommandUtil.play;
+import static com.knowplugins.ysubz.kaoscore.bukkit.moderation.ModerationCommandUtil.play;
 
 public class TellCommand extends Commands {
 
@@ -35,6 +41,27 @@ public class TellCommand extends Commands {
             sender.sendMessage("§cUsage: /tell <player> <message>");
             play(sender, Sound.CLICK);
             return;
+        }
+
+        Player playerSender = (Player) sender;
+
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
+        if (punishmentManager != null) {
+            PunishmentEntry mute = punishmentManager.getActiveMute(playerSender);
+            if (mute != null) {
+                KaosCore plugin = KaosCore.getInstance();
+                PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
+                if (messages != null) {
+                    for (String line : messages.buildMuteChatLines(mute)) {
+                        playerSender.sendMessage(line);
+                    }
+                } else {
+                    playerSender.sendMessage("§cYou are muted.");
+                    playerSender.sendMessage("§cReason: §7" + mute.getReason());
+                    playerSender.sendMessage("§cDuration: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
+                }
+                return;
+            }
         }
 
         Player target = Bukkit.getPlayer(args[0]);
@@ -65,7 +92,6 @@ public class TellCommand extends Commands {
 
         String message = messageBuilder.toString();
 
-        Player playerSender = (Player) sender;
 
         target.sendMessage("§7[§eFrom " + KaosCore.getInstance().getTagManager().getTag(playerSender).getColor() + playerSender.getName() + "§7] §e" + message);
 

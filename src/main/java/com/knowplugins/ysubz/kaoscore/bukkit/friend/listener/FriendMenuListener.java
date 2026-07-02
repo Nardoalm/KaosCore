@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.friend.listener;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.AnvilInputMenu;
@@ -45,7 +45,7 @@ public final class FriendMenuListener implements Listener {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         if (friendManager == null) {
             player.sendMessage("§cFriend system is currently unavailable.");
             return;

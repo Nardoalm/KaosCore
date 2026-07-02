@@ -1,15 +1,13 @@
-package com.knowplugins.ysubz.kaoscore.bungee;
+package com.knowplugins.ysubz.kaoscore.bungee.commands.admin;
 
-import com.knowplugins.ysubz.kaoscore.bungee.services.BungeePermissionService;
+import com.knowplugins.ysubz.kaoscore.bungee.BaseBungeeCommand;
+import com.knowplugins.ysubz.kaoscore.bungee.PermissionGroup;
+import com.knowplugins.ysubz.kaoscore.bungee.service.BungeePermissionService;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
+import com.knowplugins.ysubz.kaoscore.bungee.util.Texts;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 final class GroupBungeeCommand extends BaseBungeeCommand {
 
@@ -19,7 +17,7 @@ final class GroupBungeeCommand extends BaseBungeeCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!require(sender, "kaoscore.staff.permissions", "§c§lGROUP ➔ §cVocê não possui permissão para executar este comando.")) {
+        if (!require(sender, "kaoscore.staff.permissions", "§cVocê não possui permissão para executar este comando.")) {
             return;
         }
         if (args.length == 0) {
@@ -31,17 +29,17 @@ final class GroupBungeeCommand extends BaseBungeeCommand {
         String sub = Texts.normalize(args[0]);
         if ("list".equals(sub)) {
             Set<String> names = permissions.getGroupNames();
-            reply(sender, "§a§lGROUP ➔ §aGrupos: §f" + (names.isEmpty() ? "(nenhum)" : String.join(", ", names)));
+            reply(sender, "§aGrupos: §f" + (names.isEmpty() ? "(nenhum)" : String.join(", ", names)));
             return;
         }
         if ("info".equals(sub)) {
             if (args.length < 2) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group info <grupo>");
+                reply(sender, "§cUso: /group info <grupo>");
                 return;
             }
             PermissionGroup group = permissions.getGroup(args[1]);
             if (group == null) {
-                reply(sender, "§c§lGROUP ➔ §cGrupo não encontrado.");
+                reply(sender, "§cGrupo não encontrado.");
                 return;
             }
             reply(sender, "§a§lGROUP INFO");
@@ -56,62 +54,62 @@ final class GroupBungeeCommand extends BaseBungeeCommand {
         }
         if ("create".equals(sub)) {
             if (args.length < 2) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group create <nome> [default]");
+                reply(sender, "§cUso: /group create <nome> [default]");
                 return;
             }
             boolean result = permissions.createGroup(args[1], args.length >= 3 && "default".equalsIgnoreCase(args[2]));
-            reply(sender, result ? "§a§lGROUP ➔ §aGrupo criado: §f" + args[1] : "§c§lGROUP ➔ §cFalha ao criar grupo.");
+            reply(sender, result ? "§aGrupo criado: §f" + args[1] : "§cFalha ao criar grupo.");
             return;
         }
         if ("delete".equals(sub) || "remove".equals(sub)) {
             if (args.length < 2) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group delete <nome>");
+                reply(sender, "§cUso: /group delete <nome>");
                 return;
             }
             boolean result = permissions.deleteGroup(args[1]);
-            reply(sender, result ? "§a§lGROUP ➔ §aGrupo removido: §f" + args[1] : "§c§lGROUP ➔ §cFalha ao remover grupo.");
+            reply(sender, result ? "§aGrupo removido: §f" + args[1] : "§cFalha ao remover grupo.");
             return;
         }
         if ("default".equals(sub)) {
             if (args.length < 2) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group default <grupo>");
+                reply(sender, "§cUso: /group default <grupo>");
                 return;
             }
-            reply(sender, permissions.setDefaultGroup(args[1]) ? "§a§lGROUP ➔ §aGrupo default atualizado." : "§c§lGROUP ➔ §cFalha ao setar default.");
+            reply(sender, permissions.setDefaultGroup(args[1]) ? "§aGrupo default atualizado." : "§cFalha ao setar default.");
             return;
         }
         if ("setpriority".equals(sub)) {
             if (args.length < 3) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group setpriority <grupo> <prioridade>");
+                reply(sender, "§cUso: /group setpriority <grupo> <prioridade>");
                 return;
             }
             try {
                 int priority = Integer.parseInt(args[2]);
-                reply(sender, permissions.setGroupPriority(args[1], priority) ? "§a§lGROUP ➔ §aPrioridade atualizada." : "§c§lGROUP ➔ §cFalha ao atualizar prioridade.");
+                reply(sender, permissions.setGroupPriority(args[1], priority) ? "§aPrioridade atualizada." : "§cFalha ao atualizar prioridade.");
             } catch (NumberFormatException exception) {
-                reply(sender, "§c§lGROUP ➔ §cPrioridade inválida.");
+                reply(sender, "§cPrioridade inválida.");
             }
             return;
         }
         if ("setprefix".equals(sub)) {
             if (args.length < 3) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group setprefix <grupo> <prefix>");
+                reply(sender, "§cUso: /group setprefix <grupo> <prefix>");
                 return;
             }
-            reply(sender, permissions.setGroupPrefix(args[1], Texts.join(args, 2)) ? "§a§lGROUP ➔ §aPrefix atualizado." : "§c§lGROUP ➔ §cFalha ao atualizar prefix.");
+            reply(sender, permissions.setGroupPrefix(args[1], Texts.join(args, 2)) ? "§aPrefix atualizado." : "§cFalha ao atualizar prefix.");
             return;
         }
         if ("setsuffix".equals(sub)) {
             if (args.length < 3) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group setsuffix <grupo> <suffix>");
+                reply(sender, "§cUso: /group setsuffix <grupo> <suffix>");
                 return;
             }
-            reply(sender, permissions.setGroupSuffix(args[1], Texts.join(args, 2)) ? "§a§lGROUP ➔ §aSuffix atualizado." : "§c§lGROUP ➔ §cFalha ao atualizar suffix.");
+            reply(sender, permissions.setGroupSuffix(args[1], Texts.join(args, 2)) ? "§aSuffix atualizado." : "§cFalha ao atualizar suffix.");
             return;
         }
         if ("addperm".equals(sub)) {
             if (args.length < 3) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group addperm <grupo> <permissão> [true|false]");
+                reply(sender, "§cUso: /group addperm <grupo> <permissão> [true|false]");
                 return;
             }
             String permission = args[2];
@@ -123,20 +121,20 @@ final class GroupBungeeCommand extends BaseBungeeCommand {
             if (args.length >= 4) {
                 value = Boolean.parseBoolean(args[3]);
             }
-            reply(sender, permissions.addGroupPermission(args[1], permission, value) ? "§a§lGROUP ➔ §aPerm adicionada." : "§c§lGROUP ➔ §cFalha ao adicionar perm.");
+            reply(sender, permissions.addGroupPermission(args[1], permission, value) ? "§aPerm adicionada." : "§cFalha ao adicionar perm.");
             return;
         }
         if ("delperm".equals(sub)) {
             if (args.length < 3) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group delperm <grupo> <permissão>");
+                reply(sender, "§cUso: /group delperm <grupo> <permissão>");
                 return;
             }
-            reply(sender, permissions.removeGroupPermission(args[1], args[2]) ? "§a§lGROUP ➔ §aPerm removida." : "§c§lGROUP ➔ §cFalha ao remover perm.");
+            reply(sender, permissions.removeGroupPermission(args[1], args[2]) ? "§aPerm removida." : "§cFalha ao remover perm.");
             return;
         }
         if ("inherit".equals(sub)) {
             if (args.length < 4) {
-                reply(sender, "§c§lGROUP ➔ §cUso: /group inherit add|remove <grupo> <pai>");
+                reply(sender, "§cUso: /group inherit add|remove <grupo> <pai>");
                 return;
             }
             boolean result;
@@ -147,12 +145,12 @@ final class GroupBungeeCommand extends BaseBungeeCommand {
             } else {
                 result = false;
             }
-            reply(sender, result ? "§a§lGROUP ➔ §aHerança atualizada." : "§c§lGROUP ➔ §cFalha ao atualizar herança.");
+            reply(sender, result ? "§aHerança atualizada." : "§cFalha ao atualizar herança.");
             return;
         }
         if ("reload".equals(sub)) {
             permissions.reload(plugin.getPermissionsConfig());
-            reply(sender, "§a§lGROUP ➔ §aGrupos recarregados.");
+            reply(sender, "§aGrupos recarregados.");
             return;
         }
 

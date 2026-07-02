@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.menu;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
 import org.bukkit.Bukkit;
@@ -30,7 +30,7 @@ public final class FriendMenu {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         Inventory inv = Bukkit.createInventory(null, 54, TITLE);
 
         if (friendManager != null) {
@@ -67,7 +67,7 @@ public final class FriendMenu {
             return;
         }
 
-        FriendManager friendManager = Managers.getFriendManager();
+        FriendManager friendManager = MainManager.getFriendManager();
         Inventory inv = Bukkit.createInventory(null, 54, REQUESTS_TITLE);
 
         if (friendManager != null) {

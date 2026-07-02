@@ -1,10 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.EffectivePermissions;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionGroup;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.EffectivePermissions;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.PermissionGroup;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.manager.PermissionManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
@@ -57,7 +57,7 @@ public final class LuckPermsBridgeExpansion extends PlaceholderExpansion {
             return "";
         }
 
-        PermissionManager permissionManager = Managers.getPermissionManager();
+        PermissionManager permissionManager = MainManager.getPermissionManager();
         if (permissionManager == null) {
             return "";
         }

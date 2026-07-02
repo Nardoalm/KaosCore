@@ -3,12 +3,12 @@ package com.knowplugins.ysubz.kaoscore.bukkit.api;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.manager.ClanManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.PunishmentManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import org.bukkit.entity.Player;
@@ -233,7 +233,7 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public PunishmentEntry getActiveBan(Player player) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null || player == null) {
             return null;
         }
@@ -242,7 +242,7 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public PunishmentEntry getActiveMute(Player player) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null || player == null) {
             return null;
         }
@@ -251,7 +251,7 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public PunishmentEntry ban(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, long expiresAt, String source) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null) {
             return null;
         }
@@ -260,7 +260,7 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public PunishmentEntry mute(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, long expiresAt, String source) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null) {
             return null;
         }
@@ -269,7 +269,7 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public PunishmentEntry warn(UUID targetUuid, String targetName, UUID punisherUuid, String punisherName, String reason, String source) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null) {
             return null;
         }
@@ -278,19 +278,19 @@ public class KaosCoreAPIImpl implements KaosCoreAPI {
 
     @Override
     public boolean unban(UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         return punishmentManager != null && punishmentManager.clearActive(PunishmentType.BAN, targetUuid, targetName, removedByUuid, removedByName, removedReason);
     }
 
     @Override
     public boolean unmute(UUID targetUuid, String targetName, UUID removedByUuid, String removedByName, String removedReason) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         return punishmentManager != null && punishmentManager.clearActive(PunishmentType.MUTE, targetUuid, targetName, removedByUuid, removedByName, removedReason);
     }
 
     @Override
     public CompletableFuture<List<PunishmentEntry>> getPunishmentHistory(UUID targetUuid, String targetName, int limit) {
-        PunishmentManager punishmentManager = Managers.getPunishmentManager();
+        PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager == null) {
             return CompletableFuture.completedFuture(java.util.Collections.emptyList());
         }

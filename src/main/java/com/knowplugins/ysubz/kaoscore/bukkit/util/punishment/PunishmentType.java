@@ -1,9 +1,10 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.punishment;
 
 public enum PunishmentType {
-    BAN("banimento", "banido"),
-    MUTE("silenciamento", "mutado"),
-    WARN("advertência", "advertido");
+    BAN("ban", "banned"),
+    BANIP("ban-ip", "ip banned"),
+    MUTE("silenciamento", "muted"),
+    WARN("warn", "warned");
 
     private final String displayName;
     private final String pastName;

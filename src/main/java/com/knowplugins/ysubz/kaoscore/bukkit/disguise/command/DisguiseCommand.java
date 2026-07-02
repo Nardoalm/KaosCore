@@ -2,16 +2,18 @@ package com.knowplugins.ysubz.kaoscore.bukkit.disguise.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.vip.SkinCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.PlayerAddressRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinCacheRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.PlayerAddressRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
@@ -42,7 +44,7 @@ public class DisguiseCommand extends Commands {
         }
 
         Player player = (Player) sender;
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager == null) {
             player.sendMessage("§cDisguise system unavailable.");
             return;
@@ -64,7 +66,7 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        if (!player.hasPermission("kaoscore.vip.disguise")) {
+        if (!player.hasPermission("kaoscore.disguise")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
@@ -123,13 +125,13 @@ public class DisguiseCommand extends Commands {
                 new SkinApplier(player).applySkinForOthers();
                 new SkinApplier(player).applySkinForSelf();
 
-                String message = "§aYou are now disguised as §7" + newNick + " §8(with a random skin).";
+                String message = "§aYou are now disguised as §7" + newNick + "§a.";
                 player.sendMessage(PlaceholderManager.replacePlaceholders(message, player));
 
-                DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                 repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
 
-                SkinCacheRepository cacheRepo = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                SkinCacheRepository cacheRepo = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                 cacheRepo.saveAsync(newNick, data.value, data.signature);
             } else {
                 if (player.hasPermission("kaoscore.staff.disguise")) {
@@ -140,13 +142,25 @@ public class DisguiseCommand extends Commands {
                     new SkinApplier(player).applySkinForOthers();
                     new SkinApplier(player).applySkinForSelf();
 
-                    String message = "§aYou are now disguised as §7" + newNick + " §7(with a random skin).";
+                    String message = "§aYou are now disguised as §7" + newNick + "§a.";
                     player.sendMessage(PlaceholderManager.replacePlaceholders(message, player));
 
-                    DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+                    DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                     repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
                 }
             }
+
+            TagManager tagManager = KaosCore.getInstance().getTagManager();
+
+            Tag tag = tagManager.getTag(player);
+
+            for(Tag minTag : tagManager.getAvailableTags(player)){
+                if(minTag.getPosition() < tag.getPosition()){
+
+                }
+            }
+
+            tagManager.setTag(player, tag.getId());
 
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
@@ -198,7 +212,7 @@ public class DisguiseCommand extends Commands {
                 }
             }, 5L);
 
-            DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), Managers.getDatabaseManager());
+            DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
             repo.saveAsync(player.getUniqueId(), false, null, null);
 
         } catch (Exception exception) {
@@ -257,7 +271,7 @@ public class DisguiseCommand extends Commands {
             return false;
         }
 
-        PlayerAddressRepository repository = Managers.getPlayerAddressRepository();
+        PlayerAddressRepository repository = MainManager.getPlayerAddressRepository();
         if (repository != null && repository.hasSeenName(nick)) {
             return true;
         }

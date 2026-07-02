@@ -1,7 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.account;
 
 import com.google.common.base.MoreObjects;
-import com.knowplugins.ysubz.kaoscore.bukkit.rank.Rank;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -16,7 +15,6 @@ public final class Account {
     private String name;
     private String lastKnownIp;
     private boolean premium;
-    private Rank rank;
 
     public Account(UUID id, String name) {
         this.id = id == null ? new UUID(0L, 0L) : id;
@@ -106,17 +104,5 @@ public final class Account {
                 .add("premium", premium)
                 .add("lastKnownIp", lastKnownIp)
                 .toString();
-    }
-
-    public Rank getRank(){
-        if(rank != null) {
-            return rank;
-        } else {
-            return Rank.MEMBER;
-        }
-    }
-
-    public void setRank(Rank rank){
-        this.rank = rank;
     }
 }

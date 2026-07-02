@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import org.bukkit.entity.Player;
 
@@ -22,7 +22,7 @@ public class PlaceholderManager {
             return "Unknown";
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager != null && DisguiseManager.isDisguised(player)) {
             String disguiseNick = disguiseManager.getDisguiseNick(player);
             if (disguiseNick != null) {
@@ -39,7 +39,7 @@ public class PlaceholderManager {
         }
 
         if (DisguiseManager.isDisguised(player)) {
-            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
                 String disguiseNick = disguiseManager.getDisguiseNick(player);
                 if (disguiseNick != null) {
@@ -56,7 +56,7 @@ public class PlaceholderManager {
             return "Unknown";
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager != null) {
             String originalName = disguiseManager.getOriginalName(player);
             if (originalName != null && !originalName.trim().isEmpty()) {

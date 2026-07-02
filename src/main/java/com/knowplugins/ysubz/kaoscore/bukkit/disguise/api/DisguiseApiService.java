@@ -3,9 +3,9 @@ package com.knowplugins.ysubz.kaoscore.bukkit.disguise.api;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.plugin.repository.SkinRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.MojangSkinFetcher;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
@@ -31,7 +31,7 @@ public final class DisguiseApiService {
     }
 
     public static String getDisguiseNick(Player player) {
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         return disguiseManager == null ? null : disguiseManager.getDisguiseNick(player);
     }
 
@@ -40,7 +40,7 @@ public final class DisguiseApiService {
             return null;
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager != null) {
             String originalName = disguiseManager.getOriginalName(player);
             if (originalName != null && !originalName.trim().isEmpty()) {
@@ -136,7 +136,7 @@ public final class DisguiseApiService {
     }
 
     public static boolean applyRandomDisguise(Player player) {
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager == null) {
             return false;
         }
@@ -171,7 +171,7 @@ public final class DisguiseApiService {
         String previousEntry = player.getName();
 
         try {
-            DisguiseManager disguiseManager = Managers.getDisguiseManager();
+            DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             String originalName = disguiseManager == null ? null : disguiseManager.popOriginalName(player);
             if (originalName == null || originalName.trim().isEmpty()) {
                 originalName = player.getName();
@@ -236,7 +236,7 @@ public final class DisguiseApiService {
             return false;
         }
 
-        DisguiseManager disguiseManager = Managers.getDisguiseManager();
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
         if (disguiseManager == null) {
             return false;
         }
@@ -267,29 +267,29 @@ public final class DisguiseApiService {
     }
 
     private static void saveDisguise(Player player, boolean disguised, String nick) {
-        if (player == null || Managers.getDatabaseManager() == null) {
+        if (player == null || MainManager.getDatabaseManager() == null) {
             return;
         }
 
-        DisguiseRepository repository = new DisguiseRepository(getPlugin(), Managers.getDatabaseManager());
+        DisguiseRepository repository = new DisguiseRepository(getPlugin(), MainManager.getDatabaseManager());
         repository.saveAsync(player.getUniqueId(), disguised, "nick", nick);
     }
 
     private static void saveSkin(Player player, String skinName, String value, String signature) {
-        if (player == null || Managers.getDatabaseManager() == null) {
+        if (player == null || MainManager.getDatabaseManager() == null) {
             return;
         }
 
-        SkinRepository repository = new SkinRepository(getPlugin(), Managers.getDatabaseManager());
+        SkinRepository repository = new SkinRepository(getPlugin(), MainManager.getDatabaseManager());
         repository.saveAsync(player.getUniqueId(), skinName, value, signature);
     }
 
     private static void deleteStoredSkin(Player player) {
-        if (player == null || Managers.getDatabaseManager() == null) {
+        if (player == null || MainManager.getDatabaseManager() == null) {
             return;
         }
 
-        SkinRepository repository = new SkinRepository(getPlugin(), Managers.getDatabaseManager());
+        SkinRepository repository = new SkinRepository(getPlugin(), MainManager.getDatabaseManager());
         repository.deleteAsync(player.getUniqueId());
     }
 

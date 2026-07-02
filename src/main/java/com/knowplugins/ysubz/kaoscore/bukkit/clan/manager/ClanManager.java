@@ -5,7 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.account.Account;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanInvite;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
@@ -52,11 +52,11 @@ public class ClanManager {
     }
 
     private boolean isMongo() {
-        return Managers.getDatabaseManager() != null && Managers.getDatabaseManager().isMongo();
+        return MainManager.getDatabaseManager() != null && MainManager.getDatabaseManager().isMongo();
     }
 
     private MongoCollection<Document> getCollection(String name) {
-        return Managers.getDatabaseManager().getMongoDatabase().getCollection(name);
+        return MainManager.getDatabaseManager().getMongoDatabase().getCollection(name);
     }
 
     private void loadTagColors() {
@@ -132,7 +132,7 @@ public class ClanManager {
         String selectClans = "SELECT * FROM clans";
         String selectMembers = "SELECT * FROM clan_members WHERE clan_name = ?";
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(selectClans);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -253,7 +253,7 @@ public class ClanManager {
         String memberSql = "INSERT INTO clan_members (clan_name, player_uuid, player_name, role, joined) VALUES (?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE clan_name = VALUES(clan_name), role = VALUES(role), player_name = VALUES(player_name)";
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(clanSql);
              PreparedStatement clearMembersStmt = conn.prepareStatement(clearMembersSql);
              PreparedStatement memberStmt = conn.prepareStatement(memberSql)) {
@@ -350,7 +350,7 @@ public class ClanManager {
                     System.out.println("\u001B[31m[KaosCore] Erro ao deletar clan no MongoDB: " + e.getMessage() + "\u001B[0m");
                 }
             } else {
-                try (Connection conn = Managers.getDatabaseManager().getConnection();
+                try (Connection conn = MainManager.getDatabaseManager().getConnection();
                      PreparedStatement deleteClanStmt = conn.prepareStatement("DELETE FROM clans WHERE name = ?");
                      PreparedStatement deleteMembersStmt = conn.prepareStatement("DELETE FROM clan_members WHERE clan_name = ?");
                      PreparedStatement deleteInvitesStmt = conn.prepareStatement("DELETE FROM clan_invites WHERE clan_name = ?")) {
@@ -537,7 +537,7 @@ public class ClanManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE target_uuid = ?")) {
             stmt.setString(1, playerId.toString());
             stmt.executeUpdate();
@@ -678,7 +678,7 @@ public class ClanManager {
         }
 
         String sql = "SELECT clan_name, inviter_uuid, target_uuid, created_at FROM clan_invites WHERE target_uuid = ? ORDER BY created_at DESC";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, playerId.toString());
             try (ResultSet rs = stmt.executeQuery()) {
@@ -733,7 +733,7 @@ public class ClanManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE created_at < ?")) {
             stmt.setLong(1, threshold);
             stmt.executeUpdate();
@@ -767,7 +767,7 @@ public class ClanManager {
 
         String sql = "INSERT INTO clan_invites (clan_name, inviter_uuid, target_uuid, created_at) VALUES (?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE inviter_uuid = VALUES(inviter_uuid), created_at = VALUES(created_at)";
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, invite.getClanName());
             stmt.setString(2, invite.getInviter().toString());
@@ -797,7 +797,7 @@ public class ClanManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_invites WHERE target_uuid = ? AND clan_name = ?")) {
             stmt.setString(1, invite.getTarget().toString());
             stmt.setString(2, invite.getClanName());
@@ -821,7 +821,7 @@ public class ClanManager {
             return;
         }
 
-        try (Connection conn = Managers.getDatabaseManager().getConnection();
+        try (Connection conn = MainManager.getDatabaseManager().getConnection();
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM clan_members WHERE player_uuid = ?")) {
             stmt.setString(1, playerId.toString());
             stmt.executeUpdate();
@@ -895,6 +895,6 @@ public class ClanManager {
     }
 
     private boolean hasDatabase() {
-        return Managers.getDatabaseManager() != null;
+        return MainManager.getDatabaseManager() != null;
     }
 }

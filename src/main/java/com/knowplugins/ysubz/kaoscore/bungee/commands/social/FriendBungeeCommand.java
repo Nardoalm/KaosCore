@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bungee;
 
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
-import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeFriendService;
+import com.knowplugins.ysubz.kaoscore.bungee.service.BungeeFriendService;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;

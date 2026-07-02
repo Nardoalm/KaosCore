@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.auth.command;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.Constant;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public class SetAuthLocationCommand extends Commands {
         Player player = (Player) sender;
 
         if (!player.hasPermission("kaoscore.admin")) {
-            player.sendMessage("§cNo permission.");
+            player.sendMessage(String.valueOf(Constant.NO_PERMISSION));
             return;
         }
 

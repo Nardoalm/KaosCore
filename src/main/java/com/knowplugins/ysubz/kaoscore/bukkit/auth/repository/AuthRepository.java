@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.auth.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -26,7 +26,7 @@ public class AuthRepository {
 
     public void createTables() {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabaseManager db = Managers.getDatabaseManager();
+            DatabaseManager db = MainManager.getDatabaseManager();
             if (db == null || db.isMongo()) return;
 
             try (Connection conn = db.getConnection(); Statement stmt = conn.createStatement()) {
@@ -46,7 +46,7 @@ public class AuthRepository {
     public CompletableFuture<AuthProfile> loadProfile(UUID uuid, String name) {
         return CompletableFuture.supplyAsync(() -> {
             AuthProfile profile = new AuthProfile(uuid, name);
-            DatabaseManager db = Managers.getDatabaseManager();
+            DatabaseManager db = MainManager.getDatabaseManager();
 
             if (db == null) return profile;
 
@@ -77,7 +77,7 @@ public class AuthRepository {
 
     public void saveProfile(AuthProfile profile) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabaseManager db = Managers.getDatabaseManager();
+            DatabaseManager db = MainManager.getDatabaseManager();
             if (db == null) return;
 
             long now = System.currentTimeMillis();

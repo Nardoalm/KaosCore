@@ -1,15 +1,13 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
-import com.knowplugins.ysubz.kaoscore.bungee.services.BungeeWhitelistService;
+import com.knowplugins.ysubz.kaoscore.bungee.service.BungeeWhitelistService;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 final class WhitelistBungeeCommand extends BaseBungeeCommand {
 

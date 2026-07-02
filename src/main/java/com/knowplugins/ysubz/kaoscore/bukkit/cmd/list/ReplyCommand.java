@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-import static com.knowplugins.ysubz.kaoscore.bukkit.cmd.list.staff.ModerationCommandUtil.play;
+import static com.knowplugins.ysubz.kaoscore.bukkit.moderation.ModerationCommandUtil.play;
 
 public class ReplyCommand extends Commands {
     public ReplyCommand(){

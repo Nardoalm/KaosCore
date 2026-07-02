@@ -3,12 +3,12 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.EffectivePermissions;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionGroup;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.permission.PermissionManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.EffectivePermissions;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.PermissionGroup;
+import com.knowplugins.ysubz.kaoscore.bukkit.permission.manager.PermissionManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.Medal;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
@@ -126,11 +126,11 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         if (params.equalsIgnoreCase("friend_count")) {
-            return Managers.getFriendManager() == null ? "0" : String.valueOf(Managers.getFriendManager().getFriendCount(player.getUniqueId()));
+            return MainManager.getFriendManager() == null ? "0" : String.valueOf(MainManager.getFriendManager().getFriendCount(player.getUniqueId()));
         }
 
         if (params.equalsIgnoreCase("friend_online_count")) {
-            return Managers.getFriendManager() == null ? "0" : String.valueOf(Managers.getFriendManager().getOnlineFriendCount(player.getUniqueId()));
+            return MainManager.getFriendManager() == null ? "0" : String.valueOf(MainManager.getFriendManager().getOnlineFriendCount(player.getUniqueId()));
         }
 
         if (params.equalsIgnoreCase("clan_tag")) {
@@ -182,7 +182,7 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         }
 
         // --- Permissoes (sistema proprio KaosCore) ---
-        PermissionManager permissionManager = Managers.getPermissionManager();
+        PermissionManager permissionManager = MainManager.getPermissionManager();
         EffectivePermissions effective = permissionManager == null ? null : permissionManager.getEffective(player.getUniqueId());
         if (effective != null) {
             String lower = params.toLowerCase(Locale.ROOT);
@@ -375,6 +375,6 @@ public class KaosCoreExpansion extends PlaceholderExpansion {
         if (player == null) {
             return false;
         }
-        return DisguiseManager.isDisguised(player) && Managers.getDisguiseManager() != null;
+        return DisguiseManager.isDisguised(player) && MainManager.getDisguiseManager() != null;
     }
 }

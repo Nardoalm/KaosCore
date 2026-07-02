@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.managers.Managers;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.repository.PlayerTagRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,7 +29,6 @@ public class TagManager {
     private final Map<String, Tag> tagsByName;
     private final Map<UUID, String> selectedTags;
     private final Map<UUID, String> disguiseTags;
-    // Cache crucial para evitar atualizações fantasmas que causam piscar na tag
     private final Map<UUID, String> cachedCurrentTags;
     private FileConfiguration tagsConfig;
     private final PlayerTagRepository playerTagRepository;
@@ -41,7 +40,7 @@ public class TagManager {
         this.selectedTags = new ConcurrentHashMap<>();
         this.disguiseTags = new ConcurrentHashMap<>();
         this.cachedCurrentTags = new ConcurrentHashMap<>();
-        this.playerTagRepository = new PlayerTagRepository(plugin, Managers.getDatabaseManager());
+        this.playerTagRepository = new PlayerTagRepository(plugin, MainManager.getDatabaseManager());
         loadTags();
         loadSelectedTags();
     }
@@ -98,7 +97,7 @@ public class TagManager {
     }
 
     private void loadSelectedTags() {
-        if (plugin == null || Managers.getDatabaseManager() == null || !Managers.getDatabaseManager().isConnected()) {
+        if (plugin == null || MainManager.getDatabaseManager() == null || !MainManager.getDatabaseManager().isConnected()) {
             return;
         }
 
@@ -124,22 +123,12 @@ public class TagManager {
                     return t;
                 }
             }
-
-            Tag lowestTag = null;
-            int highestPosition = -1;
-            for (Tag t : tagsById.values()) {
-                if (t != null && t.getPosition() > highestPosition) {
-                    highestPosition = t.getPosition();
-                    lowestTag = t;
-                }
-            }
-            return lowestTag;
         }
 
         String selectedId = selectedTags.get(player.getUniqueId());
         Tag selectedTag = resolveTag(selectedId);
 
-        if (selectedTag != null && canUse(player, selectedTag)) {
+        if (selectedTag != null && (DisguiseManager.isDisguised(player) || canUse(player, selectedTag))) {
             return selectedTag;
         }
 
@@ -150,8 +139,12 @@ public class TagManager {
 
         Tag first = available.get(0);
         if (first != null) {
-            selectedTags.put(player.getUniqueId(), first.getId());
-            saveSelectedTag(player.getUniqueId(), first.getId());
+            if (DisguiseManager.isDisguised(player)) {
+                disguiseTags.put(player.getUniqueId(), first.getId());
+            } else {
+                selectedTags.put(player.getUniqueId(), first.getId());
+                saveSelectedTag(player.getUniqueId(), first.getId());
+            }
         }
         return first;
     }
@@ -166,16 +159,15 @@ public class TagManager {
             return false;
         }
 
-        // Validação anti-pisque: Se a tag for exatamente a mesma, ele cancela a injeção forçada.
-        String currentCachedId = cachedCurrentTags.get(player.getUniqueId());
-        if (currentCachedId != null && currentCachedId.equals(tag.getId())) {
-            return true;
-        }
-
         if (DisguiseManager.isDisguised(player)) {
             disguiseTags.put(player.getUniqueId(), tag.getId());
             cachedCurrentTags.put(player.getUniqueId(), tag.getId());
             refreshTag(player);
+            return true;
+        }
+
+        String currentCachedId = cachedCurrentTags.get(player.getUniqueId());
+        if (currentCachedId != null && currentCachedId.equals(tag.getId())) {
             return true;
         }
 
@@ -214,7 +206,6 @@ public class TagManager {
     public void clearDisguiseTag(UUID uuid) {
         if (uuid != null) {
             disguiseTags.remove(uuid);
-            cachedCurrentTags.remove(uuid);
         }
     }
 
@@ -300,7 +291,6 @@ public class TagManager {
             return;
         }
 
-        // Força a execução na thread principal de forma absoluta, evitando corrupção do Scoreboard
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (staleEntries == null || staleEntries.length == 0) {
