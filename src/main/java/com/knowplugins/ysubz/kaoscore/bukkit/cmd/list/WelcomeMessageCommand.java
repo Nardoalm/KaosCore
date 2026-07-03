@@ -29,7 +29,7 @@ public class WelcomeMessageCommand extends Commands {
             return;
         }
 
-        if (!player.hasPermission("kaoscore.member.welcomeMessage")) {
+        if (!player.hasPermission("kaoscore.joinmessage")) {
             player.sendMessage("§cYou do not have permission to use this command.");
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;

@@ -15,9 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public final class GrantCommand extends Commands {
-
-    private static final String PERMISSION = "kaoscore.admin";
-
     public GrantCommand() {
         super("grant", "atribuir", "setar", "conceder", "rank");
     }
@@ -104,6 +101,6 @@ public final class GrantCommand extends Commands {
         if (!(sender instanceof Player)) {
             return true;
         }
-        return sender.hasPermission(PERMISSION);
+        return sender.isOp();
     }
 }

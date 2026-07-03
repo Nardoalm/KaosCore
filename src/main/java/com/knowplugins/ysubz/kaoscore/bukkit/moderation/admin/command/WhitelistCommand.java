@@ -17,7 +17,7 @@ public class WhitelistCommand extends Commands {
 
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
-        if (!sender.hasPermission("kaoscore.admin")) {
+        if (!sender.isOp()) {
             sender.sendMessage("§cYou do not have permission to use this command.");
             ModerationCommandUtil.play(sender, Sound.CLICK);
             return;

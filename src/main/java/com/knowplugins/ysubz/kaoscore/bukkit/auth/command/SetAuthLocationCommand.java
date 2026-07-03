@@ -20,7 +20,7 @@ public class SetAuthLocationCommand extends Commands {
         if (!(sender instanceof Player)) return;
         Player player = (Player) sender;
 
-        if (!player.hasPermission("kaoscore.admin")) {
+        if (!player.isOp()) {
             player.sendMessage(String.valueOf(Constant.NO_PERMISSION));
             return;
         }

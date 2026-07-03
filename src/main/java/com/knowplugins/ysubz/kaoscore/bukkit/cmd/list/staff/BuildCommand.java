@@ -22,7 +22,7 @@ public class BuildCommand extends Commands {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("kaoscore.admin")) {
+        if (!player.isOp()) {
             player.sendMessage("§c§lBUILD ➔ §cYou do not have permission to use this command.");
             Player senderPlayer = (Player) sender;
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.CLICK, 1.0f, 1.0f);

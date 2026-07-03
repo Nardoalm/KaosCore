@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.util.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.menu.list;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import net.minecraft.server.v1_8_R3.BlockPosition;

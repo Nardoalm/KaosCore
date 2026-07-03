@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 public final class GroupCommand extends Commands {
-
-    private static final String PERMISSION = "kaoscore.admin";
-
     public GroupCommand() {
         super("group");
     }
@@ -290,7 +287,7 @@ public final class GroupCommand extends Commands {
         if (!(sender instanceof Player)) {
             return true;
         }
-        return sender.hasPermission(PERMISSION);
+        return sender.isOp();
     }
 
     private String join(String[] args, int start) {

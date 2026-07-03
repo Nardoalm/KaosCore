@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.chat;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
@@ -18,6 +18,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import us.alleypvp.practice.AlleyPractice;
+import us.alleypvp.practice.common.text.LevelBadgeUtil;
+import us.alleypvp.practice.core.profile.Profile;
+import us.alleypvp.practice.core.profile.ProfileService;
+import us.alleypvp.practice.core.profile.internal.ProfileServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,8 +41,8 @@ public class ChatListener implements Listener {
     private static final long CHAT_COOLDOWN_MS = 500L;
     private static final long SPAM_WINDOW_MS = 15000L;
     private static final int SPAM_REPEAT_THRESHOLD = 10;
-    private static final String DEFAULT_CHAT_FORMAT = "%kaos_level% %kaoscore_medal_chat_static% %kaoscore_tag_prefix%{player} &8» {message}";
     private static final String DEFAULT_CHAT_COLOR = "&7";
+    private static final String DEFAULT_CHAT_FORMAT = "{medal} {level} {prefix}{player} &8» { {message}";
     private static final String DEFAULT_VIP_CHAT_COLOR = "&f";
     private static final String DEFAULT_MENTION_FORMAT = "&b@{nick}";
 
@@ -50,8 +55,8 @@ public class ChatListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
 
-        Player p = event.getPlayer();
-        if (p == null) {
+        Player player = event.getPlayer();
+        if (player == null) {
             return;
         }
 
@@ -62,32 +67,30 @@ public class ChatListener implements Listener {
 
         PunishmentManager punishmentManager = MainManager.getPunishmentManager();
         if (punishmentManager != null) {
-            PunishmentEntry mute = punishmentManager.getActiveMute(p);
+            PunishmentEntry mute = punishmentManager.getActiveMute(player);
             if (mute != null) {
                 KaosCore plugin = KaosCore.getInstance();
                 PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
                 if (messages != null) {
                     for (String line : messages.buildMuteChatLines(mute)) {
-                        p.sendMessage(line);
+                        player.sendMessage(line);
                     }
                 } else {
-                    p.sendMessage("§cYou are muted.");
-                    p.sendMessage("§cReason: §7" + mute.getReason());
-                    p.sendMessage("§cDuration: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
+                    player.sendMessage("§cYou are muted.");
+                    player.sendMessage("§cReason: §7" + mute.getReason());
+                    player.sendMessage("§cDuration: §7" + PunishmentTime.formatRemaining(mute.getExpiresAt()));
                 }
                 return;
             }
         }
 
         long now = System.currentTimeMillis();
-        UUID uuid = p.getUniqueId();
+        UUID uuid = player.getUniqueId();
 
-        if (!p.hasPermission("kaoscore.cooldown")) {
+        if (!player.hasPermission("kaoscore.cooldown")) {
             Long last = lastChatAt.get(uuid);
             if (last != null && (now - last) < CHAT_COOLDOWN_MS) {
-                long remaining = CHAT_COOLDOWN_MS - (now - last);
-                long seconds = Math.max(1L, (long) Math.ceil(remaining / 1000.0));
-                p.sendMessage("§cAguarde " + seconds + "s para enviar outra mensagem.");
+                player.sendMessage("§cPlease wait to send another message.");
                 return;
             }
         }
@@ -118,8 +121,8 @@ public class ChatListener implements Listener {
                 KaosCore plugin = KaosCore.getInstance();
                 if (plugin != null) {
                     Bukkit.getScheduler().runTask(plugin, () -> {
-                        if (p.isOnline()) {
-                            p.kickPlayer("§cVocê foi expulso por Spam.");
+                        if (player.isOnline()) {
+                            player.kickPlayer("§cDo not spam.");
                         }
                     });
                 }
@@ -131,7 +134,7 @@ public class ChatListener implements Listener {
 
         KaosCore plugin = KaosCore.getInstance();
         FileConfiguration config = plugin == null ? null : plugin.getConfig();
-        boolean isVip = p.hasPermission("kaoscore.vip");
+        boolean isVip = player.hasPermission("kaoscore.vip");
         String chatColor = colorize(config == null
                 ? (isVip ? DEFAULT_VIP_CHAT_COLOR : DEFAULT_CHAT_COLOR)
                 : config.getString(isVip ? "chat.vip-color" : "chat.default-color", isVip ? DEFAULT_VIP_CHAT_COLOR : DEFAULT_CHAT_COLOR));
@@ -140,14 +143,26 @@ public class ChatListener implements Listener {
         MentionResult mentionResult = applyMentions(msg, config);
         msg = mentionResult.message;
 
-        String displayName = PlaceholderManager.getDisplayName(p);
-        String formatTemplate = config == null ? DEFAULT_CHAT_FORMAT : config.getString("chat.format", DEFAULT_CHAT_FORMAT);
+        String displayName = PlaceholderManager.getDisplayName(player);
+        String formatTemplate = config == null ? DEFAULT_CHAT_FORMAT : config.getString("chat.format", DEFAULT_CHAT_FORMAT); // AQUIIIIIIIIIIIIIIII
+
+        String level = "§7[0✺]";
+        if(Bukkit.getPluginManager().isPluginEnabled("AlleyPractice")) {
+            Profile profile = new Profile(player.getUniqueId(), player.getName());
+            profile.load();
+
+            ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
+            profileService.getProfile(player.getUniqueId());
+            level = LevelBadgeUtil.getDisplayBadge(player, profile.getProfileData().getExperience());
+        }
+
         String format = formatTemplate
+                .replace("{level}", displayName)
                 .replace("{player}", displayName)
                 .replace("{message}", chatColor + msg)
                 .replace("{msg}", chatColor + msg);
-        format = PlaceholderManager.replacePlaceholders(format, p);
-        format = PlaceholderAPI.setPlaceholders(p, format);
+        format = PlaceholderManager.replacePlaceholders(format, player);
+        format = PlaceholderAPI.setPlaceholders(player, format);
         format = colorize(format);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
@@ -155,7 +170,7 @@ public class ChatListener implements Listener {
         }
 
         if (plugin != null && !mentionResult.mentionedPlayers.isEmpty()) {
-            mentionResult.mentionedPlayers.remove(p.getUniqueId());
+            mentionResult.mentionedPlayers.remove(player.getUniqueId());
             if (!mentionResult.mentionedPlayers.isEmpty()) {
                 String senderName = displayName;
                 Bukkit.getScheduler().runTask(plugin, () -> notifyMentions(mentionResult.mentionedPlayers, senderName, config));

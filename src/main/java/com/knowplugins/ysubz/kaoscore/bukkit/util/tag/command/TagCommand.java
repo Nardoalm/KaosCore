@@ -44,6 +44,12 @@ public class TagCommand extends Commands {
                 return;
             }
 
+            if(selected == plugin.getTagManager().getTag(player)){
+                player.sendMessage("§cYou are already using this tag");
+                sendAvailableTags(player);
+                return;
+            }
+
             if (!plugin.getTagManager().canUse(player, selected) && !DisguiseManager.isDisguised(player)) {
                 player.sendMessage("§cYou do not have permission to use this tag.");
                 sendAvailableTags(player);

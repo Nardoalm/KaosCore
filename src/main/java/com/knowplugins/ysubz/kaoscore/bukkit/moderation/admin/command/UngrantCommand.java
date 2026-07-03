@@ -14,9 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public final class UngrantCommand extends Commands {
-
-    private static final String PERMISSION = "kaoscore.admin";
-
     public UngrantCommand() {
         super("ungrant", "unrank");
     }
@@ -81,6 +78,6 @@ public final class UngrantCommand extends Commands {
         if (!(sender instanceof Player)) {
             return true;
         }
-        return sender.hasPermission(PERMISSION);
+        return sender.isOp();
     }
 }

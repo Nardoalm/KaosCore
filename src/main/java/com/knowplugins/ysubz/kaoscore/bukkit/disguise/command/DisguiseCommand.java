@@ -92,7 +92,7 @@ public class DisguiseCommand extends Commands {
             return;
         }
 
-        if (!player.hasPermission("kaoscore.admin")) {
+        if (!player.isOp()) {
             if (hasJoinedBefore(newNick)) {
                 player.sendMessage("§cThat nickname belongs to a player who has already joined the server.");
                 return;
@@ -108,7 +108,13 @@ public class DisguiseCommand extends Commands {
                 KaosCore.getInstance().getTagManager().clearDisguiseTag(player.getUniqueId());
             }
 
-            disguiseManager.recordOriginalName(player);
+            String absoluteRealName = player.getName();
+            OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+            if (op != null && op.getName() != null) {
+                absoluteRealName = op.getName();
+            }
+            disguiseManager.setOriginalName(player, absoluteRealName);
+
             GameProfile profile = ((CraftPlayer) player).getProfile();
             OriginalSkinManager.cache(player, profile);
 
@@ -144,23 +150,39 @@ public class DisguiseCommand extends Commands {
 
                     String message = "§aYou are now disguised as §7" + newNick + "§a.";
                     player.sendMessage(PlaceholderManager.replacePlaceholders(message, player));
-
-                    DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
-                    repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
                 }
+
+                DisguiseRepository repo = new DisguiseRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
+                repo.saveAsync(player.getUniqueId(), true, "nick", newNick);
+
+                Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> {
+                    try {
+                        GameProfile currentProfile = ((CraftPlayer) player).getProfile();
+                        if (currentProfile.getProperties().containsKey("textures")) {
+                            Property textures = currentProfile.getProperties().get("textures").iterator().next();
+                            if (textures != null) {
+                                SkinCacheRepository cacheRepo = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
+                                cacheRepo.saveAsync(newNick, textures.getValue(), textures.getSignature());
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }, 40L);
             }
 
             TagManager tagManager = KaosCore.getInstance().getTagManager();
+            Tag lowestTag = null;
+            int maxPos = -1;
 
-            Tag tag = tagManager.getTag(player);
-
-            for(Tag minTag : tagManager.getAvailableTags(player)){
-                if(minTag.getPosition() < tag.getPosition()){
-
+            for (Tag minTag : tagManager.getAvailableTags(player)) {
+                if (minTag.getPosition() > maxPos) {
+                    maxPos = minTag.getPosition();
+                    lowestTag = minTag;
                 }
             }
 
-            tagManager.setTag(player, tag.getId());
+            if (lowestTag != null) {
+                tagManager.setTag(player, lowestTag.getId());
+            }
 
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
 
@@ -182,7 +204,10 @@ public class DisguiseCommand extends Commands {
             if (fakeNick == null) fakeNick = player.getName();
 
             String originalName = disguiseManager.popOriginalName(player);
-            if (originalName == null) originalName = player.getName();
+            if (originalName == null || originalName.trim().isEmpty()) {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+                originalName = (op != null && op.getName() != null) ? op.getName() : player.getName();
+            }
 
             if (KaosCore.getInstance() != null && KaosCore.getInstance().getTagTeamManager() != null) {
                 KaosCore.getInstance().getTagTeamManager().removePlayer(player, fakeNick, originalName);

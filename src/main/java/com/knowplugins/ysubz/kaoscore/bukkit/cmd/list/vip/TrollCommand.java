@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class TrollCommand extends Commands {
 
-    private static final String PERMISSION = "kaoscore.admin.troll";
+    private static final String PERMISSION = "kaoscore.troll";
     private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
     private static final long COOLDOWN_TIME = 10000;
 

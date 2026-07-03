@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.util.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

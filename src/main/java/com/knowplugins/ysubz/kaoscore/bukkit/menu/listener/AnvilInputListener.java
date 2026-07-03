@@ -1,6 +1,6 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.menu.listener;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.AnvilInputMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.menu.list.AnvilInputMenu;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;

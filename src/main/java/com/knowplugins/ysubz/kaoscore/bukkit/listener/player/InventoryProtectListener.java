@@ -14,7 +14,7 @@ public class InventoryProtectListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
-        if (!player.hasPermission("kaoscore.admin.build")) {
+        if (!player.isOp()) {
             event.setCancelled(true);
         }
     }

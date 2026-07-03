@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.util.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.friend.menu;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;

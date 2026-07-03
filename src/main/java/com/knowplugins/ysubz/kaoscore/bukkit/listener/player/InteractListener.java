@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.MenuUtils;
+import com.knowplugins.ysubz.kaoscore.bukkit.menu.MenuUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

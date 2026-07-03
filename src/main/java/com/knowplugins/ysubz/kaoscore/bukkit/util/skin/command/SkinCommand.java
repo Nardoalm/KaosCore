@@ -7,7 +7,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinRepository
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
-import com.knowplugins.ysubz.kaoscore.bukkit.util.menu.SkinMenu;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenu;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.MojangSkinFetcher;

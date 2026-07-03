@@ -25,7 +25,7 @@ public class SetJumpPadCommand extends Commands {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("kaoscore.admin.jumppad")) {
+        if (!player.isOp()) {
             player.sendMessage("§cYou do not have permission to execute this command.");
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;

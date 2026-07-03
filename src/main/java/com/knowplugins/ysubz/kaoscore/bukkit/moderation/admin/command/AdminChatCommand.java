@@ -26,7 +26,7 @@ public class AdminChatCommand extends Commands {
 
         Player playerSender = (Player) sender;
 
-        if (!playerSender.hasPermission("kaoscore.admin")) {
+        if (!playerSender.isOp()) {
             sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return;
         }
@@ -62,7 +62,7 @@ public class AdminChatCommand extends Commands {
         String formattedMessage = ChatColor.translateAlternateColorCodes('&', "&c[AdminChat] ") + tagColor + realName + "§f: " + rawMessage;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player != null && player.isOnline() && player.hasPermission("kaoscore.admin")) {
+            if (player != null && player.isOnline() && player.isOp()) {
                 player.sendMessage(formattedMessage);
             }
         }

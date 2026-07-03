@@ -14,9 +14,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public final class SetTagCommand extends Commands {
-
-    private static final String PERMISSION = "kaoscore.admin";
-
     public SetTagCommand() {
         super("settag", "setartag");
     }

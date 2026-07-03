@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.util.menu;
+package com.knowplugins.ysubz.kaoscore.bukkit.menu;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import org.bukkit.Bukkit;

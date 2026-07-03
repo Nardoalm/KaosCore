@@ -2,12 +2,15 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthListener;
-import com.knowplugins.ysubz.kaoscore.bukkit.friend.listener.FriendMenuListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.chat.ChatListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.friend.menu.FriendMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.player.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.world.*;
+import com.knowplugins.ysubz.kaoscore.bukkit.menu.listener.AnvilInputListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.listener.PermissionListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.sit.listener.SitListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.join.listener.JoinMessageMenuListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.WhitelistListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
