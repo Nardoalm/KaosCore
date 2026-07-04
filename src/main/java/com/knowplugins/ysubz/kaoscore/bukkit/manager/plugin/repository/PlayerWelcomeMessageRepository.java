@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
@@ -52,7 +53,7 @@ public class PlayerWelcomeMessageRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("Erro ao carregar welcome messages do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar welcome messages do MongoDB: " + e.getMessage());
                 }
             }
             return result;
@@ -74,7 +75,7 @@ public class PlayerWelcomeMessageRepository {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("Erro ao carregar welcome messages selecionadas do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar welcome messages selecionadas do DB: " + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -93,7 +94,7 @@ public class PlayerWelcomeMessageRepository {
                     Document doc = new Document("uuid", uuid.toString()).append("message_id", messageId);
                     getCollection().replaceOne(new Document("uuid", uuid.toString()), doc, new ReplaceOptions().upsert(true));
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar welcome message no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar welcome message no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -104,7 +105,7 @@ public class PlayerWelcomeMessageRepository {
                 ps.setString(2, messageId);
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar welcome message selecionada no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar welcome message selecionada no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

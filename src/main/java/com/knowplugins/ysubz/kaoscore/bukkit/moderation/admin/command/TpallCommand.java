@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.moderation.admin.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.Constant;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.moderation.ModerationCommandUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import org.bukkit.Bukkit;

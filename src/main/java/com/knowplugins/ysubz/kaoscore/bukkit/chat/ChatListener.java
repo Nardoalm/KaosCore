@@ -1,13 +1,16 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.chat;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.Medal;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.message.ActionBarUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,11 +21,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import us.alleypvp.practice.AlleyPractice;
-import us.alleypvp.practice.common.text.LevelBadgeUtil;
-import us.alleypvp.practice.core.profile.Profile;
-import us.alleypvp.practice.core.profile.ProfileService;
-import us.alleypvp.practice.core.profile.internal.ProfileServiceImpl;
+import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.common.text.LevelBadgeUtil;
+import live.pvphard.practice.core.profile.Profile;
+import live.pvphard.practice.core.profile.ProfileService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,7 +44,7 @@ public class ChatListener implements Listener {
     private static final long SPAM_WINDOW_MS = 15000L;
     private static final int SPAM_REPEAT_THRESHOLD = 10;
     private static final String DEFAULT_CHAT_COLOR = "&7";
-    private static final String DEFAULT_CHAT_FORMAT = "{medal} {level} {prefix}{player} &8» { {message}";
+    private static final String DEFAULT_CHAT_FORMAT = "{level} {medal}{prefix}{player}: {message}";
     private static final String DEFAULT_VIP_CHAT_COLOR = "&f";
     private static final String DEFAULT_MENTION_FORMAT = "&b@{nick}";
 
@@ -146,18 +148,42 @@ public class ChatListener implements Listener {
         String displayName = PlaceholderManager.getDisplayName(player);
         String formatTemplate = config == null ? DEFAULT_CHAT_FORMAT : config.getString("chat.format", DEFAULT_CHAT_FORMAT); // AQUIIIIIIIIIIIIIIII
 
-        String level = "§7[0✺]";
-        if(Bukkit.getPluginManager().isPluginEnabled("AlleyPractice")) {
+        String level = "&7[0✺]";
+
+        if(Bukkit.getPluginManager().isPluginEnabled("HardPractice")) {
             Profile profile = new Profile(player.getUniqueId(), player.getName());
             profile.load();
 
-            ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
+            ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
             profileService.getProfile(player.getUniqueId());
             level = LevelBadgeUtil.getDisplayBadge(player, profile.getProfileData().getExperience());
         }
 
+        if(DisguiseApiService.isDisguised(player)){
+            level = "&7[0✺]";
+        }
+
+        String tagPrefix = "";
+        if (plugin != null && plugin.getTagManager() != null) {
+            Tag playerTag = plugin.getTagManager().getTag(player);
+            if (playerTag != null) {
+                tagPrefix = playerTag.getPrefix();
+            }
+        }
+
+        String medal = "";
+        if (plugin != null && plugin.getMedalManager() != null) {
+            Medal playerMedal = plugin.getMedalManager().getMedal(player);
+            if (playerMedal != null && playerMedal.getStaticChat() != null) {
+                medal = playerMedal.getStaticChat();
+            }
+        }
+
         String format = formatTemplate
-                .replace("{level}", displayName)
+                .replace("{level}", level)
+                .replace("{medal}", medal)
+                .replace("{prefix}", tagPrefix)
+                .replace("{color}", chatColor)
                 .replace("{player}", displayName)
                 .replace("{message}", chatColor + msg)
                 .replace("{msg}", chatColor + msg);

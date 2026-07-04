@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.auth.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.Constant;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

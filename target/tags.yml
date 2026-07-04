@@ -12,6 +12,13 @@ tags:
     color: "§4"
     suffix: " %kaoscore_clan_tag%"
     permission: "kaoscore.tag.manager"
+    position: 15
+  developer:
+    name: "Developer"
+    prefix: "§6§lDEV §6"
+    color: "§6"
+    suffix: " %kaoscore_clan_tag%"
+    permission: "kaoscore.tag.developer"
     position: 20
   admin:
     name: "Admin"

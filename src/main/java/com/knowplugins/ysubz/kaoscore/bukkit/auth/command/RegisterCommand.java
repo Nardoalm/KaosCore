@@ -1,13 +1,13 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.auth.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import us.alleypvp.practice.AlleyPractice;
-import us.alleypvp.practice.feature.hotbar.HotbarService;
-import us.alleypvp.practice.feature.spawn.SpawnService;
+import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.feature.hotbar.HotbarService;
+import live.pvphard.practice.feature.spawn.SpawnService;
 
 public class RegisterCommand extends Commands {
 
@@ -43,9 +43,9 @@ public class RegisterCommand extends Commands {
         }
 
         if(!plugin.getAuthManager().isPending(player.getUniqueId())) {
-            if(Bukkit.getServer().getPluginManager().getPlugin("AlleyPractice") != null) {
-                AlleyPractice.getInstance().getService(SpawnService.class).teleportToSpawn(player);
-                AlleyPractice.getInstance().getService(HotbarService.class).applyHotbarItems(player);
+            if(Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
+                HardPractice.getInstance().getService(SpawnService.class).teleportToSpawn(player);
+                HardPractice.getInstance().getService(HotbarService.class).applyHotbarItems(player);
             }
         }
     }

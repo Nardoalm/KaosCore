@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.skin;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
@@ -247,12 +248,12 @@ public final class SkinPoolManager {
             return FetchResult.success(skin);
         } catch (IOException e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao buscar skin '" + cleanNick + "': " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao buscar skin '" + cleanNick + "': " + e.getMessage());
             }
             return FetchResult.error();
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao buscar skin '" + cleanNick + "': " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao buscar skin '" + cleanNick + "': " + e.getMessage());
             }
             return FetchResult.error();
         }
@@ -272,7 +273,7 @@ public final class SkinPoolManager {
             new SkinApplier(player).applySkinForSelf();
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Falha ao aplicar skin em " + player.getName() + ": " + e.getMessage());
+                Logger.warning("[KaosCore] Falha ao aplicar skin em " + player.getName() + ": " + e.getMessage());
             }
         }
     }

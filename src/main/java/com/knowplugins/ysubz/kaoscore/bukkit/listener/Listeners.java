@@ -11,7 +11,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.permission.listener.PermissionListe
 import com.knowplugins.ysubz.kaoscore.bukkit.sit.listener.SitListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.join.listener.JoinMessageMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenuListener;
-import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.WhitelistListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.listener.WhitelistListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 

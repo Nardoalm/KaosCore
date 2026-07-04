@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -31,7 +32,7 @@ final class KaosCoreReloadCommand extends BaseBungeeCommand {
             reply(sender, "§a§lKAOSCORE ➔ §aAs configurações foram recarregadas com sucesso.");
         } catch (Exception exception) {
             reply(sender, "§c§lKAOSCORE ➔ §cFalha ao recarregar. Veja o console.");
-            plugin.getLogger().severe("Falha ao executar /kaoscore reload: " + exception.getMessage());
+            Logger.severe("Falha ao executar /kaoscore reload: " + exception.getMessage());
         }
     }
 }

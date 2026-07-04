@@ -1,8 +1,9 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
@@ -160,7 +161,7 @@ public class SkinCommand extends Commands {
                     });
 
                 } catch (Exception exception) {
-                    plugin.getLogger().warning("[KaosCore] Error fetching skin '" + cleanTarget + "': " + exception.getMessage());
+                    Logger.warning("[KaosCore] Error fetching skin '" + cleanTarget + "': " + exception.getMessage());
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         player.sendMessage("§cSkin not found or API error.");
                         player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);

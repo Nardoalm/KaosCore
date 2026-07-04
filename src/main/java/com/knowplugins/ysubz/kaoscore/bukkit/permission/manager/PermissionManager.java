@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.data.PermissionRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.data.PermissionUserData;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -170,7 +171,7 @@ public final class PermissionManager {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Falha ao sincronizar permissions.yml: " + e.getMessage());
+                Logger.warning("[KaosCore] Falha ao sincronizar permissions.yml: " + e.getMessage());
             }
         }
     }
@@ -261,7 +262,7 @@ public final class PermissionManager {
             repository.createGroup(DEFAULT_GROUP_NAME, true);
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Falha ao criar grupo default: " + e.getMessage());
+                Logger.warning("[KaosCore] Falha ao criar grupo default: " + e.getMessage());
             }
         }
 
@@ -403,7 +404,7 @@ public final class PermissionManager {
             return true;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao criar grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao criar grupo: " + e.getMessage());
             }
             return false;
         }
@@ -705,7 +706,7 @@ public final class PermissionManager {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Falha ao injetar permissiveis: " + e.getMessage());
+                Logger.warning("[KaosCore] Falha ao injetar permissiveis: " + e.getMessage());
             }
         }
     }

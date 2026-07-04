@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -57,7 +58,7 @@ public final class SkinCacheRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao carregar skin cache do MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao carregar skin cache do MongoDB: " + e.getMessage());
                 }
             }
             return null;
@@ -75,7 +76,7 @@ public final class SkinCacheRepository {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao carregar skin cache: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao carregar skin cache: " + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -100,7 +101,7 @@ public final class SkinCacheRepository {
                     );
                 } catch (Exception e) {
                     if (plugin != null) {
-                        plugin.getLogger().warning("[KaosCore] Erro ao salvar skin cache no MongoDB: " + e.getMessage());
+                        Logger.warning("[KaosCore] Erro ao salvar skin cache no MongoDB: " + e.getMessage());
                     }
                 }
                 return;
@@ -117,7 +118,7 @@ public final class SkinCacheRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao salvar skin cache: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao salvar skin cache: " + e.getMessage());
                 }
                 e.printStackTrace();
             }
@@ -140,7 +141,7 @@ public final class SkinCacheRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao carregar pool de skins do MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao carregar pool de skins do MongoDB: " + e.getMessage());
                 }
             }
             return out;
@@ -160,7 +161,7 @@ public final class SkinCacheRepository {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao carregar pool de skins do cache: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao carregar pool de skins do cache: " + e.getMessage());
             }
         }
 

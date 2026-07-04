@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -53,7 +54,7 @@ public class PlayerMedalRepository {
                     } catch (Exception ignored) {}
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar medalhas selecionadas do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao carregar medalhas selecionadas do MongoDB: " + e.getMessage());
             }
             return result;
         }
@@ -73,7 +74,7 @@ public class PlayerMedalRepository {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao carregar medalhas selecionadas do DB: " + e.getMessage());
+            Logger.warning("Erro ao carregar medalhas selecionadas do DB: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -100,7 +101,7 @@ public class PlayerMedalRepository {
                             new UpdateOptions().upsert(true)
                     );
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar medalha selecionada no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar medalha selecionada no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -114,7 +115,7 @@ public class PlayerMedalRepository {
                     ps.executeUpdate();
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar medalha selecionada no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar medalha selecionada no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -130,7 +131,7 @@ public class PlayerMedalRepository {
                 try {
                     getCollection().deleteOne(new Document("uuid", uuid.toString()));
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao remover medalha selecionada no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao remover medalha selecionada no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -140,7 +141,7 @@ public class PlayerMedalRepository {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao remover medalha selecionada no DB: " + e.getMessage());
+                Logger.warning("Erro ao remover medalha selecionada no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

@@ -4,13 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
-import us.alleypvp.practice.AlleyPractice;
-import us.alleypvp.practice.core.profile.Profile;
-import us.alleypvp.practice.core.profile.ProfileService;
-import us.alleypvp.practice.core.profile.enums.ProfileState;
-import us.alleypvp.practice.feature.match.Match;
+import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.core.profile.Profile;
+import live.pvphard.practice.core.profile.ProfileService;
+import live.pvphard.practice.core.profile.enums.ProfileState;
+import live.pvphard.practice.feature.match.Match;
 
 public class VanishCommand extends Commands {
 
@@ -57,8 +57,8 @@ public class VanishCommand extends Commands {
 
 
    public void endMatch(Player player) {
-      if(Bukkit.getServer().getPluginManager().getPlugin("AlleyPractice") != null) {
-         ProfileService profileService = AlleyPractice.getInstance().getService(ProfileService.class);
+      if(Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
+         ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
          Profile profile = profileService.getProfile(player.getUniqueId());
 
          if(profile.getState() == ProfileState.PLAYING || profile.getState() == ProfileState.PLAYING_TOURNAMENT || profile.getState() == ProfileState.PLAYING_EVENT) {

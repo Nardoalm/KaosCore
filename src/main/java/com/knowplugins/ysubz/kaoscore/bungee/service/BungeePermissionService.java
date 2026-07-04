@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee.service;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
 import com.knowplugins.ysubz.kaoscore.bungee.EffectivePermissions;
 import com.knowplugins.ysubz.kaoscore.bungee.PermissionGroup;
@@ -56,7 +57,7 @@ public class BungeePermissionService {
             reload(null);
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao criar grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao criar grupo: " + exception.getMessage());
             return false;
         }
     }

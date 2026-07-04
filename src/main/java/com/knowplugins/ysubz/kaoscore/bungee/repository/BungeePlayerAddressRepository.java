@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee.repository;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.knowplugins.ysubz.kaoscore.bungee.util.Texts;
@@ -41,7 +42,7 @@ public final class BungeePlayerAddressRepository {
             statement.setLong(5, now);
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao registrar IP: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao registrar IP: " + exception.getMessage());
         }
     }
 
@@ -63,7 +64,7 @@ public final class BungeePlayerAddressRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao verificar historico de nome: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao verificar historico de nome: " + exception.getMessage());
         }
         return false;
     }
@@ -91,7 +92,7 @@ public final class BungeePlayerAddressRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao resolver UUID por nome: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao resolver UUID por nome: " + exception.getMessage());
         }
         return null;
     }
@@ -128,7 +129,7 @@ public final class BungeePlayerAddressRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao buscar alts: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao buscar alts: " + exception.getMessage());
         }
         return result;
     }
@@ -150,7 +151,7 @@ public final class BungeePlayerAddressRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao resolver nome por UUID: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao resolver nome por UUID: " + exception.getMessage());
         }
         return "Desconhecido";
     }

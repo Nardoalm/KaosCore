@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,7 +60,7 @@ public final class BungeePermissionRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao carregar grupos: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao carregar grupos: " + exception.getMessage());
         }
         return groups;
     }
@@ -106,7 +107,7 @@ public final class BungeePermissionRepository {
                 return statement.executeUpdate() > 0;
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao deletar grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao deletar grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -153,7 +154,7 @@ public final class BungeePermissionRepository {
                 return statement.executeUpdate() > 0;
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao atualizar grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao atualizar grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -171,7 +172,7 @@ public final class BungeePermissionRepository {
             statement.setBoolean(3, value);
             return statement.executeUpdate() > 0;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao setar permissao de grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao setar permissao de grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -188,7 +189,7 @@ public final class BungeePermissionRepository {
             statement.setString(2, p);
             return statement.executeUpdate() > 0;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao remover permissao de grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao remover permissao de grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -205,7 +206,7 @@ public final class BungeePermissionRepository {
             statement.setString(2, i);
             return statement.executeUpdate() > 0;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao adicionar heranca: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao adicionar heranca: " + exception.getMessage());
             return false;
         }
     }
@@ -222,7 +223,7 @@ public final class BungeePermissionRepository {
             statement.setString(2, i);
             return statement.executeUpdate() > 0;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao remover heranca: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao remover heranca: " + exception.getMessage());
             return false;
         }
     }
@@ -233,7 +234,7 @@ public final class BungeePermissionRepository {
             statement.executeUpdate("UPDATE kaoscore_groups SET is_default = 0");
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao limpar grupos default: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao limpar grupos default: " + exception.getMessage());
             return false;
         }
     }
@@ -267,7 +268,7 @@ public final class BungeePermissionRepository {
             connection.commit();
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao substituir permissoes do grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao substituir permissoes do grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -300,7 +301,7 @@ public final class BungeePermissionRepository {
             connection.commit();
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao substituir herancas do grupo: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao substituir herancas do grupo: " + exception.getMessage());
             return false;
         }
     }
@@ -357,7 +358,7 @@ public final class BungeePermissionRepository {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao carregar permissoes do usuario: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao carregar permissoes do usuario: " + exception.getMessage());
         }
 
         return new PermissionUserData(uuid, safeName(name), grants, nodes, now);
@@ -403,7 +404,7 @@ public final class BungeePermissionRepository {
             statement.setString(6, Texts.normalize(groupName));
             return statement.executeUpdate() > 0;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao remover grant: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao remover grant: " + exception.getMessage());
             return false;
         }
     }

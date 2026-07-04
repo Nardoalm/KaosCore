@@ -6,7 +6,8 @@ import com.knowplugins.ysubz.kaoscore.bukkit.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.manager.AuthManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPreLoginListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPacketListener;
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.Listeners;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.proxy.ProxySyncListener;
@@ -22,6 +23,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.KaosCoreExpansion;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinPoolManager;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
@@ -29,42 +31,49 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class KaosCore extends JavaPlugin {
 
-    private static KaosCore instance;
-    private AccountController accountController;
     private MainManager mainManager;
+
+    @Getter
+    private static KaosCore instance;
+
+    @Getter
+    private AccountController accountController;
+
+    @Getter
     private TagManager tagManager;
+
+    @Getter
+    private DisguiseManager disguiseManager;
+
+    @Getter
     private MedalManager medalManager;
+
+    @Getter
     private TagTeamManager tagTeamManager;
+
+    @Getter
     private AuthManager authManager;
+
+    @Getter
     private AuthPacketListener authPacketListener;
+
+    @Getter
     private AuthPreLoginListener authPreLoginListener;
+
+    @Getter
     private DiscordWebhookManager webhookManager;
+
+    @Getter
     private SkinPoolManager skinPoolManager;
+
+    @Getter
     private PunishmentMessageManager punishmentMessageManager;
+
     private KaosCoreAPI api;
     private ProxySyncListener proxySyncListener;
 
-    public static KaosCore getInstance() {
-        return instance;
-    }
-
-    public AuthManager getAuthManager() {
-        return authManager;
-    }
-    public AuthPacketListener getAuthPacketListener() {
-        return authPacketListener;
-    }
-    public AuthPreLoginListener getAuthPreLoginListener() {
-        return authPreLoginListener;
-    }
-    public TagManager getTagManager() { return tagManager; }
-    public MedalManager getMedalManager() { return medalManager; }
     public ClanManager getClanManager() { return MainManager.getClanManager(); }
-    public TagTeamManager getTagTeamManager() { return tagTeamManager; }
-    public AccountController getAccountController() { return accountController; }
-    public DiscordWebhookManager getWebhookManager() { return webhookManager; }
-    public SkinPoolManager getSkinPoolManager() { return skinPoolManager; }
-    public PunishmentMessageManager getPunishmentMessageManager() { return punishmentMessageManager; }
+
     public KaosCoreAPI getAPI() { return api; }
 
     @Override
@@ -94,7 +103,7 @@ public class KaosCore extends JavaPlugin {
 
         DatabaseManager db = new DatabaseManager(this);
         if (!db.connect() || !db.isConnected()) {
-            getLogger().severe("§c[KaosCore] Nao foi possivel conectar ao banco de dados. Desativando o plugin.");
+            Logger.severe("§c[KaosCore] Nao foi possivel conectar ao banco de dados. Desativando o plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -138,7 +147,7 @@ public class KaosCore extends JavaPlugin {
             MainManager.getDisguiseManager().loadNicksFile(this);
         }
 
-        getLogger().info("All systems have been loaded.");
+        Logger.info("All systems have been loaded.");
     }
 
     public synchronized void reloadSystems() {
@@ -212,7 +221,6 @@ public class KaosCore extends JavaPlugin {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     if (DisguiseManager.isDisguised(online)) {
                         disguiseManager.removeDisguise(online);
-                        SkinCommand.resetSkin(online);
                     }
                 }
             }

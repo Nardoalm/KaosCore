@@ -60,11 +60,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>us.alleypvp.practice</groupId>
-            <artifactId>AlleyPractice</artifactId>
-            <version>3.1</version>
+            <groupId>live.pvphard.practice</groupId>
+            <artifactId>HardPractice</artifactId>
+            <version>4.2</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/AlleyPractice.jar</systemPath>
+            <systemPath>${project.basedir}/libs/HardPractice.jar</systemPath>
         </dependency>
 
         <dependency>

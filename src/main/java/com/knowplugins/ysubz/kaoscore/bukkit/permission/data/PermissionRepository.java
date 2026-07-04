@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.GroupGrant;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.PermissionGroup;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.UserPermissionNode;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
@@ -83,7 +84,7 @@ public final class PermissionRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao carregar grupos do MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao carregar grupos do MongoDB: " + e.getMessage());
                 }
             }
             return groups;
@@ -141,7 +142,7 @@ public final class PermissionRepository {
 
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao carregar grupos do DB: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao carregar grupos do DB: " + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -214,7 +215,7 @@ public final class PermissionRepository {
                 return getCollection("kaoscore_groups").deleteOne(new Document("name", groupName)).getDeletedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao deletar grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao deletar grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -243,7 +244,7 @@ public final class PermissionRepository {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao deletar grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao deletar grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -275,7 +276,7 @@ public final class PermissionRepository {
                 ).getMatchedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao atualizar grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao atualizar grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -331,7 +332,7 @@ public final class PermissionRepository {
             }
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao atualizar grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao atualizar grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -353,7 +354,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao setar perm de grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao setar perm de grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -367,7 +368,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao setar perm de grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao setar perm de grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -388,7 +389,7 @@ public final class PermissionRepository {
                 ).getDeletedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao remover perm de grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao remover perm de grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -401,7 +402,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao remover perm de grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao remover perm de grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -425,7 +426,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao adicionar heranca no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao adicionar heranca no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -438,7 +439,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao adicionar heranca: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao adicionar heranca: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -459,7 +460,7 @@ public final class PermissionRepository {
                 ).getDeletedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao remover heranca no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao remover heranca no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -472,7 +473,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao remover heranca: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao remover heranca: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -486,7 +487,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao limpar default groups no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao limpar default groups no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -498,7 +499,7 @@ public final class PermissionRepository {
             return true;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao limpar default groups: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao limpar default groups: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -530,7 +531,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao substituir perms do grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao substituir perms do grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -564,7 +565,7 @@ public final class PermissionRepository {
             return true;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao substituir perms do grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao substituir perms do grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -594,7 +595,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao substituir herancas do grupo no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao substituir herancas do grupo no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -627,7 +628,7 @@ public final class PermissionRepository {
             return true;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao substituir herancas do grupo: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao substituir herancas do grupo: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -698,7 +699,7 @@ public final class PermissionRepository {
                 }
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao carregar user perms do MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao carregar user perms do MongoDB: " + e.getMessage());
                 }
             }
             return new PermissionUserData(uuid, safeName(name), grants, nodes, now);
@@ -768,7 +769,7 @@ public final class PermissionRepository {
 
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao carregar user perms do DB: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao carregar user perms do DB: " + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -805,7 +806,7 @@ public final class PermissionRepository {
                 getCollection("kaoscore_user_grants").insertOne(doc);
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao aplicar grant no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao aplicar grant no MongoDB: " + e.getMessage());
                 }
             }
             return;
@@ -861,7 +862,7 @@ public final class PermissionRepository {
                 return getCollection("kaoscore_user_grants").updateMany(filter, update).getMatchedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao ungrant no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao ungrant no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -882,7 +883,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao ungrant: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao ungrant: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -913,7 +914,7 @@ public final class PermissionRepository {
                 return true;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao setar perm user no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao setar perm user no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -932,7 +933,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao setar perm user: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao setar perm user: " + e.getMessage());
             }
             e.printStackTrace();
             return false;
@@ -956,7 +957,7 @@ public final class PermissionRepository {
                 ).getDeletedCount() > 0;
             } catch (Exception e) {
                 if (plugin != null) {
-                    plugin.getLogger().warning("[KaosCore] Erro ao remover perm user no MongoDB: " + e.getMessage());
+                    Logger.warning("[KaosCore] Erro ao remover perm user no MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -969,7 +970,7 @@ public final class PermissionRepository {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             if (plugin != null) {
-                plugin.getLogger().warning("[KaosCore] Erro ao remover perm user: " + e.getMessage());
+                Logger.warning("[KaosCore] Erro ao remover perm user: " + e.getMessage());
             }
             e.printStackTrace();
             return false;

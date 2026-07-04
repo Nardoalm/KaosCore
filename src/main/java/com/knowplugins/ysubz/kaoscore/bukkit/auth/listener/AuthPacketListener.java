@@ -16,6 +16,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.security.EncryptionUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.util.MojangAPI;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -101,7 +102,7 @@ public class AuthPacketListener {
                         try {
                             protocolManager.sendServerPacket(event.getPlayer(), request);
                         } catch (Exception e) {
-                            plugin.getLogger().severe("Failed to send ENCRYPTION_BEGIN to " + username);
+                            Logger.severe("Failed to send ENCRYPTION_BEGIN to " + username);
                             e.printStackTrace();
                         }
                     } else {
@@ -120,7 +121,7 @@ public class AuthPacketListener {
                 try {
                     networkManager = getNetworkManager(event.getPlayer());
                 } catch (Throwable e) {
-                    plugin.getLogger().severe("Failed to resolve NetworkManager - falling back to cracked login (no premium verification) for this connection.");
+                    Logger.severe("Failed to resolve NetworkManager - falling back to cracked login (no premium verification) for this connection.");
                     e.printStackTrace();
 
                     String fallbackUsername = findPendingUsernameForPlayer(event.getPlayer());
@@ -199,7 +200,7 @@ public class AuthPacketListener {
             encryptMethod.setAccessible(true);
             encryptMethod.invoke(networkManager, secretKey);
         } catch (Exception exc) {
-            plugin.getLogger().severe("Failed to enable Netty encryption pipeline!");
+            Logger.severe("Failed to enable Netty encryption pipeline!");
             exc.printStackTrace();
         }
     }
@@ -211,7 +212,7 @@ public class AuthPacketListener {
                 uuidAccessor.set(networkManager, premiumUUID);
             }
         } catch (Exception exc) {
-            plugin.getLogger().severe("Failed to inject premium UUID into NetworkManager!");
+            Logger.severe("Failed to inject premium UUID into NetworkManager!");
             exc.printStackTrace();
         }
     }
@@ -309,7 +310,7 @@ public class AuthPacketListener {
         try {
             protocolManager.receiveClientPacket(connection, startPacket, false);
         } catch (Exception e) {
-            plugin.getLogger().severe("Failed to reinject START packet for " + username);
+            Logger.severe("Failed to reinject START packet for " + username);
             e.printStackTrace();
         }
     }

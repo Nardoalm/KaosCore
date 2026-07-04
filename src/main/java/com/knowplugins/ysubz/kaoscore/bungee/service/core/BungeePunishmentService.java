@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 
 import java.sql.Connection;
@@ -73,7 +74,7 @@ public final class BungeePunishmentService {
             webhookManager.logPunishmentApplied(entry);
             return entry;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao registrar punicao: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao registrar punicao: " + exception.getMessage());
             return null;
         }
     }
@@ -105,7 +106,7 @@ public final class BungeePunishmentService {
             }
             return result;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao revogar punicao: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao revogar punicao: " + exception.getMessage());
             return false;
         }
     }
@@ -131,7 +132,7 @@ public final class BungeePunishmentService {
             }
             statement.close();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao consultar historico: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao consultar historico: " + exception.getMessage());
         }
         return result;
     }
@@ -164,7 +165,7 @@ public final class BungeePunishmentService {
                 return entry.isActive() ? entry : null;
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao consultar punicao ativa: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao consultar punicao ativa: " + exception.getMessage());
             return null;
         }
     }

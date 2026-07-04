@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.database;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -126,12 +127,12 @@ public class DatabaseManager {
             mongoDatabase = mongoClient.getDatabase(mongoDatabaseName);
             ensureMongoCollections();
             connected = true;
-            plugin.getLogger().info("[KaosCore] Connected to MongoDB.");
+            Logger.info("[KaosCore] Connected to MongoDB.");
             return true;
         } catch (Exception e) {
             connected = false;
             closeMongo();
-            plugin.getLogger().severe("[KaosCore] Failed to connect to MongoDB: " + e.getMessage());
+            Logger.severe("[KaosCore] Failed to connect to MongoDB: " + e.getMessage());
             return false;
         }
     }

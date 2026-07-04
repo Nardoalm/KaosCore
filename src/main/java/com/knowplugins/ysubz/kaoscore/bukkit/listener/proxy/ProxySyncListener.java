@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.listener.proxy;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
@@ -87,7 +88,7 @@ public final class ProxySyncListener implements PluginMessageListener {
                 FriendMenu.open(target);
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao processar sincronizacao do proxy: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao processar sincronizacao do proxy: " + exception.getMessage());
         }
     }
 

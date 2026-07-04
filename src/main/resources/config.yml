@@ -5,7 +5,7 @@ features:
   scoreboard:
     enabled: false
     update-ticks: 4
-    bottom: '&balleypvp.us'
+    bottom: '&bpvphard.live'
     lobby-line: '&fLobby: &a#1'
     title-animation:
       - '&f&lA&b&lLLEY'
@@ -31,7 +31,7 @@ features:
       - '&balleypvp.us'
   join-title:
     enabled: true
-    title: '&b&lALLEY'
+    title: '&9&lPVPHARD'
     subtitle: '&fWelcome to our server!'
     fade-in: 20
     stay: 40
@@ -40,7 +40,7 @@ features:
     enabled: true
     header:
       - ''
-      - '&b&lALLEY'
+      - '&b&lPVPHARD'
       - ''
     footer:
       - ''
@@ -74,7 +74,7 @@ sit:
     enabled: false
     require-empty-hand: true
 practice-blocks:
-  message: '&b&lALLEY &8➔ &cYou cannot use commands during Practice.'
+  message: '&cYou cannot use commands during Practice.'
   commands:
     - fly
     - voar

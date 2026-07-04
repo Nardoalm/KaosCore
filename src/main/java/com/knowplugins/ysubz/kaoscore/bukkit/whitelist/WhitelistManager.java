@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.whitelist;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -113,7 +114,7 @@ public class WhitelistManager {
         try {
             config.save(file);
         } catch (IOException e) {
-            plugin.getLogger().warning("Nao foi possivel salvar whitelist.yml: " + e.getMessage());
+            Logger.warning("Nao foi possivel salvar whitelist.yml: " + e.getMessage());
         }
     }
 

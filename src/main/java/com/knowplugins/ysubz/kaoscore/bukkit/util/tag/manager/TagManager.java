@@ -383,6 +383,32 @@ public class TagManager {
         return text.replaceAll("(?i)&[0-9A-FK-OR]", "").replaceAll("(?i)§[0-9A-FK-OR]", "");
     }
 
+    public Tag getHighestValueTag(Player player) {
+        if (player == null) {
+            return null;
+        }
+
+        List<Tag> available = getAvailableTags(player);
+        if (available.isEmpty()) {
+            return null;
+        }
+
+        return available.get(0);
+    }
+
+    public Tag getLowestValueTag(Player player) {
+        if (player == null) {
+            return null;
+        }
+
+        List<Tag> available = getAvailableTags(player);
+        if (available.isEmpty()) {
+            return null;
+        }
+
+        return available.get(available.size() - 1);
+    }
+
     private String value(String text, String fallback) {
         if (text == null) {
             return fallback == null ? "" : fallback;

@@ -9,6 +9,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.TabListManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.PlayerAddressRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
@@ -99,7 +100,7 @@ public class PlayerJoinListener implements Listener {
             try {
                MainManager.getPermissionManager().handleLogin(player);
             } catch (Throwable t) {
-               plugin.getLogger().warning("Could not inject permissions for " + player.getName());
+               Logger.warning("Could not inject permissions for " + player.getName());
             }
          }
       }, 20L);

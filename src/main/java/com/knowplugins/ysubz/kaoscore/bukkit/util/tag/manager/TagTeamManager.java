@@ -8,6 +8,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.KaosPracticeBr
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -283,7 +284,7 @@ public class TagTeamManager {
 
         } catch (IllegalStateException ignored) {
         } catch (Exception e) {
-            plugin.getLogger().warning("Error applying tag to " + player.getName() + ": " + e.getMessage());
+            Logger.warning("Error applying tag to " + player.getName() + ": " + e.getMessage());
         }
     }
 
@@ -303,7 +304,7 @@ public class TagTeamManager {
         } catch (IllegalArgumentException e) {
             return scoreboard.getTeam(teamName);
         } catch (IllegalStateException e) {
-            plugin.getLogger().warning("Failed to create team " + teamName + ": " + e.getMessage());
+            Logger.warning("Failed to create team " + teamName + ": " + e.getMessage());
             return null;
         }
     }
@@ -315,20 +316,20 @@ public class TagTeamManager {
 
         // BLOQUEIO SUPREMO: Prioridade máxima para lutadores ativos dos eventos
         try {
-            us.alleypvp.practice.AlleyPractice alley = us.alleypvp.practice.AlleyPractice.getInstance();
+            live.pvphard.practice.HardPractice alley = live.pvphard.practice.HardPractice.getInstance();
             if (alley != null) {
-                us.alleypvp.practice.feature.event.EventService eventService = alley.getService(us.alleypvp.practice.feature.event.EventService.class);
+                live.pvphard.practice.feature.event.EventService eventService = alley.getService(live.pvphard.practice.feature.event.EventService.class);
                 if (eventService != null) {
-                    us.alleypvp.practice.feature.event.model.ActiveEvent activeEvent = eventService.getActiveEvent();
+                    live.pvphard.practice.feature.event.model.ActiveEvent activeEvent = eventService.getActiveEvent();
                     if (activeEvent != null && activeEvent.isParticipant(player.getUniqueId())) {
-                        us.alleypvp.practice.feature.event.model.EventParticipant participant = activeEvent.getParticipant(player.getUniqueId());
+                        live.pvphard.practice.feature.event.model.EventParticipant participant = activeEvent.getParticipant(player.getUniqueId());
                         if (participant != null) {
-                            if (participant.getState() == us.alleypvp.practice.feature.event.EventPlayerState.FIGHTING) {
+                            if (participant.getState() == live.pvphard.practice.feature.event.EventPlayerState.FIGHTING) {
                                 String color = "§a"; // Cor Genérica (FFA)
-                                us.alleypvp.practice.feature.event.EventType type = activeEvent.getDefinition().getType();
-                                if (type == us.alleypvp.practice.feature.event.EventType.SUMO ||
-                                        type == us.alleypvp.practice.feature.event.EventType.BRACKETS ||
-                                        type == us.alleypvp.practice.feature.event.EventType.GULAG) {
+                                live.pvphard.practice.feature.event.EventType type = activeEvent.getDefinition().getType();
+                                if (type == live.pvphard.practice.feature.event.EventType.SUMO ||
+                                        type == live.pvphard.practice.feature.event.EventType.BRACKETS ||
+                                        type == live.pvphard.practice.feature.event.EventType.GULAG) {
                                     if (player.getUniqueId().equals(activeEvent.getCurrentFighterA())) {
                                         color = "§c";
                                     } else if (player.getUniqueId().equals(activeEvent.getCurrentFighterB())) {
@@ -437,7 +438,7 @@ public class TagTeamManager {
                     }
                 } catch (IllegalStateException ignored) {
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Error removing entry " + entry + " from team " + team.getName() + ": " + e.getMessage());
+                    Logger.warning("Error removing entry " + entry + " from team " + team.getName() + ": " + e.getMessage());
                 }
             }
         }
@@ -584,7 +585,7 @@ public class TagTeamManager {
                 }
             } catch (IllegalStateException ignored) {
             } catch (Exception e) {
-                plugin.getLogger().warning("Error cleaning up team " + name + ": " + e.getMessage());
+                Logger.warning("Error cleaning up team " + name + ": " + e.getMessage());
             }
         }
     }
@@ -609,7 +610,7 @@ public class TagTeamManager {
                 team.unregister();
             } catch (IllegalStateException ignored) {
             } catch (Exception e) {
-                plugin.getLogger().warning("Error clearing team " + name + ": " + e.getMessage());
+                Logger.warning("Error clearing team " + name + ": " + e.getMessage());
             }
         }
     }

@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -43,7 +44,7 @@ public class SkinRepository {
                         return new SkinData(doc.getString("skin_name"), doc.getString("skin_value"), doc.getString("skin_signature"));
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao carregar skin do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar skin do MongoDB: " + e.getMessage());
                 }
                 return null;
             }
@@ -60,7 +61,7 @@ public class SkinRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar skin do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar skin do DB: " + e.getMessage());
                 e.printStackTrace();
             }
             return null;
@@ -105,7 +106,7 @@ public class SkinRepository {
                             new UpdateOptions().upsert(true)
                     );
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar skin no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar skin no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -121,7 +122,7 @@ public class SkinRepository {
                     ps.executeUpdate();
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar skin no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar skin no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -133,7 +134,7 @@ public class SkinRepository {
                 try {
                     getCollection().deleteOne(new Document("uuid", uuid.toString()));
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao deletar skin do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao deletar skin do MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -143,7 +144,7 @@ public class SkinRepository {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao deletar skin do DB: " + e.getMessage());
+                Logger.warning("Erro ao deletar skin do DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

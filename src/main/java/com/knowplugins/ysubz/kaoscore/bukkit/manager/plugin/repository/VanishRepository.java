@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import org.bson.Document;
@@ -40,7 +41,7 @@ public class VanishRepository {
                         return doc.getBoolean("is_vanished", false);
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao carregar vanish do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar vanish do MongoDB: " + e.getMessage());
                 }
                 return false;
             }
@@ -49,11 +50,11 @@ public class VanishRepository {
             try {
                 conn = databaseManager.getConnection();
                 if (conn == null || conn.isClosed()) {
-                    plugin.getLogger().warning("DB connection was closed, attempting reconnect...");
+                    Logger.warning("DB connection was closed, attempting reconnect...");
                     databaseManager.connect();
                     conn = databaseManager.getConnection();
                     if (conn == null || conn.isClosed()) {
-                        plugin.getLogger().warning("Failed to obtain DB connection for vanish load");
+                        Logger.warning("Failed to obtain DB connection for vanish load");
                         return false;
                     }
                 }
@@ -67,7 +68,7 @@ public class VanishRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar vanish do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar vanish do DB: " + e.getMessage());
                 e.printStackTrace();
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -87,7 +88,7 @@ public class VanishRepository {
                     Document doc = new Document("uuid", uuid.toString()).append("is_vanished", isVanished);
                     getCollection().replaceOne(new Document("uuid", uuid.toString()), doc, new ReplaceOptions().upsert(true));
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar vanish no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar vanish no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -99,7 +100,7 @@ public class VanishRepository {
                     ps.executeUpdate();
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar vanish no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar vanish no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

@@ -12,21 +12,33 @@ public class TitleAPI {
         if (title == null) title = "";
         if (subtitle == null) subtitle = "";
         try {
-            Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+            Object chatTitle = getNMSClass("IChatBaseComponent")
+                    .getDeclaredClasses()[0]
+                    .getMethod("a", String.class)
                     .invoke(null, "{\"text\":\"" + title + "\"}");
-            Object chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
+            Object chatSubtitle = getNMSClass("IChatBaseComponent")
+                    .getDeclaredClasses()[0]
+                    .getMethod("a", String.class)
                     .invoke(null, "{\"text\":\"" + subtitle + "\"}");
 
-            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
+            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle")
+                    .getConstructor(
+                    getNMSClass("PacketPlayOutTitle")
+                            .getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
                     int.class, int.class, int.class);
 
             Object packetTitle = titleConstructor.newInstance(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
+                    getNMSClass("PacketPlayOutTitle")
+                            .getDeclaredClasses()[0]
+                            .getField("TITLE")
+                            .get(null), chatTitle,
                     fadeIn, stay, fadeOut);
 
             Object packetSubtitle = titleConstructor.newInstance(
-                    getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatSubtitle,
+                    getNMSClass("PacketPlayOutTitle")
+                            .getDeclaredClasses()[0]
+                            .getField("SUBTITLE")
+                            .get(null), chatSubtitle,
                     fadeIn, stay, fadeOut);
 
             sendPacket(player, packetTitle);

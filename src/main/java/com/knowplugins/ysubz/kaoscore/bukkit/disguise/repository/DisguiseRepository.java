@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -42,7 +43,7 @@ public class DisguiseRepository {
                         return doc.getString("disguise_meta");
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao carregar disguise do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar disguise do MongoDB: " + e.getMessage());
                 }
                 return null;
             }
@@ -58,7 +59,7 @@ public class DisguiseRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar disguise do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar disguise do DB: " + e.getMessage());
                 e.printStackTrace();
             }
             return null;
@@ -78,7 +79,7 @@ public class DisguiseRepository {
                         } catch (Exception ignored) {}
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao carregar disguises ativos do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar disguises ativos do MongoDB: " + e.getMessage());
                 }
                 return result;
             }
@@ -95,7 +96,7 @@ public class DisguiseRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar disguises ativos do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar disguises ativos do DB: " + e.getMessage());
                 e.printStackTrace();
             }
             return result;
@@ -116,7 +117,7 @@ public class DisguiseRepository {
                             new UpdateOptions().upsert(true)
                     );
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar disguise no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar disguise no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -132,7 +133,7 @@ public class DisguiseRepository {
                     ps.executeUpdate();
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar disguise no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar disguise no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

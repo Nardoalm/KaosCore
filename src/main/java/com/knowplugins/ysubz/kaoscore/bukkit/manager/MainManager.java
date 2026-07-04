@@ -16,6 +16,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.manager.world.ClimateManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.world.NPCManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.world.SpawnLimitsManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.sit.SitManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.WhitelistManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,7 +62,7 @@ public class MainManager {
     }
 
     public void loadAll() {
-        plugin.getLogger().info("Inicializando sistemas e managers...");
+        Logger.info("Inicializando sistemas e managers...");
 
         whitelistManager = new WhitelistManager(plugin);
 
@@ -105,11 +106,11 @@ public class MainManager {
         autoBroadcastManager = new AutoBroadcastManager(plugin);
         // spawnLimitsManager = new SpawnLimitsManager(plugin);
 
-        plugin.getLogger().info("Systems loaded successfully.");
+        Logger.info("Systems loaded successfully.");
     }
 
     public void reloadAll() {
-        plugin.getLogger().info("Recarregando managers...");
+        Logger.info("Recarregando managers...");
 
         if (whitelistManager == null) {
             whitelistManager = new WhitelistManager(plugin);
@@ -170,7 +171,7 @@ public class MainManager {
             spawnLimitsManager.reload();
         }
 
-        plugin.getLogger().info("Managers reloaded successfully.");
+        Logger.info("Managers reloaded successfully.");
     }
 
     public static ClimateManager getClimateManager() {

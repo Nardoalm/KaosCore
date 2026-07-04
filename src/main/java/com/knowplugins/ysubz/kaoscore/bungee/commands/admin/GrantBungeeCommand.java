@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -63,7 +64,7 @@ final class GrantBungeeCommand extends BaseBungeeCommand {
             }
         } catch (Exception exception) {
             reply(sender, "§c§lGRANT ➔ §cErro ao aplicar grant.");
-            plugin.getLogger().severe("Falha ao aplicar grant: " + exception.getMessage());
+            Logger.severe("Falha ao aplicar grant: " + exception.getMessage());
         }
     }
 }

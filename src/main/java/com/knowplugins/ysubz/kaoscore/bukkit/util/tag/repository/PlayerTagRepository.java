@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.tag.repository;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
@@ -49,7 +50,7 @@ public class PlayerTagRepository {
                     } catch (Exception ignored) {}
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar tags selecionadas do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao carregar tags selecionadas do MongoDB: " + e.getMessage());
             }
             return result;
         }
@@ -69,7 +70,7 @@ public class PlayerTagRepository {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao carregar tags selecionadas do DB: " + e.getMessage());
+            Logger.warning("Erro ao carregar tags selecionadas do DB: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -96,7 +97,7 @@ public class PlayerTagRepository {
                             new UpdateOptions().upsert(true)
                     );
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar tag selecionada no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar tag selecionada no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -110,7 +111,7 @@ public class PlayerTagRepository {
                     ps.executeUpdate();
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar tag selecionada no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar tag selecionada no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -126,7 +127,7 @@ public class PlayerTagRepository {
                 try {
                     getCollection().deleteOne(new Document("uuid", uuid.toString()));
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao remover tag selecionada no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao remover tag selecionada no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -136,7 +137,7 @@ public class PlayerTagRepository {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao remover tag selecionada no DB: " + e.getMessage());
+                Logger.warning("Erro ao remover tag selecionada no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });

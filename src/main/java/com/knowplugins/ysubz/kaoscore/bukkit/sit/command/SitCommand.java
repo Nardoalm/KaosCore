@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.sit.command;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.cmd.Commands;
+import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.sit.SitManager;
 import org.bukkit.Sound;

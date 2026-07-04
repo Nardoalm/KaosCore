@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee.service;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.BungeeDatabase;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.knowplugins.ysubz.kaoscore.bungee.model.Clan;
@@ -77,7 +78,7 @@ public final class BungeeClanService {
                 loadedClans.put(Texts.normalize(name), clan);
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao carregar clans: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao carregar clans: " + exception.getMessage());
         }
 
         clans.clear();
@@ -157,7 +158,7 @@ public final class BungeeClanService {
             }
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao deletar clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao deletar clan: " + exception.getMessage());
             return false;
         }
     }
@@ -206,7 +207,7 @@ public final class BungeeClanService {
                 connection.setAutoCommit(originalAutoCommit);
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao salvar clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao salvar clan: " + exception.getMessage());
         }
         reload();
     }
@@ -277,7 +278,7 @@ public final class BungeeClanService {
             statement.setLong(4, invite.getTimestamp());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao salvar convite de clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao salvar convite de clan: " + exception.getMessage());
         }
     }
 
@@ -303,7 +304,7 @@ public final class BungeeClanService {
                 }
             }
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao carregar convites de clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao carregar convites de clan: " + exception.getMessage());
         }
         return result;
     }
@@ -328,7 +329,7 @@ public final class BungeeClanService {
             statement.setString(2, clan == null ? clanNameOrTag : clan.getName());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao remover convite de clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao remover convite de clan: " + exception.getMessage());
         }
     }
 
@@ -341,7 +342,7 @@ public final class BungeeClanService {
             statement.setString(1, playerId.toString());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao limpar convites de clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao limpar convites de clan: " + exception.getMessage());
         }
     }
 
@@ -389,7 +390,7 @@ public final class BungeeClanService {
             statement.setString(1, playerId.toString());
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao remover membro de clan: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao remover membro de clan: " + exception.getMessage());
         }
     }
 
@@ -399,7 +400,7 @@ public final class BungeeClanService {
             statement.setLong(1, System.currentTimeMillis() - ClanInvite.EXPIRATION_MILLIS);
             statement.executeUpdate();
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao limpar convites expirados: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao limpar convites expirados: " + exception.getMessage());
         }
     }
 

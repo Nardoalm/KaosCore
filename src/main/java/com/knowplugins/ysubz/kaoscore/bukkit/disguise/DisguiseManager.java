@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.disguise;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.lunarclient.apollo.Apollo;
 import com.lunarclient.apollo.module.nametag.*;
 import com.lunarclient.apollo.recipients.Recipients;
@@ -335,7 +336,7 @@ public class DisguiseManager {
             this.allNicks.addAll(fileNicks);
         }
 
-        plugin.getLogger().info("Sistema de Disguise carregado: " + this.defaultNicks.size() + " nicks fixos e " + (fileNicks != null ? fileNicks.size() : 0) + " nicks do arquivo!");
+        Logger.info("Sistema de Disguise carregado: " + this.defaultNicks.size() + " nicks fixos e " + (fileNicks != null ? fileNicks.size() : 0) + " nicks do arquivo!");
     }
 
     public String getRandomNick() {

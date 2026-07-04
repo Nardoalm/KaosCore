@@ -6,6 +6,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanInvite;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
@@ -162,7 +163,7 @@ public class ClanManager {
                                     loadedPlayerClans.put(uuid, name);
                                 } catch (Exception memberException) {
                                     if (plugin != null) {
-                                        plugin.getLogger().warning("[KaosCore] Membro inválido ignorado ao carregar clan " + name + ": " + memberException.getMessage());
+                                        Logger.warning("[KaosCore] Membro inválido ignorado ao carregar clan " + name + ": " + memberException.getMessage());
                                     }
                                 }
                             }
@@ -177,7 +178,7 @@ public class ClanManager {
                     loadedClans.put(name.toLowerCase(Locale.ROOT), clan);
                 } catch (Exception clanException) {
                     if (plugin != null) {
-                        plugin.getLogger().warning("[KaosCore] Clan inválido ignorado ao carregar dados: " + clanException.getMessage());
+                        Logger.warning("[KaosCore] Clan inválido ignorado ao carregar dados: " + clanException.getMessage());
                     }
                 }
             }
@@ -293,7 +294,7 @@ public class ClanManager {
                     conn.rollback();
                 } catch (SQLException rollbackException) {
                     if (plugin != null) {
-                        plugin.getLogger().warning("[KaosCore] Falha ao desfazer salvamento do clan " + clan.getName() + ": " + rollbackException.getMessage());
+                        Logger.warning("[KaosCore] Falha ao desfazer salvamento do clan " + clan.getName() + ": " + rollbackException.getMessage());
                     }
                 }
                 throw exception;

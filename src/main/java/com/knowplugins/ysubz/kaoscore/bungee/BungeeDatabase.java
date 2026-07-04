@@ -1,5 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bungee;
 
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -66,7 +67,7 @@ public class BungeeDatabase {
         } catch (Exception exception) {
             connected = false;
             disconnect();
-            plugin.getLogger().warning("[KaosCore] Falha ao conectar no MySQL: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao conectar no MySQL: " + exception.getMessage());
             return false;
         }
     }
@@ -123,7 +124,7 @@ public class BungeeDatabase {
             ensureColumn(connection, "clans", "elo", "INT NOT NULL DEFAULT 1000");
             return true;
         } catch (Exception exception) {
-            plugin.getLogger().warning("[KaosCore] Falha ao criar tabelas: " + exception.getMessage());
+            Logger.warning("[KaosCore] Falha ao criar tabelas: " + exception.getMessage());
             return false;
         }
     }

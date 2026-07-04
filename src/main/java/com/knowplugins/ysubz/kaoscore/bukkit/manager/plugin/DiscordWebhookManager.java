@@ -4,6 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.discord.DiscordWebhookClient;
@@ -268,7 +269,7 @@ public class DiscordWebhookManager {
             try {
                 DiscordWebhookClient.postJson(webhook.url, GSON.toJson(payload), DEFAULT_TIMEOUT_MS);
             } catch (Exception e) {
-                plugin.getLogger().warning("[KaosCore] Failed to send webhook (" + webhook.name + "): " + e.getMessage());
+                Logger.warning("[KaosCore] Failed to send webhook (" + webhook.name + "): " + e.getMessage());
             }
         });
     }

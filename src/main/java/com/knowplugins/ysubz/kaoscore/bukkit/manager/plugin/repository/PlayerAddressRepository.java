@@ -4,6 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
@@ -82,7 +83,7 @@ public class PlayerAddressRepository {
                         new UpdateOptions().upsert(true)
                 );
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao registrar IP do jogador no MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao registrar IP do jogador no MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -96,7 +97,7 @@ public class PlayerAddressRepository {
             ps.setLong(5, now);
             ps.executeUpdate();
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao registrar IP do jogador no DB: " + e.getMessage());
+            Logger.warning("Erro ao registrar IP do jogador no DB: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -119,7 +120,7 @@ public class PlayerAddressRepository {
                     return true;
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao verificar histórico de nome do jogador no MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao verificar histórico de nome do jogador no MongoDB: " + e.getMessage());
             }
             return false;
         }
@@ -135,7 +136,7 @@ public class PlayerAddressRepository {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao verificar histórico de nome do jogador no DB: " + e.getMessage());
+            Logger.warning("Erro ao verificar histórico de nome do jogador no DB: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -179,7 +180,7 @@ public class PlayerAddressRepository {
                         }
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao buscar alts no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao buscar alts no MongoDB: " + e.getMessage());
                 }
                 return result;
             }
@@ -209,7 +210,7 @@ public class PlayerAddressRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao buscar alts no DB: " + e.getMessage());
+                Logger.warning("Erro ao buscar alts no DB: " + e.getMessage());
                 e.printStackTrace();
             }
 

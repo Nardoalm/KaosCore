@@ -4,6 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
 import com.mongodb.client.MongoCollection;
@@ -61,7 +62,7 @@ public class PunishmentRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar punicoes ativas do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao carregar punicoes ativas do MongoDB: " + e.getMessage());
             }
             return result;
         }
@@ -78,7 +79,7 @@ public class PunishmentRepository {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao carregar punicoes ativas do DB: " + e.getMessage());
+            Logger.warning("Erro ao carregar punicoes ativas do DB: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -133,7 +134,7 @@ public class PunishmentRepository {
                             .append("active", entry.isActive());
                     getCollection().insertOne(doc);
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao salvar punicao no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao salvar punicao no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -156,7 +157,7 @@ public class PunishmentRepository {
                 ps.setBoolean(10, entry.isActive());
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar punicao no DB: " + e.getMessage());
+                Logger.warning("Erro ao salvar punicao no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -196,7 +197,7 @@ public class PunishmentRepository {
 
                     getCollection().updateMany(Filters.and(filters), update);
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao revogar punicao no MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao revogar punicao no MongoDB: " + e.getMessage());
                 }
                 return;
             }
@@ -222,7 +223,7 @@ public class PunishmentRepository {
                 }
                 ps.executeUpdate();
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao revogar punicao no DB: " + e.getMessage());
+                Logger.warning("Erro ao revogar punicao no DB: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -259,7 +260,7 @@ public class PunishmentRepository {
                         }
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().warning("Erro ao carregar histórico de punicoes do MongoDB: " + e.getMessage());
+                    Logger.warning("Erro ao carregar histórico de punicoes do MongoDB: " + e.getMessage());
                 }
                 return result;
             }
@@ -289,7 +290,7 @@ public class PunishmentRepository {
                     }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar histórico de punicoes do DB: " + e.getMessage());
+                Logger.warning("Erro ao carregar histórico de punicoes do DB: " + e.getMessage());
                 e.printStackTrace();
             }
 
@@ -360,7 +361,7 @@ public class PunishmentRepository {
             String removedReason = rs.getString("removed_reason");
             return new PunishmentEntry(id, targetUuid, targetName, type, reason, createdAt, expiresAt, punisherUuid, punisherName, source, active, removedAt, removedByUuid, removedByName, removedReason);
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao mapear punicao do DB: " + e.getMessage());
+            Logger.warning("Erro ao mapear punicao do DB: " + e.getMessage());
             return null;
         }
     }
@@ -384,7 +385,7 @@ public class PunishmentRepository {
             String removedReason = doc.getString("removed_reason");
             return new PunishmentEntry(id, targetUuid, targetName, type, reason, createdAt, expiresAt, punisherUuid, punisherName, source, active, removedAt, removedByUuid, removedByName, removedReason);
         } catch (Exception e) {
-            plugin.getLogger().warning("Erro ao mapear punicao do MongoDB: " + e.getMessage());
+            Logger.warning("Erro ao mapear punicao do MongoDB: " + e.getMessage());
             return null;
         }
     }

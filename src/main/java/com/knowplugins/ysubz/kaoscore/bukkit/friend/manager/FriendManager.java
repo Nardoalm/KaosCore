@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.account.Account;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.mongodb.client.MongoCollection;
@@ -86,7 +87,7 @@ public class FriendManager {
                     friends.computeIfAbsent(playerId, key -> ConcurrentHashMap.newKeySet()).add(friendId);
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar amigos do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao carregar amigos do MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -104,7 +105,7 @@ public class FriendManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao carregar amigos: " + e.getMessage());
+            Logger.warning("Erro ao carregar amigos: " + e.getMessage());
         }
     }
 
@@ -502,7 +503,7 @@ public class FriendManager {
                     ));
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao carregar pedidos de amizade do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao carregar pedidos de amizade do MongoDB: " + e.getMessage());
             }
             return result;
         }
@@ -525,7 +526,7 @@ public class FriendManager {
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao carregar pedidos de amizade: " + e.getMessage());
+            Logger.warning("Erro ao carregar pedidos de amizade: " + e.getMessage());
         }
 
         return result;
@@ -561,7 +562,7 @@ public class FriendManager {
             try {
                 getCollection("friend_requests").deleteMany(Filters.lt("created_at", threshold));
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao limpar pedidos de amizade expirados do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao limpar pedidos de amizade expirados do MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -571,7 +572,7 @@ public class FriendManager {
             stmt.setLong(1, threshold);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao limpar pedidos de amizade expirados: " + e.getMessage());
+            Logger.warning("Erro ao limpar pedidos de amizade expirados: " + e.getMessage());
         }
     }
 
@@ -599,7 +600,7 @@ public class FriendManager {
                 );
                 getCollection("friends").replaceOne(filter, doc, new ReplaceOptions().upsert(true));
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar amizade no MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao salvar amizade no MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -613,7 +614,7 @@ public class FriendManager {
             stmt.setLong(4, since);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao salvar amizade: " + e.getMessage());
+            Logger.warning("Erro ao salvar amizade: " + e.getMessage());
         }
     }
 
@@ -630,7 +631,7 @@ public class FriendManager {
                 );
                 getCollection("friends").deleteMany(filter);
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao remover amizade do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao remover amizade do MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -643,7 +644,7 @@ public class FriendManager {
             stmt.setString(4, playerId.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao remover amizade: " + e.getMessage());
+            Logger.warning("Erro ao remover amizade: " + e.getMessage());
         }
     }
 
@@ -664,7 +665,7 @@ public class FriendManager {
                 );
                 getCollection("friend_requests").replaceOne(filter, doc, new ReplaceOptions().upsert(true));
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao salvar pedido de amizade no MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao salvar pedido de amizade no MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -679,7 +680,7 @@ public class FriendManager {
             stmt.setLong(4, request.getCreatedAt());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao salvar pedido de amizade: " + e.getMessage());
+            Logger.warning("Erro ao salvar pedido de amizade: " + e.getMessage());
         }
     }
 
@@ -707,7 +708,7 @@ public class FriendManager {
                 );
                 getCollection("friend_requests").deleteOne(filter);
             } catch (Exception e) {
-                plugin.getLogger().warning("Erro ao remover pedido de amizade do MongoDB: " + e.getMessage());
+                Logger.warning("Erro ao remover pedido de amizade do MongoDB: " + e.getMessage());
             }
             return;
         }
@@ -718,7 +719,7 @@ public class FriendManager {
             stmt.setString(2, targetId.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            plugin.getLogger().warning("Erro ao remover pedido de amizade: " + e.getMessage());
+            Logger.warning("Erro ao remover pedido de amizade: " + e.getMessage());
         }
     }
 
