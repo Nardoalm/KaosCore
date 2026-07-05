@@ -259,6 +259,6 @@ public class KaosCore extends JavaPlugin {
             MainManager.getSitManager().cleanupAll();
         }
 
-        Bukkit.getConsoleSender().sendMessage("§c[KaosCore] §cThe plugin has been disabled.");
+        Logger.severe("The plugin has been disabled.");
     }
 }

@@ -1,5 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.command.list;
 
+import com.cheatbreaker.api.CheatBreakerAPI;
+import com.cheatbreaker.api.object.CBNotification;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
@@ -30,10 +32,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class ReportCommand extends Commands {
 
-    private static final String RECEIVE_PERMISSION = "kaoscore.staff.report";
+    private static final String RECEIVE_PERMISSION = "kaoscore.staff";
     private static final long COOLDOWN_MS = 15_000L;
 
     private final Map<UUID, Long> lastReportAt = new ConcurrentHashMap<>();
@@ -117,7 +120,7 @@ public class ReportCommand extends Commands {
                 + " §7for: §f" + reason + " ";
 
         TextComponent message = new TextComponent(base);
-        TextComponent go = new TextComponent("§a§l[GO]");
+        TextComponent go = new TextComponent("§a§l[§aGO§l]");
         go.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/go " + target.getName()));
         go.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to go to " + targetDisplay).create()));
         message.addExtra(go);
@@ -143,7 +146,7 @@ public class ReportCommand extends Commands {
 
             online.spigot().sendMessage(message);
 
-            sendCheatBreakerNotification(online, titleNotification, bodyNotification);
+            CheatBreakerAPI.getInstance().sendNotification(online, new CBNotification(titleNotification + "\n\n" + bodyNotification, 8, TimeUnit.SECONDS, CBNotification.Level.INFO));
 
             if (notificationModule != null) {
                 com.lunarclient.apollo.player.ApolloPlayer apolloPlayer = com.lunarclient.apollo.Apollo.getPlayerManager()
@@ -168,18 +171,18 @@ public class ReportCommand extends Commands {
         reporter.playSound(reporter.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
     }
 
-    private void sendCheatBreakerNotification(Player player, String title, String message) {
-        try {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            out.writeByte(32);
-            out.writeUTF(ChatColor.stripColor(title));
-            out.writeUTF(ChatColor.stripColor(message));
-            out.writeLong(5000L);
-            player.sendPluginMessage(JavaPlugin.getPlugin(KaosCore.class), "CB|Binary", b.toByteArray());
-        } catch (Exception ignored) {
-        }
-    }
+//    private void sendCheatBreakerNotification(Player player, String title, String message) {
+//        try {
+//            ByteArrayOutputStream b = new ByteArrayOutputStream();
+//            DataOutputStream out = new DataOutputStream(b);
+//            out.writeByte(32);
+//            out.writeUTF(ChatColor.stripColor(title));
+//            out.writeUTF(ChatColor.stripColor(message));
+//            out.writeLong(5000L);
+//            player.sendPluginMessage(JavaPlugin.getPlugin(KaosCore.class), "CB|Binary", b.toByteArray());
+//        } catch (Exception ignored) {
+//        }
+//    }
 
     private String getTagColor(Player player) {
         KaosCore core = KaosCore.getInstance();

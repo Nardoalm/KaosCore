@@ -68,6 +68,14 @@
         </dependency>
 
         <dependency>
+            <groupId>com.cheatbreaker.api</groupId>
+            <artifactId>CheatBreakerAPI</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/CheatBreakerAPI.jar</systemPath>
+        </dependency>
+
+        <dependency>
             <groupId>com.lunarclient</groupId>
             <artifactId>apollo-api</artifactId>
             <version>1.2.7</version>

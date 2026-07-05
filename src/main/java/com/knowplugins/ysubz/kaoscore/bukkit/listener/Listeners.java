@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthListener;
-import com.knowplugins.ysubz.kaoscore.bukkit.chat.ChatListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.chat.listener.ChatListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.menu.FriendMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.player.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.world.*;
