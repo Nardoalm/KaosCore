@@ -125,6 +125,36 @@ public final class SkinCacheRepository {
         });
     }
 
+    public void deleteAsync(String nick) {
+        String clean = normalizeNick(nick);
+        if (clean.isEmpty()) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (isMongo()) {
+                try {
+                    getCollection().deleteOne(new Document("nick", clean));
+                } catch (Exception e) {
+                    if (plugin != null) {
+                        Logger.warning("[KaosCore] Erro ao deletar skin cache do MongoDB: " + e.getMessage());
+                    }
+                }
+                return;
+            }
+
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement("DELETE FROM kaoscore_skin_cache WHERE nick = ?")) {
+                ps.setString(1, clean);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                if (plugin != null) {
+                    Logger.warning("[KaosCore] Erro ao deletar skin cache: " + e.getMessage());
+                }
+                e.printStackTrace();
+            }
+        });
+    }
+
     public List<SkinData> loadAnyPoolSync(int limit) {
         int lim = limit <= 0 ? 64 : Math.min(limit, 512);
         List<SkinData> out = new ArrayList<>();

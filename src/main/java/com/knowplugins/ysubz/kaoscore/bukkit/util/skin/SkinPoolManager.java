@@ -299,6 +299,13 @@ public final class SkinPoolManager {
         return nick.trim().toLowerCase(Locale.ROOT);
     }
 
+    public void removeCachedSkin(String nick) {
+        if (nick == null) return;
+        String normalized = normalizeNick(nick);
+        runtimeCacheByNick.remove(normalized);
+        negativeCacheUntilByNick.remove(normalized);
+    }
+
     public static final class CachedSkin {
         public final String nick;
         public final String value;

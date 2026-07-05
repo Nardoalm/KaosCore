@@ -24,7 +24,7 @@ public final class TpallCommand extends Commands {
         }
 
         if (!sender.hasPermission("kaoscore.staff")) {
-            sender.sendMessage(String.valueOf(Constant.NO_PERMISSION_COMMAND));
+            sender.sendMessage(Constant.NO_PERMISSION_COMMAND.getMessage());
             ModerationCommandUtil.play(sender, Sound.CLICK);
             return;
         }

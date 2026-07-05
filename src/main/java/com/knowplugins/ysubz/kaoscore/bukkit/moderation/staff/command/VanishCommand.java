@@ -42,7 +42,7 @@ public class VanishCommand extends Commands {
          return;
       }
 
-
+      // a permissao "kaoscore.vanish" é para VIPs poder usar vanish pra eles
       if (!sender.hasPermission("kaoscore.vanish") || !sender.hasPermission("kaoscore.staff")) {
          sender.sendMessage("§cYou do not have permission to use this command.");
          Player senderPlayer = (Player) sender;

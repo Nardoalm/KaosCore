@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.repository.AuthRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.security.BCrypt;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.session.AuthSession;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.join.JoinMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +23,7 @@ public class AuthManager {
     private final AuthRepository repository;
     private final Map<UUID, AuthSession> pendingPlayers = new ConcurrentHashMap<>();
     private final Map<UUID, AuthProfile> cachedProfiles = new ConcurrentHashMap<>();
+    private final Set<UUID> welcomedPlayers = ConcurrentHashMap.newKeySet();
 
     // Sincronia perfeita entre ProtocolLib e Bukkit Event
     private final Map<String, UUID> verifiedPremiumPlayers = new ConcurrentHashMap<>();
@@ -59,6 +62,10 @@ public class AuthManager {
         cachedProfiles.put(profile.getUuid(), profile);
     }
 
+    public AuthProfile getCachedProfile(UUID uuid) {
+        return uuid == null ? null : cachedProfiles.get(uuid);
+    }
+
     private void loadAuthLocation() {
         if (plugin.getConfig().contains("auth.location.world")) {
             this.authLocation = new Location(
@@ -84,20 +91,53 @@ public class AuthManager {
     }
 
     public void handleJoin(Player player) {
-        AuthProfile profile = cachedProfiles.get(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        if (welcomedPlayers.contains(uuid)) {
+            return;
+        }
+
+        AuthProfile profile = cachedProfiles.get(uuid);
+
+        if (profile == null) {
+            // Try lookup by name in cache first (in case of UUID mismatch)
+            for (AuthProfile p : cachedProfiles.values()) {
+                if (player.getName().equalsIgnoreCase(p.getName())) {
+                    profile = p;
+                    cachedProfiles.remove(p.getUuid());
+                    cachedProfiles.put(uuid, p);
+                    break;
+                }
+            }
+        }
+
+        if (profile == null) {
+            // Try loading from database synchronously (blocking) as a fallback
+            try {
+                profile = repository.loadProfile(uuid, player.getName()).join();
+                if (profile != null) {
+                    cacheProfile(profile);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to load auth profile fallback for " + player.getName());
+                e.printStackTrace();
+            }
+        }
 
         if (profile == null) {
             player.kickPlayer("§cFailed to load authentication profile.");
             return;
         }
 
-        if (profile.isPremium() && player.getUniqueId().version() == 4) {
+        welcomedPlayers.add(uuid);
+
+        if (profile.isPremium() && uuid.version() == 4) {
             player.sendMessage("§aPremium Authentication verified. Welcome!");
+            JoinMessage.sendWelcomeMessage(player);
             return;
         }
 
         Location previous = player.getLocation();
-        pendingPlayers.put(player.getUniqueId(), new AuthSession(profile, previous));
+        pendingPlayers.put(uuid, new AuthSession(profile, previous));
 
         player.setWalkSpeed(0F);
         player.setFlySpeed(0F);
@@ -118,8 +158,10 @@ public class AuthManager {
     }
 
     public void handleQuit(Player player) {
-        pendingPlayers.remove(player.getUniqueId());
-        cachedProfiles.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        pendingPlayers.remove(uuid);
+        cachedProfiles.remove(uuid);
+        welcomedPlayers.remove(uuid);
     }
 
     public boolean isPending(UUID uuid) {
@@ -165,6 +207,7 @@ public class AuthManager {
             player.teleport(session.getPreviousLocation());
         }
         player.sendMessage("§aAuthentication successful.");
+        JoinMessage.sendWelcomeMessage(player);
     }
 
     private void startTimeoutTask() {

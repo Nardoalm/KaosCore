@@ -49,6 +49,12 @@ public final class OriginalSkinManager {
         return uuid == null ? null : ORIGINAL_SKINS.get(uuid);
     }
 
+    public static void remove(UUID uuid) {
+        if (uuid != null) {
+            ORIGINAL_SKINS.remove(uuid);
+        }
+    }
+
     public static Property fetchOriginal(UUID uuid) throws Exception {
         if (uuid == null) {
             return null;

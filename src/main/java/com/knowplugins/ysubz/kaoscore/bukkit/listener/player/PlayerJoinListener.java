@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.account.AccountController;
+import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
@@ -98,6 +99,10 @@ public class PlayerJoinListener implements Listener {
    @EventHandler
    public void onPlayerJoin(PlayerJoinEvent event) {
       Player player = event.getPlayer();
+      for (int i = 0; i < 100; i++) {
+         player.sendMessage("");
+      }
+
       UUID uuid = player.getUniqueId();
       KaosCore plugin = KaosCore.getInstance();
       if (plugin == null) return;
@@ -225,8 +230,6 @@ public class PlayerJoinListener implements Listener {
             Bukkit.getScheduler().runTaskLater(plugin, () -> SkinCommand.setSkinForOthers(player, cache.nick), 10L);
          }
 
-         JoinMessage.sendWelcomeMessage(player);
-
       } else {
          if (MainManager.getDatabaseManager() != null) {
             VanishRepository vanishRepo = new VanishRepository(plugin, MainManager.getDatabaseManager());
@@ -255,12 +258,22 @@ public class PlayerJoinListener implements Listener {
                   return;
                }
 
+               if (isPremiumPlayer(player)) {
+                  Bukkit.getScheduler().runTask(plugin, () -> {
+                     OriginalSkinManager.cache(player, ((CraftPlayer) player).getProfile());
+                  });
+                  return;
+               }
+
                scheduleJoinSkinRefresh(plugin, player);
             });
          } else {
-            scheduleJoinSkinRefresh(plugin, player);
+            if (isPremiumPlayer(player)) {
+               OriginalSkinManager.cache(player, ((CraftPlayer) player).getProfile());
+            } else {
+               scheduleJoinSkinRefresh(plugin, player);
+            }
          }
-         JoinMessage.sendWelcomeMessage(player);
       }
    }
 
@@ -330,11 +343,13 @@ public class PlayerJoinListener implements Listener {
    @EventHandler(priority = EventPriority.MONITOR)
    public void onPlayerQuitCleanup(PlayerQuitEvent event) {
       pendingDisguises.remove(event.getPlayer().getUniqueId());
+      OriginalSkinManager.remove(event.getPlayer().getUniqueId());
    }
 
    @EventHandler(priority = EventPriority.MONITOR)
    public void onPlayerKickCleanup(PlayerKickEvent event) {
       pendingDisguises.remove(event.getPlayer().getUniqueId());
+      OriginalSkinManager.remove(event.getPlayer().getUniqueId());
    }
 
    private void applyStoredSkin(Player player, SkinData skinData) {
@@ -432,5 +447,13 @@ public class PlayerJoinListener implements Listener {
               && skinData.name != null
               && !skinData.name.trim().isEmpty()
               && (skinData.value == null || skinData.value.trim().isEmpty());
+   }
+
+   private boolean isPremiumPlayer(Player player) {
+      if (player == null) return false;
+      KaosCore plugin = KaosCore.getInstance();
+      if (plugin == null || plugin.getAuthManager() == null) return false;
+      AuthProfile profile = plugin.getAuthManager().getCachedProfile(player.getUniqueId());
+      return profile != null && profile.isPremium() && player.getUniqueId().version() == 4;
    }
 }
