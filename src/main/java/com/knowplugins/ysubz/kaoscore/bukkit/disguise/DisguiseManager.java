@@ -85,12 +85,13 @@ public class DisguiseManager {
 
     public void setOriginalName(Player player, String name) {
         if (player == null || name == null) return;
+        if (name.equalsIgnoreCase(getDisguiseNick(player))) return;
         ORIGINAL_NAMES.put(player.getUniqueId(), name);
     }
 
     public String popOriginalName(Player player) {
         if (player == null) return null;
-        return ORIGINAL_NAMES.remove(player.getUniqueId());
+        return ORIGINAL_NAMES.get(player.getUniqueId());
     }
 
     public String getOriginalName(Player player) {

@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class KaosPracticeBridge {
+public class HardPracticeBridge {
 
     private static final String API_CLASS_NAME = "live.pvphard.practice.api.HardPracticeAPI";
     private static final List<String> MATCH_COLOR_POOL = Arrays.asList(
@@ -44,7 +44,7 @@ public class KaosPracticeBridge {
 
         boolean inMatch = invokeBoolean(api, "isInMatch", player);
         boolean spectating = invokeBoolean(api, "isSpectating", player);
-        boolean inEvent = invokeBoolean(api, "isInEvent", player); // Adicionado para consistência
+        boolean inEvent = invokeBoolean(api, "isInEvent", player);
         boolean overrideDefaultNametag = invokeBoolean(api, "shouldOverrideDefaultNametag", player);
         String matchId = invokeString(api, "getMatchId", player);
         String teamId = invokeString(api, "getTeamId", player);
@@ -57,7 +57,6 @@ public class KaosPracticeBridge {
         int priority = invokeContextInt(context, "getPriority");
 
         if (spectating) {
-            // CORREÇÃO: Adicionado o parâmetro 'false' para inEvent (Total 10 parâmetros)
             return new PracticeState(false, false, false, true, "", "§8", "", 9500, teamId, matchId);
         }
 
@@ -67,7 +66,6 @@ public class KaosPracticeBridge {
                 resolvedColor = fallbackMatchColor(teamId.isEmpty() ? player.getUniqueId().toString() : teamId);
             }
             int resolvedPriority = priority > 0 ? priority : 100;
-            // CORREÇÃO: Adicionado o parâmetro inEvent (Total 10 parâmetros)
             return new PracticeState(true, inMatch, inEvent, false, prefix, resolvedColor, suffix, resolvedPriority, teamId, matchId);
         }
 
@@ -84,7 +82,7 @@ public class KaosPracticeBridge {
         } catch (Throwable ignored) {
         }
 
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("KaosPractice");
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("HardPractice");
         if (plugin == null) {
             return null;
         }

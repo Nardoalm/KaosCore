@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.moderation.admin.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,32 +15,33 @@ public class OpCommand extends Commands {
     @Override
     public void perform(CommandSender sender, String label, String[] args) {
         if (!sender.hasPermission("kaoscore.op")) {
-            sender.sendMessage("§c§lOP ➔ §cYou don't have permission to use this command.");
+            sender.sendMessage("§cYou don't have permission to use this command.");
             return;
         }
 
         if (args.length == 0) {
-            sender.sendMessage("§c§lOP ➔ §cUsage: /op <player>");
+            sender.sendMessage("§cUsage: /op <player>");
             return;
         }
 
-        Player player = Bukkit.getPlayer(args[0]);
+        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
-        if(player.isOp()) {
-            sender.sendMessage("§c§lOP ➔ §cThis player is already an operator.");
+        if (player == null || !player.hasPlayedBefore()) {
+            sender.sendMessage("§cPlayer not found.");
             return;
         }
 
-        if (player == null) {
-            sender.sendMessage("§c§lOP ➔ §cPlayer not found.");
+        if (player.isOp()) {
+            sender.sendMessage("§cThis player is already an operator.");
             return;
         }
 
         player.setOp(true);
-        sender.sendMessage("§a§lOP ➔ §aAdministrative permissions have been enabled.");
+        sender.sendMessage("§aAdministrative permissions have been enabled.");
 
-        if (sender instanceof Player) {
-            ((Player) sender).playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 1f);
+        if (sender instanceof Player && player.isOnline()) {
+            Player targetPlayer = player.getPlayer();
+            ((Player) sender).playSound(targetPlayer.getLocation(), Sound.NOTE_PLING, 1f, 1f);
         }
     }
 }

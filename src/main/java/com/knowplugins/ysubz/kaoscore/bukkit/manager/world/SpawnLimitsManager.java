@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.manager.world;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.KaosPracticeBridge;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,14 +19,14 @@ public class SpawnLimitsManager {
     private static final long RETURN_COOLDOWN_MS = 1500L;
 
     private final KaosCore plugin;
-    private final KaosPracticeBridge practiceBridge;
+    private final HardPracticeBridge practiceBridge;
     private final Map<UUID, Long> lastReturn;
 
     private BukkitTask task;
 
     public SpawnLimitsManager(KaosCore plugin) {
         this.plugin = plugin;
-        this.practiceBridge = new KaosPracticeBridge();
+        this.practiceBridge = new HardPracticeBridge();
         this.lastReturn = new ConcurrentHashMap<>();
         reload();
     }

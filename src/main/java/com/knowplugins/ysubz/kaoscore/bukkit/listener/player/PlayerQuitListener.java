@@ -30,7 +30,6 @@ public class PlayerQuitListener implements Listener {
             try {
                 String originalName = disguiseManager.getOriginalName(player);
 
-                // Se o manager perdeu o nome real, forçamos a busca pela UUID no Bukkit
                 if (originalName == null || originalName.trim().isEmpty()) {
                     OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
                     originalName = op != null ? op.getName() : null;

@@ -20,6 +20,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.friend.command.FriendCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.moderation.admin.command.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.moderation.staff.command.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.sit.command.SitCommand;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.command.MedalCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.command.SetTagCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.command.TagCommand;

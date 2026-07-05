@@ -108,10 +108,13 @@ public class DisguiseCommand extends Commands {
                 KaosCore.getInstance().getTagManager().clearDisguiseTag(player.getUniqueId());
             }
 
-            String absoluteRealName = player.getName();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
-            if (op != null && op.getName() != null) {
-                absoluteRealName = op.getName();
+            String absoluteRealName = disguiseManager.getOriginalName(player);
+            if (absoluteRealName == null || absoluteRealName.trim().isEmpty()) {
+                absoluteRealName = player.getName();
+                OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+                if (op != null && op.getName() != null) {
+                    absoluteRealName = op.getName();
+                }
             }
             disguiseManager.setOriginalName(player, absoluteRealName);
 
@@ -203,7 +206,7 @@ public class DisguiseCommand extends Commands {
             String fakeNick = disguiseManager.getDisguiseNick(player);
             if (fakeNick == null) fakeNick = player.getName();
 
-            String originalName = disguiseManager.popOriginalName(player);
+            String originalName = disguiseManager.getOriginalName(player);
             if (originalName == null || originalName.trim().isEmpty()) {
                 OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
                 originalName = (op != null && op.getName() != null) ? op.getName() : player.getName();

@@ -1,4 +1,4 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository;
+package com.knowplugins.ysubz.kaoscore.bukkit.util.medal.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;

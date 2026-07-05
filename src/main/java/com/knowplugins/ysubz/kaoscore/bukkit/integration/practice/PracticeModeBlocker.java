@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 public final class PracticeModeBlocker {
 
     private static final String DEFAULT_BLOCK_MESSAGE = "&cEsta funcao nao pode ser usada durante partidas do Practice.";
-    private static final KaosPracticeBridge PRACTICE_BRIDGE = new KaosPracticeBridge();
+    private static final HardPracticeBridge PRACTICE_BRIDGE = new HardPracticeBridge();
 
     private PracticeModeBlocker() {
     }
@@ -22,7 +22,7 @@ public final class PracticeModeBlocker {
                 return false;
             }
 
-            KaosPracticeBridge.PracticeState state = PRACTICE_BRIDGE.getState(player);
+            HardPracticeBridge.PracticeState state = PRACTICE_BRIDGE.getState(player);
             return state.isInMatch() || state.isSpectating() || PRACTICE_BRIDGE.isQueueing(player) || state.isInEvent();
         } catch (Exception ignored) {
             return false;
@@ -39,7 +39,7 @@ public final class PracticeModeBlocker {
                 return false;
             }
 
-            KaosPracticeBridge.PracticeState state = PRACTICE_BRIDGE.getState(player);
+            HardPracticeBridge.PracticeState state = PRACTICE_BRIDGE.getState(player);
             return state.isInMatch() || state.isInEvent();
         } catch (Exception ignored) {
             return false;

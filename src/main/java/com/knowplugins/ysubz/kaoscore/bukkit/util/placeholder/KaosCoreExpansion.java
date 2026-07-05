@@ -4,7 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.ClanRole;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.manager.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.EffectivePermissions;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.PermissionGroup;

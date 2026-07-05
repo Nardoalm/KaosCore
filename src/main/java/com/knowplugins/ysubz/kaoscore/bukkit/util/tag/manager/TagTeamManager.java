@@ -4,9 +4,9 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.Clan;
 import com.knowplugins.ysubz.kaoscore.bukkit.clan.manager.ClanManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.KaosPracticeBridge;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.MedalManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.manager.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
@@ -31,7 +31,7 @@ public class TagTeamManager {
     private final KaosCore plugin;
     private final TagManager tagManager;
     private final MedalManager medalManager;
-    private final KaosPracticeBridge practiceBridge;
+    private final HardPracticeBridge practiceBridge;
     private final ConcurrentMap<UUID, Scoreboard> trackedBoards;
     private final Set<String> practiceHiddenPairs;
     private BukkitTask syncTask;
@@ -40,7 +40,7 @@ public class TagTeamManager {
         this.plugin = plugin;
         this.tagManager = tagManager;
         this.medalManager = medalManager;
-        this.practiceBridge = new KaosPracticeBridge();
+        this.practiceBridge = new HardPracticeBridge();
         this.trackedBoards = new ConcurrentHashMap<>();
         this.practiceHiddenPairs = ConcurrentHashMap.newKeySet();
     }
@@ -124,7 +124,7 @@ public class TagTeamManager {
         }
 
         Set<String> entries = collectEntries(player, staleEntries);
-        KaosPracticeBridge.PracticeState playerState = practiceBridge.getState(player);
+        HardPracticeBridge.PracticeState playerState = practiceBridge.getState(player);
 
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             Scoreboard scoreboard = resolveScoreboard(viewer);
@@ -164,7 +164,7 @@ public class TagTeamManager {
 
     private void syncAll() {
         Set<UUID> onlinePlayers = new HashSet<>();
-        Map<UUID, KaosPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
+        Map<UUID, HardPracticeBridge.PracticeState> practiceStates = collectPracticeStates();
 
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             onlinePlayers.add(viewer.getUniqueId());
@@ -189,25 +189,25 @@ public class TagTeamManager {
         });
     }
 
-    private void refreshViewer(Player viewer, Scoreboard scoreboard, Map<UUID, KaosPracticeBridge.PracticeState> practiceStates) {
+    private void refreshViewer(Player viewer, Scoreboard scoreboard, Map<UUID, HardPracticeBridge.PracticeState> practiceStates) {
         if (viewer == null || scoreboard == null) {
             return;
         }
 
         trackedBoards.put(viewer.getUniqueId(), scoreboard);
-        KaosPracticeBridge.PracticeState viewerState = practiceStates.get(viewer.getUniqueId());
+        HardPracticeBridge.PracticeState viewerState = practiceStates.get(viewer.getUniqueId());
 
         for (Player target : Bukkit.getOnlinePlayers()) {
-            KaosPracticeBridge.PracticeState targetState = practiceStates.get(target.getUniqueId());
+            HardPracticeBridge.PracticeState targetState = practiceStates.get(target.getUniqueId());
             updateVisibility(viewer, target, viewerState, targetState);
             applyTag(scoreboard, target, collectEntries(target), targetState);
         }
 
-        KaosPracticeBridge.PracticeState selfState = practiceStates.get(viewer.getUniqueId());
+        HardPracticeBridge.PracticeState selfState = practiceStates.get(viewer.getUniqueId());
         applyTag(scoreboard, viewer, collectEntries(viewer), selfState);
     }
 
-    private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries, KaosPracticeBridge.PracticeState practiceState) {
+    private void applyTag(Scoreboard scoreboard, Player player, Set<String> staleEntries, HardPracticeBridge.PracticeState practiceState) {
         if (scoreboard == null || player == null) {
             return;
         }
@@ -309,7 +309,7 @@ public class TagTeamManager {
         }
     }
 
-    private NametagStyle resolveStyle(Player player, KaosPracticeBridge.PracticeState practiceState) {
+    private NametagStyle resolveStyle(Player player, HardPracticeBridge.PracticeState practiceState) {
         if (player == null) {
             return null;
         }
@@ -466,7 +466,7 @@ public class TagTeamManager {
         return entries;
     }
 
-    private void updateVisibility(Player viewer, Player target, KaosPracticeBridge.PracticeState viewerState, KaosPracticeBridge.PracticeState targetState) {
+    private void updateVisibility(Player viewer, Player target, HardPracticeBridge.PracticeState viewerState, HardPracticeBridge.PracticeState targetState) {
         if (viewer == null || target == null || viewer.equals(target)) {
             return;
         }
@@ -484,7 +484,7 @@ public class TagTeamManager {
         clearPracticeVisibility(viewer, target);
     }
 
-    private boolean shouldHideForPractice(KaosPracticeBridge.PracticeState viewerState, KaosPracticeBridge.PracticeState targetState) {
+    private boolean shouldHideForPractice(HardPracticeBridge.PracticeState viewerState, HardPracticeBridge.PracticeState targetState) {
         if (viewerState == null || !viewerState.isInMatch()) {
             return false;
         }
@@ -526,8 +526,8 @@ public class TagTeamManager {
         return viewer.getUniqueId() + ":" + target.getUniqueId();
     }
 
-    private Map<UUID, KaosPracticeBridge.PracticeState> collectPracticeStates() {
-        Map<UUID, KaosPracticeBridge.PracticeState> states = new ConcurrentHashMap<>();
+    private Map<UUID, HardPracticeBridge.PracticeState> collectPracticeStates() {
+        Map<UUID, HardPracticeBridge.PracticeState> states = new ConcurrentHashMap<>();
         for (Player online : Bukkit.getOnlinePlayers()) {
             states.put(online.getUniqueId(), practiceBridge.getState(online));
         }

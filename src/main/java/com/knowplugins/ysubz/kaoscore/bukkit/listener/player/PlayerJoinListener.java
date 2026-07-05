@@ -36,6 +36,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -67,7 +69,12 @@ public class PlayerJoinListener implements Listener {
          try {
             DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
-               disguiseManager.setOriginalName(player, player.getName());
+               String realName = player.getName();
+               if (realName.equalsIgnoreCase(cache.nick)) {
+                  OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+                  realName = op != null && op.getName() != null ? op.getName() : realName;
+               }
+               disguiseManager.setOriginalName(player, realName);
             }
 
             GameProfile profile = ((CraftPlayer) player).getProfile();
@@ -123,7 +130,7 @@ public class PlayerJoinListener implements Listener {
             }
          }
 
-         accounts.trackLogin(uuid, realName, ip); // Agora salva o nick real!
+         accounts.trackLogin(uuid, realName, ip);
       }
 
       event.setJoinMessage(null);
@@ -309,15 +316,25 @@ public class PlayerJoinListener implements Listener {
             String banMessage = messages != null
                     ? messages.buildBanScreen(expires == null, reason, duration)
                     : ("§cYou have been banned.\n\n" +
-                    "  §cReason: §7" + reason + "\n" +
-                    "  §cExpires in: §7" + duration + "\n" +
-                    "  §eBuy your unban at: §bstore.alleypvp.us\n" +
-                    "  §cBanned unfairly? Contact us via\n" +
-                    "  §9§ndiscord.gg/freep");
+                       "  §cReason: §7" + reason + "\n" +
+                       "  §cExpires in: §7" + duration + "\n" +
+                       "  §eBuy your unban at: §bstore.alleypvp.us\n" +
+                       "  §cBanned unfairly? Contact us via\n" +
+                       "  §9§ndiscord.gg/freep");
 
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
          }
       }
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR)
+   public void onPlayerQuitCleanup(PlayerQuitEvent event) {
+      pendingDisguises.remove(event.getPlayer().getUniqueId());
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR)
+   public void onPlayerKickCleanup(PlayerKickEvent event) {
+      pendingDisguises.remove(event.getPlayer().getUniqueId());
    }
 
    private void applyStoredSkin(Player player, SkinData skinData) {

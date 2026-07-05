@@ -1,6 +1,5 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.moderation.staff.command;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.moderation.ModerationCommandUtil;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
@@ -8,7 +7,6 @@ import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
-import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -91,18 +89,11 @@ public class BanCommand extends Commands {
             onlineTarget.kickPlayer(ModerationCommandUtil.buildBanScreen(punishment));
         }
 
-        String targetTagColor = "";
-
-        if(KaosCore.getInstance() != null) {
-            TagManager tagManager = KaosCore.getInstance().getTagManager();
-            targetTagColor = tagManager.getTag(onlineTarget).getColor();
-        }
 
         sender.sendMessage("§a" + target.getName() + " was banned" + (punishment.isPermanent() ? " permanently" : " for " + PunishmentTime.formatRemaining(punishment.getExpiresAt())) + ".");
-        ModerationCommandUtil.play(sender, Sound.EXPLODE);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendMessage("§c§l✘ §e" + targetTagColor + target.getName() + " §cwas banned. Reason: §7" + reason);
+            online.sendMessage("§c§l✘ §4" + target.getName() + " §cwas banned for " + reason + "§c.");
             online.playSound(online.getLocation(), Sound.ARROW_HIT, 1.0f, 1.0f);
         }
     }

@@ -1,8 +1,8 @@
-package com.knowplugins.ysubz.kaoscore.bukkit.manager.player;
+package com.knowplugins.ysubz.kaoscore.bukkit.util.medal.manager;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.PlayerMedalRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.repository.PlayerMedalRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.Medal;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;

@@ -69,7 +69,7 @@ public class CheatBanCommand extends Commands {
             return;
         }
 
-        Bukkit.getBanList(BanList.Type.IP).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
+        Bukkit.getBanList(BanList.Type.NAME).addBan(target.getName(), reason, new Date(expiresAt), punisherName);
 
         sender.sendMessage(ChatColor.GREEN + "§a" + target.getName() + " was banned for 30 days successfully!");
         ModerationCommandUtil.play(sender, Sound.EXPLODE);
@@ -81,7 +81,7 @@ public class CheatBanCommand extends Commands {
         }
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.sendMessage("§c" + target.getName() + " §cwas banned for cheating.");
+            p.sendMessage("§c§l✘ §4" + target.getName() + " §cwas banned for cheating.");
             p.playSound(p.getLocation(), Sound.ARROW_HIT, 1.0f, 1.0f);
         }
     }
