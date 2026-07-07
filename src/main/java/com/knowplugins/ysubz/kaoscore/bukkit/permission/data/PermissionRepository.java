@@ -723,7 +723,7 @@ public final class PermissionRepository {
                     while (rs.next()) {
                         long id = rs.getLong("id");
                         String groupName = normalize(rs.getString("group_name"));
-                        long createdAt = rs.getLong("createdAt");
+                        long createdAt = rs.getLong("created_at");
                         long expiresAt = rs.getLong("expires_at");
                         if (rs.wasNull()) {
                             expiresAt = 0L;

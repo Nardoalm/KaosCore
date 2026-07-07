@@ -269,7 +269,9 @@ public final class SkinPoolManager {
             OriginalSkinManager.cache(player, profile);
             profile.getProperties().removeAll("textures");
             profile.getProperties().put("textures", new Property("textures", skin.value, skin.signature));
-            OriginalSkinManager.cache(player, profile);
+            if (skin.nick != null && skin.nick.equalsIgnoreCase(player.getName())) {
+                OriginalSkinManager.cache(player, profile);
+            }
             new SkinApplier(player).applySkinForSelf();
         } catch (Exception e) {
             if (plugin != null) {

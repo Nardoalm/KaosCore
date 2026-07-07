@@ -8,6 +8,9 @@ import com.knowplugins.ysubz.kaoscore.bukkit.auth.session.AuthSession;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.join.JoinMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -139,8 +142,6 @@ public class AuthManager {
         Location previous = player.getLocation();
         pendingPlayers.put(uuid, new AuthSession(profile, previous));
 
-        player.setWalkSpeed(0F);
-        player.setFlySpeed(0F);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1, false, false));
 
         for (Player online : Bukkit.getOnlinePlayers()) {
@@ -224,5 +225,8 @@ public class AuthManager {
                 }
             }
         }, 20L, 20L);
+    }
+    public Location getAuthLocation() {
+        return authLocation;
     }
 }

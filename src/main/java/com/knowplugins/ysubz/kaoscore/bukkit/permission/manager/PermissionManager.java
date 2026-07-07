@@ -388,6 +388,10 @@ public final class PermissionManager {
         return effectivePermissionsByUuid.get(uuid);
     }
 
+    public PermissionRepository getRepository() {
+        return this.repository;
+    }
+
     public Boolean getGroupPermissionValue(String groupName, String permission) {
         String key = normalize(groupName);
         if (key.isEmpty() || permission == null) {

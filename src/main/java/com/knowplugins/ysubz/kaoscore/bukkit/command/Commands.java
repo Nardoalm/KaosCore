@@ -85,6 +85,7 @@ public abstract class Commands extends Command {
       new HistoryCommand();
       new KickCommand();
       new AltsCommand();
+      new AccCommand();
       new GroupCommand();
       new GrantCommand();
       new UngrantCommand();

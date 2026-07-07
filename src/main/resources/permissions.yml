@@ -2,11 +2,200 @@ sync:
   enabled: true
 
 groups:
-  membro:
+  member:
     default: true
     priority: 0
-    prefix: ""
-    suffix: ""
+    prefix: "&7"
+    suffix: " %kaoscore_clan_tag%"
     inherits: []
-    permissions: []
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.default
 
+  vip:
+    default: false
+    priority: 1
+    prefix: "&2&lVIP &2"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - member
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.vip
+      - kaoscore.fly
+      - kaoscore.vip
+
+  pro:
+    default: false
+    priority: 2
+    prefix: "&d&lPRO &d"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - vip
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.pro
+      - kaoscore.fly
+      - kaoscore.vip
+
+  legend:
+    default: false
+    priority: 3
+    prefix: "&b&lLEGEND &b"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - pro
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.legend
+
+  ace:
+    default: false
+    priority: 4
+    prefix: "&3&lACE &3"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - legend
+    permissions:
+      - kaoscore.disguise
+      - kaoscore.tag.use
+      - kaoscore.tag.ace
+      - kaoscore.fly
+      - kaoscore.vip
+
+  media:
+    default: false
+    priority: 5
+    prefix: "&9&lMEDIA &9"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - ace
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.media
+
+  famous:
+    default: false
+    priority: 6
+    prefix: "&6&lFAMOUS &6"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - media
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.famous
+
+  partner:
+    default: false
+    priority: 7
+    prefix: "&d&lPARTNER &d"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - famous
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.partner
+
+  builder:
+    default: false
+    priority: 8
+    prefix: "&2&lBUILDER &2"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - partner
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.builder
+
+  helper:
+    default: false
+    priority: 9
+    prefix: "&e&lHELPER &e"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - builder
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.helper
+
+  mod:
+    default: false
+    priority: 10
+    prefix: "&5&lMOD &5"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - helper
+    permissions:
+      - kaoscore.disguise
+      - kaoscore.tag.use
+      - kaoscore.tag.mod
+
+  admin:
+    default: false
+    priority: 20
+    prefix: "&c&lADMIN &c"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - mod
+    permissions:
+      - kaoscore.tag.use
+      - kaoscore.tag.admin
+      - kaoscore.tag.set.vip
+      - kaoscore.tag.set.pro
+      - kaoscore.tag.set.mvp
+      - kaoscore.tag.set.ace
+      - kaoscore.tag.set.media
+      - kaoscore.tag.set.famous
+      - kaoscore.tag.set.partner
+      - kaoscore.tag.set.builder
+      - kaoscore.tag.set.helper
+      - kaoscore.tag.set.default
+
+  manager:
+    default: false
+    priority: 30
+    prefix: "&4&lMANAGER &4"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - admin
+    permissions:
+      - '*'
+      - kaoscore.tag.use
+      - kaoscore.tag.manager
+      - kaoscore.tag.set.admin
+      - kaoscore.tag.set.vip
+      - kaoscore.tag.set.pro
+      - kaoscore.tag.set.mvp
+      - kaoscore.tag.set.ace
+      - kaoscore.tag.set.media
+      - kaoscore.tag.set.famous
+      - kaoscore.tag.set.partner
+      - kaoscore.tag.set.builder
+      - kaoscore.tag.set.helper
+      - kaoscore.tag.set.mod
+      - kaoscore.tag.set.default
+
+  owner:
+    default: false
+    priority: 40
+    prefix: "&4&lOWNER &4"
+    suffix: " %kaoscore_clan_tag%"
+    inherits:
+      - manager
+    permissions:
+      - '*'
+      - kaoscore.tag.use
+      - kaoscore.tag.owner
+      - kaoscore.tag.set.manager
+      - kaoscore.tag.set.admin
+      - kaoscore.tag.set.mod
+      - kaoscore.tag.set.helper
+      - kaoscore.tag.set.builder
+      - kaoscore.tag.set.partner
+      - kaoscore.tag.set.famous
+      - kaoscore.tag.set.media
+      - kaoscore.tag.set.ace
+      - kaoscore.tag.set.mvp
+      - kaoscore.tag.set.pro
+      - kaoscore.tag.set.vip
+      - kaoscore.tag.set.default

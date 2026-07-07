@@ -45,6 +45,45 @@ public class SkinCommand extends Commands {
             return;
         }
 
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("reset")) {
+                if (!player.hasPermission("kaoscore.staff.skin")) {
+                    player.sendMessage("§cYou do not have permission to execute this command.");
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                    return;
+                }
+                String targetName = args[1];
+                Player target = Bukkit.getPlayer(targetName);
+                if (target == null) {
+                    player.sendMessage("§cPlayer not online.");
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                    return;
+                }
+                resetSkin(target);
+                player.sendMessage("§aYou have reset §6" + target.getName() + "§a's skin.");
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+                return;
+            } else {
+                if (!player.hasPermission("kaoscore.staff.skin")) {
+                    player.sendMessage("§cYou do not have permission to execute this command.");
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                    return;
+                }
+                String targetName = args[0];
+                String targetSkin = args[1];
+                Player target = Bukkit.getPlayer(targetName);
+                if (target == null) {
+                    player.sendMessage("§cPlayer not online.");
+                    player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+                    return;
+                }
+                setSkin(target, targetSkin);
+                player.sendMessage("§aYou have set §6" + target.getName() + "§a's skin to §6" + targetSkin + "§a.");
+                player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
+                return;
+            }
+        }
+
         if (args.length == 1 && args[0].equalsIgnoreCase("gui")) {
             SkinMenu.open(player);
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
@@ -54,7 +93,12 @@ public class SkinCommand extends Commands {
         if (args.length != 1) {
             player.sendMessage("§eUsage of §6/skin§e:");
             player.sendMessage(" §e* §6/skin <nick>");
-            player.sendMessage(" §e* §6/skin reset");
+            if (player.hasPermission("kaoscore.staff.skin")) {
+                player.sendMessage(" §e* §6/skin reset [player]");
+                player.sendMessage(" §e* §6/skin <player> <skin>");
+            } else {
+                player.sendMessage(" §e* §6/skin reset");
+            }
             player.sendMessage(" §e* §6/skin gui");
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
@@ -206,9 +250,6 @@ public class SkinCommand extends Commands {
                 if (MainManager.getDatabaseManager() != null) {
                     SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                     repo.deleteAsync(id);
-
-                    SkinCacheRepository cache = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
-                    cache.deleteAsync(player.getName());
                 }
                 KaosCore coreInstance = KaosCore.getInstance();
                 if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
@@ -261,6 +302,7 @@ public class SkinCommand extends Commands {
                             GameProfile profile = ((CraftPlayer) player).getProfile();
                             profile.getProperties().removeAll("textures");
                             profile.getProperties().put("textures", finalFetchedOriginal);
+                            OriginalSkinManager.cache(player, profile);
 
                             new SkinApplier(player).applySkinForSelf();
 
@@ -274,9 +316,6 @@ public class SkinCommand extends Commands {
                             if (MainManager.getDatabaseManager() != null) {
                                 SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                                 repo.deleteAsync(id);
-
-                                SkinCacheRepository cache = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
-                                cache.deleteAsync(originalName);
                             }
                             KaosCore coreInstance = KaosCore.getInstance();
                             if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {

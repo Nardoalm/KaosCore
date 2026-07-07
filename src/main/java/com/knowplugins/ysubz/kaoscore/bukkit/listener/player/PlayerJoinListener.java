@@ -359,7 +359,6 @@ public class PlayerJoinListener implements Listener {
 
       try {
          GameProfile profile = ((CraftPlayer) player).getProfile();
-         OriginalSkinManager.cache(player, profile);
 
          profile.getProperties().removeAll("textures");
          profile.getProperties().put("textures", new Property("textures", skinData.value, skinData.signature));

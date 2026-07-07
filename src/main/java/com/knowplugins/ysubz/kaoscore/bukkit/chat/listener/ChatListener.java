@@ -10,7 +10,7 @@ public class ChatListener implements Listener {
 
     private final ChatManager chatManager = new ChatManager();
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
         chatManager.processChat(event);

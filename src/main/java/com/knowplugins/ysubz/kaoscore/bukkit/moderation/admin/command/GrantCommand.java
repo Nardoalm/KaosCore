@@ -101,6 +101,6 @@ public final class GrantCommand extends Commands {
         if (!(sender instanceof Player)) {
             return true;
         }
-        return sender.isOp();
+        return sender.isOp() || sender.hasPermission("kaoscore.grant");
     }
 }

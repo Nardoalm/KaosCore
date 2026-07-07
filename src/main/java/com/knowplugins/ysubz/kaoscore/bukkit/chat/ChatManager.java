@@ -65,6 +65,12 @@ public class ChatManager {
         FileConfiguration config = plugin == null ? null : plugin.getConfig();
 
         boolean isVip = player.hasPermission("kaoscore.vip");
+        if (plugin != null && plugin.getTagManager() != null) {
+            Tag activeTag = plugin.getTagManager().getTag(player);
+            if (activeTag != null && activeTag.getId().equalsIgnoreCase("member")) {
+                isVip = false;
+            }
+        }
         String chatColor = resolveChatColor(config, isVip);
 
         message = isVip ? applyVipFormatting(message, chatColor) : message;
