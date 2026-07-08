@@ -392,27 +392,86 @@ public class AuthPacketListener {
     private void injectFakeStart(Player connection, String username, UUID forcedUUID) {
         UUID uuidToUse = (forcedUUID != null) ? forcedUUID : offlineUuid(username);
 
-        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
-        WrappedGameProfile profile = new WrappedGameProfile(uuidToUse, username);
-        startPacket.getGameProfiles().write(0, profile);
-
         try {
             Object networkManager = getNetworkManager(connection);
             java.lang.reflect.Field channelField = networkManager.getClass().getDeclaredField("channel");
             channelField.setAccessible(true);
             io.netty.channel.Channel channel = (io.netty.channel.Channel) channelField.get(networkManager);
 
-            Object nmsPacket = startPacket.getHandle();
             channel.eventLoop().execute(() -> {
-                channel.pipeline().fireChannelRead(nmsPacket);
+                try {
+                    // Directly manipulate LoginListener state instead of injecting through the Netty
+                    // pipeline, which is unreliable (exceptions in the event loop are swallowed silently).
+                    Class<?> loginListenerClass = Class.forName("net.minecraft.server.v1_8_R3.LoginListener");
+                    Object loginListener = null;
+
+                    for (java.lang.reflect.Field f : networkManager.getClass().getDeclaredFields()) {
+                        f.setAccessible(true);
+                        try {
+                            Object val = f.get(networkManager);
+                            if (val != null && loginListenerClass.isInstance(val)) {
+                                loginListener = val;
+                                break;
+                            }
+                        } catch (Exception ignored) {}
+                    }
+
+                    if (loginListener == null) {
+                        throw new IllegalStateException("LoginListener not found in NetworkManager fields");
+                    }
+
+                    // Set the GameProfile field (search by type to handle field renames in forks)
+                    com.mojang.authlib.GameProfile gameProfile = new com.mojang.authlib.GameProfile(uuidToUse, username);
+                    for (java.lang.reflect.Field f : loginListener.getClass().getDeclaredFields()) {
+                        if (!java.lang.reflect.Modifier.isStatic(f.getModifiers())
+                                && com.mojang.authlib.GameProfile.class.isAssignableFrom(f.getType())) {
+                            f.setAccessible(true);
+                            f.set(loginListener, gameProfile);
+                            break;
+                        }
+                    }
+
+                    // Set login state to READY (search by enum type, find READY constant)
+                    for (java.lang.reflect.Field f : loginListener.getClass().getDeclaredFields()) {
+                        if (!java.lang.reflect.Modifier.isStatic(f.getModifiers()) && f.getType().isEnum()) {
+                            f.setAccessible(true);
+                            for (Object constant : f.getType().getEnumConstants()) {
+                                if ("READY".equalsIgnoreCase(constant.toString())) {
+                                    f.set(loginListener, constant);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    Logger.info("Premium login state set to READY for " + username + " (" + uuidToUse + ")");
+
+                } catch (Exception e) {
+                    Logger.severe("Failed to set LoginListener READY state for " + username + ". Trying pipeline fallback.");
+                    e.printStackTrace();
+                    // Fallback: inject PacketPlayInLoginStart through the pipeline
+                    try {
+                        PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
+                        startPacket.getGameProfiles().write(0, new WrappedGameProfile(uuidToUse, username));
+                        Object nmsPacket = startPacket.getHandle();
+                        channel.pipeline().fireChannelRead(nmsPacket);
+                    } catch (Exception ex) {
+                        Logger.severe("Pipeline fallback also failed for " + username);
+                        ex.printStackTrace();
+                    }
+                }
             });
+
         } catch (Exception e) {
-            Logger.severe("Failed to reinject START packet via Netty for " + username + ". Falling back to ProtocolLib.");
+            Logger.severe("Failed to get NetworkManager/channel for " + username + ". Trying ProtocolLib fallback.");
             e.printStackTrace();
             try {
+                PacketContainer startPacket = protocolManager.createPacket(PacketType.Login.Client.START);
+                startPacket.getGameProfiles().write(0, new WrappedGameProfile(uuidToUse, username));
                 protocolManager.receiveClientPacket(connection, startPacket, false);
             } catch (Exception ex) {
-                Logger.severe("ProtocolLib fallback failed too for " + username);
+                Logger.severe("ProtocolLib fallback also failed for " + username);
                 ex.printStackTrace();
             }
         }
