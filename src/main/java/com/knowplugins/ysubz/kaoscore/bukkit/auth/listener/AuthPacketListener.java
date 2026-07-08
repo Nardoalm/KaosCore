@@ -195,13 +195,86 @@ public class AuthPacketListener {
 
     private void enableNettyEncryption(Object networkManager, SecretKey secretKey) {
         try {
-            Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
-                    .getMethodByParameters("a", SecretKey.class);
-            encryptMethod.setAccessible(true);
-            encryptMethod.invoke(networkManager, secretKey);
+            java.lang.reflect.Field channelField = networkManager.getClass().getDeclaredField("channel");
+            channelField.setAccessible(true);
+            io.netty.channel.Channel channel = (io.netty.channel.Channel) channelField.get(networkManager);
+            
+            java.lang.reflect.Field gField = networkManager.getClass().getDeclaredField("g");
+            gField.setAccessible(true);
+            gField.setBoolean(networkManager, true);
+
+            io.netty.channel.ChannelPipeline pipeline = channel.pipeline();
+            
+            Class<?> minecraftEncryptionClass = Class.forName("net.minecraft.server.v1_8_R3.MinecraftEncryption");
+            Method aMethod = minecraftEncryptionClass.getMethod("a", int.class, java.security.Key.class);
+            Object cipherDecrypt = aMethod.invoke(null, 2, secretKey);
+            Object cipherEncrypt = aMethod.invoke(null, 1, secretKey);
+            
+            Class<?> packetDecrypterClass = Class.forName("net.minecraft.server.v1_8_R3.PacketDecrypter");
+            Class<?> packetEncrypterClass = Class.forName("net.minecraft.server.v1_8_R3.PacketEncrypter");
+            
+            Object decrypter = packetDecrypterClass.getConstructor(javax.crypto.Cipher.class).newInstance(cipherDecrypt);
+            Object encrypter = packetEncrypterClass.getConstructor(javax.crypto.Cipher.class).newInstance(cipherEncrypt);
+
+            List<String> names = pipeline.names();
+            
+            String splitterName = names.contains("splitter") ? "splitter" : null;
+            if (splitterName == null) {
+                for (String name : names) {
+                    if (name.toLowerCase().contains("splitter") || pipeline.get(name).getClass().getSimpleName().contains("Splitter")) {
+                        splitterName = name;
+                        break;
+                    }
+                }
+            }
+            
+            String prependerName = names.contains("prepender") ? "prepender" : null;
+            if (prependerName == null) {
+                for (String name : names) {
+                    if (name.toLowerCase().contains("prepender") || pipeline.get(name).getClass().getSimpleName().contains("Prepender")) {
+                        prependerName = name;
+                        break;
+                    }
+                }
+            }
+            
+            if (splitterName != null) {
+                pipeline.addBefore(splitterName, "decrypt", (io.netty.channel.ChannelHandler) decrypter);
+            } else {
+                if (names.contains("decoder")) {
+                    pipeline.addBefore("decoder", "decrypt", (io.netty.channel.ChannelHandler) decrypter);
+                } else if (names.contains("packet_handler")) {
+                    pipeline.addBefore("packet_handler", "decrypt", (io.netty.channel.ChannelHandler) decrypter);
+                } else {
+                    pipeline.addFirst("decrypt", (io.netty.channel.ChannelHandler) decrypter);
+                }
+            }
+            
+            if (prependerName != null) {
+                pipeline.addBefore(prependerName, "encrypt", (io.netty.channel.ChannelHandler) encrypter);
+            } else {
+                if (names.contains("encoder")) {
+                    pipeline.addBefore("encoder", "encrypt", (io.netty.channel.ChannelHandler) encrypter);
+                } else if (names.contains("packet_handler")) {
+                    pipeline.addBefore("packet_handler", "encrypt", (io.netty.channel.ChannelHandler) encrypter);
+                } else {
+                    pipeline.addFirst("encrypt", (io.netty.channel.ChannelHandler) encrypter);
+                }
+            }
+            
+            Logger.info("Netty encryption pipeline successfully enabled dynamically.");
         } catch (Exception exc) {
-            Logger.severe("Failed to enable Netty encryption pipeline!");
+            Logger.severe("Failed to enable Netty encryption pipeline dynamically! Trying native fallback.");
             exc.printStackTrace();
+            try {
+                Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
+                        .getMethodByParameters("a", SecretKey.class);
+                encryptMethod.setAccessible(true);
+                encryptMethod.invoke(networkManager, secretKey);
+            } catch (Exception e) {
+                Logger.severe("Native fallback method failed as well!");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -308,10 +381,24 @@ public class AuthPacketListener {
         startPacket.getGameProfiles().write(0, profile);
 
         try {
-            protocolManager.receiveClientPacket(connection, startPacket, false);
+            Object networkManager = getNetworkManager(connection);
+            java.lang.reflect.Field channelField = networkManager.getClass().getDeclaredField("channel");
+            channelField.setAccessible(true);
+            io.netty.channel.Channel channel = (io.netty.channel.Channel) channelField.get(networkManager);
+
+            Object nmsPacket = startPacket.getHandle();
+            channel.eventLoop().execute(() -> {
+                channel.pipeline().fireChannelRead(nmsPacket);
+            });
         } catch (Exception e) {
-            Logger.severe("Failed to reinject START packet for " + username);
+            Logger.severe("Failed to reinject START packet via Netty for " + username + ". Falling back to ProtocolLib.");
             e.printStackTrace();
+            try {
+                protocolManager.receiveClientPacket(connection, startPacket, false);
+            } catch (Exception ex) {
+                Logger.severe("ProtocolLib fallback failed too for " + username);
+                ex.printStackTrace();
+            }
         }
     }
 
