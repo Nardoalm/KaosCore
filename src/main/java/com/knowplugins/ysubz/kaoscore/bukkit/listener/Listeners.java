@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.auth.listener.AuthPreLoginListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.chat.listener.ChatListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.menu.FriendMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.player.*;
@@ -21,6 +22,7 @@ public class Listeners {
          PluginManager pm = Bukkit.getPluginManager();
          pm.registerEvents(new PermissionListener(), plugin);
          pm.registerEvents(new AuthListener(plugin), plugin);
+         pm.registerEvents(new AuthPreLoginListener(plugin), plugin);
          pm.registerEvents(new WhitelistListener(), plugin);
          pm.registerEvents(new PlayerJoinListener(), plugin);
          pm.registerEvents(new ChatListener(), plugin);
