@@ -309,13 +309,16 @@ public class PlayerJoinListener implements Listener {
 
       if (MainManager.getDatabaseManager() != null) {
          DisguiseRepository disguiseRepo = new DisguiseRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
-         disguiseRepo.load(e.getUniqueId()).thenAccept(res -> {
+         try {
+            String res = disguiseRepo.load(e.getUniqueId()).join();
             if (res != null && !res.trim().isEmpty()) {
                SkinCacheRepository skinCacheRepo = new SkinCacheRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
                SkinData skin = skinCacheRepo.loadSync(res);
                pendingDisguises.put(e.getUniqueId(), new CachedDisguise(res, skin));
             }
-         });
+         } catch (Exception ex) {
+            Logger.warning("Erro ao carregar disguise em pre-login: " + ex.getMessage());
+         }
       }
 
       if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
