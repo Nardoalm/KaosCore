@@ -179,6 +179,21 @@ public class AuthPacketListener {
 
                             asyncCore.getAuthManager().addVerifiedPremium(validSession.username, premiumUUID);
 
+                            // Directly preload, mark as premium, save, and cache the profile
+                            // because AsyncPlayerPreLoginEvent does NOT fire for premium players
+                            // under our direct LoginListener injection flow.
+                            try {
+                                AuthProfile profile = asyncCore.getAuthManager().getRepository().loadProfile(premiumUUID, validSession.username).join();
+                                if (profile != null) {
+                                    profile.setPremium(true);
+                                    asyncCore.getAuthManager().getRepository().saveProfile(profile);
+                                    asyncCore.getAuthManager().cacheProfile(profile);
+                                    Logger.info("[AuthDebug] Directly preloaded, marked premium, and cached profile for " + validSession.username);
+                                }
+                            } catch (Exception ex) {
+                                Logger.severe("Failed to preload premium profile in AuthPacketListener for " + validSession.username + ": " + ex.getMessage());
+                            }
+
                             injectFakeStart(event.getPlayer(), validSession.username, premiumUUID);
                         } else {
                             kick(event, "§cAuthentication with Mojang servers failed.");
