@@ -210,6 +210,27 @@ public class AuthPacketListener {
 
     private void enableNettyEncryption(Object networkManager, SecretKey secretKey) {
         try {
+            // Tenta chamar o método nativo a(SecretKey) do NetworkManager primeiro.
+            // Isso garante compatibilidade perfeita com as otimizações de pipeline do AetherSpigot.
+            Method encryptMethod = null;
+            for (Method m : networkManager.getClass().getDeclaredMethods()) {
+                if (m.getParameterCount() == 1 && m.getParameterTypes()[0] == SecretKey.class) {
+                    encryptMethod = m;
+                    break;
+                }
+            }
+            if (encryptMethod != null) {
+                encryptMethod.setAccessible(true);
+                encryptMethod.invoke(networkManager, secretKey);
+                Logger.info("Netty encryption pipeline enabled via native NetworkManager method.");
+                return;
+            }
+        } catch (Exception nativeEx) {
+            Logger.warning("Failed to enable Netty encryption via native method. Trying manual injection...");
+            nativeEx.printStackTrace();
+        }
+
+        try {
             java.lang.reflect.Field channelField = networkManager.getClass().getDeclaredField("channel");
             channelField.setAccessible(true);
             io.netty.channel.Channel channel = (io.netty.channel.Channel) channelField.get(networkManager);
@@ -286,26 +307,10 @@ public class AuthPacketListener {
                 }
             }
 
-            Logger.info("Netty encryption pipeline successfully enabled dynamically.");
+            Logger.info("Netty encryption pipeline successfully enabled dynamically (manual fallback).");
         } catch (Exception exc) {
-            Logger.severe("Failed to enable Netty encryption pipeline dynamically! Trying native fallback.");
+            Logger.severe("Failed to enable Netty encryption pipeline dynamically!");
             exc.printStackTrace();
-            try {
-                // Native fallback: let NetworkManager handle encryption itself.
-                // Check first whether decrypt/encrypt are already in the pipeline to avoid duplicates.
-                java.lang.reflect.Field channelField2 = networkManager.getClass().getDeclaredField("channel");
-                channelField2.setAccessible(true);
-                io.netty.channel.Channel ch = (io.netty.channel.Channel) channelField2.get(networkManager);
-                if (ch != null && ch.pipeline().get("decrypt") == null) {
-                    Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
-                            .getMethodByParameters("a", SecretKey.class);
-                    encryptMethod.setAccessible(true);
-                    encryptMethod.invoke(networkManager, secretKey);
-                }
-            } catch (Exception e) {
-                Logger.severe("Native fallback method failed as well!");
-                e.printStackTrace();
-            }
         }
     }
 

@@ -228,12 +228,26 @@ public class AccCommand extends Commands {
                 } catch (Exception ignored) {}
             }
 
+            // Detect fake nick / disguise
+            boolean isFake = false;
+            String originalName = "";
+            if (isOnline) {
+                Player onlinePlayer = Bukkit.getPlayer(targetUuid);
+                if (onlinePlayer != null) {
+                    com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager disguiseManager = MainManager.getDisguiseManager();
+                    if (disguiseManager != null && com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager.isDisguised(onlinePlayer)) {
+                        isFake = true;
+                        originalName = disguiseManager.getOriginalName(onlinePlayer);
+                    }
+                }
+            }
+
             // Compile information and format it
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             sdf.setTimeZone(java.util.TimeZone.getTimeZone("America/Sao_Paulo"));
 
-            String regStr = registeredAt > 0 ? sdf.format(new Date(registeredAt)) : "Não registrado";
-            String lastStr = lastLogin > 0 ? sdf.format(new Date(lastLogin)) : "Nenhum registro";
+            String regStr = registeredAt > 0 ? sdf.format(new Date(registeredAt)) : "Not registered";
+            String lastStr = lastLogin > 0 ? sdf.format(new Date(lastLogin)) : "No record";
 
             // Setup premium status detection
             boolean premiumDetected = premium || targetUuid.version() == 4;
@@ -247,23 +261,39 @@ public class AccCommand extends Commands {
             String finalTargetName = targetName;
             boolean finalPremium = premiumDetected;
             long finalAddressId = addressId;
+            boolean finalIsFake = isFake;
+            String finalOriginalName = originalName;
+
+            // When faking, finalTargetName is the fake nick; real name is finalOriginalName
+            // When not faking, finalTargetName is the real name
+            String displayedRealName = finalIsFake ? finalOriginalName : finalTargetName;
+            String currentNickDisplay = finalIsFake ? finalTargetName : "";
 
             Bukkit.getScheduler().runTask(KaosCore.getInstance(), () -> {
                 sender.sendMessage("§8§m---------------------------------------------");
-                sender.sendMessage("§b§lCONTA ➔ §f" + finalTargetName);
+                if (finalIsFake) {
+                    sender.sendMessage("§b§lACCOUNT ➔ §f" + displayedRealName + " §6§l[FAKE NICK: §e" + currentNickDisplay + "§6§l]");
+                } else {
+                    sender.sendMessage("§b§lACCOUNT ➔ §f" + displayedRealName);
+                }
                 sender.sendMessage("§8§m---------------------------------------------");
-                sender.sendMessage(" §7• §eID de Registro: §f#" + finalAddressId);
-                sender.sendMessage(" §7• §eConexão: " + (isOnline ? "§aOnline" : "§cOffline"));
+                sender.sendMessage(" §7• §eRegistration ID: §f#" + finalAddressId);
+                sender.sendMessage(" §7• §eConnection: " + (isOnline ? "§aOnline" : "§cOffline"));
                 sender.sendMessage(" §7• §eUUID: §7" + targetUuid);
-                sender.sendMessage(" §7• §eConta Original: " + (finalPremium ? "§aSim" : "§cNão"));
-                sender.sendMessage(" §7• §eVínculo Discord: §cNão vinculado");
-                sender.sendMessage(" §7• §eData de Cadastro: §f" + regStr);
-                sender.sendMessage(" §7• §eÚltimo Acesso: §f" + lastStr);
+                sender.sendMessage(" §7• §ePremium Account: " + (finalPremium ? "§aYes" : "§cNo"));
+                sender.sendMessage(" §7• §eDiscord Linked: §cNot linked");
+                if (finalIsFake) {
+                    sender.sendMessage(" §7• §6§lFake Nick: §eYes §7(Current Nick: §f" + currentNickDisplay + "§7, Real Name: §f" + displayedRealName + "§7)");
+                } else {
+                    sender.sendMessage(" §7• §eFake Nick: §cNo");
+                }
+                sender.sendMessage(" §7• §eRegistered At: §f" + regStr);
+                sender.sendMessage(" §7• §eLast Login: §f" + lastStr);
                 sender.sendMessage("§8§m---------------------------------------------");
-                sender.sendMessage("§b§lCARGOS E PERMISSÕES:");
+                sender.sendMessage("§b§lGRANTS AND PERMISSIONS:");
 
                 if (grants.isEmpty()) {
-                    sender.sendMessage(" §7• §7Membro §8(Padrão)");
+                    sender.sendMessage(" §7• §7Member §8(Default)");
                 } else {
                     for (GrantInfo info : grants) {
                         PermissionGroup groupObj = MainManager.getPermissionManager().getGroup(info.groupName);
@@ -271,9 +301,9 @@ public class AccCommand extends Commands {
                         if (groupObj != null && groupObj.getPrefix() != null && !groupObj.getPrefix().isEmpty()) {
                             displayName = ChatColor.translateAlternateColorCodes('&', groupObj.getPrefix().trim());
                         }
-                        sender.sendMessage(" §7• " + displayName + " §8(Ativo)");
+                        sender.sendMessage(" §7• " + displayName + " §8(Active)");
                         String dateStr = info.createdAt > 0 ? sdf.format(new Date(info.createdAt)) : "N/A";
-                        sender.sendMessage("   §8└ §7Ativado em: §f" + dateStr + " §7por: §f" + info.givenBy);
+                        sender.sendMessage("   §8└ §7Activated at: §f" + dateStr + " §7by: §f" + info.givenBy);
                     }
                 }
                 sender.sendMessage("§8§m---------------------------------------------");

@@ -521,9 +521,40 @@ public class ClanCommand extends Commands {
             player.sendMessage("§aAvailable tag colors:");
             TextComponent line = new TextComponent("");
 
+            List<String> palette = Arrays.asList("§c", "§6", "§e", "§a", "§b", "§9", "§d");
+            long offset = System.currentTimeMillis() / 150L;
+
             for (int i = 0; i < availableColors.size(); i++) {
                 TagColorOption option = availableColors.get(i);
-                TextComponent colorComponent = new TextComponent(option.colorCode + option.name);
+                String displayName;
+                if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(option.colorCode)) {
+                    StringBuilder rainbowWord = new StringBuilder();
+                    String word = "RAINBOW";
+                    for (int j = 0; j < word.length(); j++) {
+                        int idx = (int) Math.floorMod(j + offset, (long) palette.size());
+                        rainbowWord.append(palette.get(idx)).append(word.charAt(j));
+                    }
+                    displayName = rainbowWord.toString();
+                } else if ("brazil".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§aBRA§eZIL§f]";
+                } else if ("usa".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§9US§fA§cA§f]";
+                } else if ("argentina".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§bARG§fENTINA§f]";
+                } else if ("na".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§9N§cA§f]";
+                } else if ("sa".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§aS§eA§f]";
+                } else if ("germany".equalsIgnoreCase(option.colorCode)) {
+                    displayName = "§f[§cGER§6MANY§f]";
+                } else {
+                    String nameUpper = option.name.toUpperCase();
+                    if ("§7".equals(option.colorCode) && "GRAY".equals(nameUpper)) {
+                        nameUpper = "DEFAULT";
+                    }
+                    displayName = option.colorCode + nameUpper;
+                }
+                TextComponent colorComponent = new TextComponent(displayName);
                 colorComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan color " + option.token));
                 colorComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Click to use color §f" + option.name).create()));
                 line.addExtra(colorComponent);
@@ -550,7 +581,7 @@ public class ClanCommand extends Commands {
         }
 
         MainManager.getClanManager().setTagColor(clan, selected.colorCode);
-        player.sendMessage("§aTag color changed to: " + selected.preview());
+        player.sendMessage("§aTag color changed to: " + clan.getFormattedTag());
     }
 
     private void cmdEditTag(Player player, String[] args) {
@@ -715,6 +746,25 @@ public class ClanCommand extends Commands {
         TagColorOption animated = TagColorOption.animated();
         if (hasPermission(player, animated.permission)) colors.add(animated);
 
+        if (hasPermission(player, "kaoscore.clan.cortag.brazil")) {
+            colors.add(new TagColorOption("brazil", "Brazil", "brazil", "brazil", "kaoscore.clan.cortag.brazil"));
+        }
+        if (hasPermission(player, "kaoscore.clan.cortag.usa")) {
+            colors.add(new TagColorOption("usa", "USA", "usa", "usa", "kaoscore.clan.cortag.usa"));
+        }
+        if (hasPermission(player, "kaoscore.clan.cortag.argentina")) {
+            colors.add(new TagColorOption("argentina", "Argentina", "argentina", "argentina", "kaoscore.clan.cortag.argentina"));
+        }
+        if (hasPermission(player, "kaoscore.clan.cortag.na")) {
+            colors.add(new TagColorOption("na", "NA", "na", "na", "kaoscore.clan.cortag.na"));
+        }
+        if (hasPermission(player, "kaoscore.clan.cortag.sa")) {
+            colors.add(new TagColorOption("sa", "SA", "sa", "sa", "kaoscore.clan.cortag.sa"));
+        }
+        if (hasPermission(player, "kaoscore.clan.cortag.germany")) {
+            colors.add(new TagColorOption("germany", "Germany", "germany", "germany", "kaoscore.clan.cortag.germany"));
+        }
+
         for (String raw : MainManager.getClanManager().getTagColors()) {
             TagColorOption option = parseTagColor(raw);
             if (option != null && hasPermission(player, option.permission)) colors.add(option);
@@ -732,7 +782,7 @@ public class ClanCommand extends Commands {
             String permission = parts.length > 1 && !parts[1].trim().isEmpty()
                     ? parts[1].trim()
                     : "kaoscore.clan.cortag.animated";
-            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animated", "animated", "animated", permission);
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Rainbow", "rainbow", "rainbow", permission);
         }
 
         if (value.length() < 3 || value.charAt(0) != '§') return null;
@@ -777,11 +827,14 @@ public class ClanCommand extends Commands {
 
         private String preview() {
             if (Clan.ANIMATED_TAG_COLOR.equalsIgnoreCase(colorCode)) return "§f[§cW§6A§eV§aE§f]";
+            if ("brazil".equalsIgnoreCase(colorCode)) return "§f[§aBR§eAZ§f]";
+            if ("usa".equalsIgnoreCase(colorCode)) return "§f[§9U§fS§cA§f]";
+            if ("argentina".equalsIgnoreCase(colorCode)) return "§f[§bAR§fGE§f]";
             return colorCode + name;
         }
 
         private static TagColorOption animated() {
-            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Animated", "animated", "animated", "kaoscore.clan.cortag.animated");
+            return new TagColorOption(Clan.ANIMATED_TAG_COLOR, "Rainbow", "rainbow", "rainbow", "kaoscore.clan.cortag.animated");
         }
     }
 }

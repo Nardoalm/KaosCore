@@ -12,7 +12,7 @@ public class Clan {
 
     public static final String ANIMATED_TAG_COLOR = "wave";
     private static final List<String> ANIMATED_TAG_PALETTE = Arrays.asList(
-            "§c", "§6", "§e", "§a", "§b", "§9", "§d", "§5", "§1"
+            "§c", "§6", "§e", "§a", "§b", "§9", "§d"
     );
 
     private String name;
@@ -69,6 +69,24 @@ public class Clan {
         if (isAnimatedTagColor()) {
             return buildAnimatedTag();
         }
+        if ("brazil".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§a", "§e") + "§f]";
+        }
+        if ("usa".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildThreeColorTag("§9", "§f", "§c") + "§f]";
+        }
+        if ("argentina".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§b", "§f") + "§f]";
+        }
+        if ("na".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§9", "§c") + "§f]";
+        }
+        if ("sa".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§a", "§e") + "§f]";
+        }
+        if ("germany".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§c", "§6") + "§f]";
+        }
         return tagColor + "[" + tag + "]";
     }
 
@@ -76,7 +94,56 @@ public class Clan {
         if (isAnimatedTagColor()) {
             return "§f[" + getAnimatedPrimaryColor() + tag + "§f]";
         }
+        if ("brazil".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§a", "§e") + "§f]";
+        }
+        if ("usa".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildThreeColorTag("§9", "§f", "§c") + "§f]";
+        }
+        if ("argentina".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§b", "§f") + "§f]";
+        }
+        if ("na".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§9", "§c") + "§f]";
+        }
+        if ("sa".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§a", "§e") + "§f]";
+        }
+        if ("germany".equalsIgnoreCase(tagColor)) {
+            return "§f[" + buildTwoColorTag("§c", "§6") + "§f]";
+        }
         return tagColor + "[" + tag + "]";
+    }
+
+    private String buildTwoColorTag(String color1, String color2) {
+        String safeTag = tag == null ? "" : tag.toUpperCase(Locale.ROOT);
+        if (safeTag.isEmpty()) {
+            return "";
+        }
+        int mid = (safeTag.length() + 1) / 2;
+        String first = safeTag.substring(0, mid);
+        String second = safeTag.substring(mid);
+        return color1 + first + color2 + second;
+    }
+
+    private String buildThreeColorTag(String color1, String color2, String color3) {
+        String safeTag = tag == null ? "" : tag.toUpperCase(Locale.ROOT);
+        if (safeTag.isEmpty()) {
+            return "";
+        }
+        int len = safeTag.length();
+        // Split into 3 roughly equal parts; middle gets the extra char if not divisible by 3
+        int first = len / 3;
+        int last = len / 3;
+        int mid = len - first - last;
+        String p1 = safeTag.substring(0, first);
+        String p2 = safeTag.substring(first, first + mid);
+        String p3 = safeTag.substring(first + mid);
+        if (first == 0) {
+            // Very short tag: just blue/red split
+            return buildTwoColorTag(color1, color3);
+        }
+        return color1 + p1 + color2 + p2 + color3 + p3;
     }
 
     public boolean isAnimatedTagColor() {

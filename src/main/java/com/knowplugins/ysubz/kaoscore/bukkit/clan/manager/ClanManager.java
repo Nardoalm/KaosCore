@@ -65,10 +65,8 @@ public class ClanManager {
         tagColors.addAll(plugin.getConfig().getStringList("clan.tag-colors"));
         if (tagColors.isEmpty()) {
             tagColors.addAll(Arrays.asList(
-                    "§0Black", "§1Dark blue", "§2Dark green", "§3Dark aqua",
-                    "§4Dark red", "§5Purple", "§6Gold", "§7Gray",
-                    "§8Dark gray", "§9Blue", "§aGreen", "§bAqua",
-                    "§cRed", "§dLight purple", "§eYellow", "§fWhite"
+                    "§6Gold", "§9Blue", "§aGreen", "§bAqua",
+                    "§cRed", "§dPink", "§eYellow", "§fWhite"
             ));
         }
     }
