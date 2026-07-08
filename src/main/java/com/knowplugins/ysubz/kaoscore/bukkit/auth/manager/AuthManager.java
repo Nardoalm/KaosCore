@@ -136,6 +136,16 @@ public class AuthManager {
         if (profile.isPremium()) {
             player.sendMessage("§aPremium Authentication verified. Welcome!");
             JoinMessage.sendWelcomeMessage(player);
+            if (Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
+                try {
+                    live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.feature.spawn.SpawnService.class).teleportToSpawn(player);
+                    live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.feature.hotbar.HotbarService.class).applyHotbarItems(player);
+                } catch (Exception e) {
+                    player.teleport(player.getWorld().getSpawnLocation());
+                }
+            } else {
+                player.teleport(player.getWorld().getSpawnLocation());
+            }
             return;
         }
 
@@ -143,6 +153,11 @@ public class AuthManager {
         pendingPlayers.put(uuid, new AuthSession(profile, previous));
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1, false, false));
+
+        // Clear inventory so slots are empty during authentication
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+        player.updateInventory();
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             online.hidePlayer(player);
@@ -207,8 +222,19 @@ public class AuthManager {
             player.showPlayer(online);
         }
 
-        if (session.getPreviousLocation() != null && authLocation != null) {
-            player.teleport(session.getPreviousLocation());
+        if (Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
+            try {
+                live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.feature.spawn.SpawnService.class).teleportToSpawn(player);
+                live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.feature.hotbar.HotbarService.class).applyHotbarItems(player);
+            } catch (Exception e) {
+                if (session.getPreviousLocation() != null && authLocation != null) {
+                    player.teleport(session.getPreviousLocation());
+                }
+            }
+        } else {
+            if (session.getPreviousLocation() != null && authLocation != null) {
+                player.teleport(session.getPreviousLocation());
+            }
         }
         player.sendMessage("§aAuthentication successful.");
         JoinMessage.sendWelcomeMessage(player);

@@ -35,9 +35,8 @@ public class LoginCommand extends Commands {
 
         if (!plugin.getAuthManager().login(player, args[0])) {
             player.sendMessage("§cIncorrect password or you are not registered.");
+            return;
         }
-
-        plugin.getAuthManager().login(player,  args[0]);
 
         if(!plugin.getAuthManager().isPending(player.getUniqueId())) {
             if(Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
