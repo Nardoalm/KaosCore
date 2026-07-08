@@ -447,6 +447,28 @@ public class AuthPacketListener {
 
                     Logger.info("Premium login state set to READY for " + username + " (" + uuidToUse + ")");
 
+                    // Immediately invoke LoginListener.c() (the tick method) on the Bukkit main
+                    // thread so loginPlayer() is called without waiting for the next server tick.
+                    // This prevents a race condition where the timeout counter hits 600 before
+                    // loginPlayer() is triggered, causing "Took too long to log in" even though
+                    // READY was successfully set.
+                    final Object finalLoginListener = loginListener;
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        try {
+                            for (java.lang.reflect.Method m : finalLoginListener.getClass().getDeclaredMethods()) {
+                                if ("c".equals(m.getName()) && m.getParameterCount() == 0
+                                        && m.getReturnType() == void.class) {
+                                    m.setAccessible(true);
+                                    m.invoke(finalLoginListener);
+                                    break;
+                                }
+                            }
+                        } catch (Exception ex) {
+                            // LoginListener.c() may throw if player was already processed — ignore.
+                            Logger.severe("LoginListener tick invocation failed for " + username + ": " + ex.getMessage());
+                        }
+                    });
+
                 } catch (Exception e) {
                     Logger.severe("Failed to set LoginListener READY state for " + username + ". Trying pipeline fallback.");
                     e.printStackTrace();
