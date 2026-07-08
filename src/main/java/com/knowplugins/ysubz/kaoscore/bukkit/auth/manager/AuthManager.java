@@ -126,6 +126,8 @@ public class AuthManager {
             }
         }
 
+        plugin.getLogger().info("[AuthDebug] handleJoin for player=" + player.getName() + ", uuid=" + uuid + ", profileLoaded=" + (profile != null) + ", isPremium=" + (profile != null && profile.isPremium()));
+
         if (profile == null) {
             player.kickPlayer("§cFailed to load authentication profile.");
             return;

@@ -32,6 +32,8 @@ public class AuthPreLoginListener implements Listener {
         }
 
         UUID finalUUID = event.getUniqueId();
+        plugin.getLogger().info("[AuthDebug] PreLogin for name=" + name + ", eventUUID=" + finalUUID + ", premiumUUID=" + premiumUUID + ", cachedMojang=" + cachedMojangStatus);
+
         if (finalUUID == null) {
             if (premiumUUID != null) {
                 finalUUID = premiumUUID;
@@ -52,6 +54,7 @@ public class AuthPreLoginListener implements Listener {
                 if (premiumUUID != null) {
                     profile.setPremium(true);
                     plugin.getAuthManager().getRepository().saveProfile(profile);
+                    plugin.getLogger().info("[AuthDebug] Marked and saved profile for " + name + " as PREMIUM (UUID=" + finalUUID + ")");
                 } else if (!profile.isRegistered()) {
                     if (cachedMojangStatus != null && cachedMojangStatus) {
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
@@ -60,6 +63,7 @@ public class AuthPreLoginListener implements Listener {
                     }
                 }
                 plugin.getAuthManager().cacheProfile(profile);
+                plugin.getLogger().info("[AuthDebug] Cached profile for " + name + " (premium=" + profile.isPremium() + ", registered=" + profile.isRegistered() + ")");
             }
 
         } catch (Exception e) {

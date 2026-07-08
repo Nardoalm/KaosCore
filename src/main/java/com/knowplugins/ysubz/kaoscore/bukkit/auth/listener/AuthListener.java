@@ -45,7 +45,9 @@ public class AuthListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         if (plugin.getAuthManager().isPending(event.getPlayer().getUniqueId())) {
-            String cmd = event.getMessage().split(" ")[0].toLowerCase();
+            String message = event.getMessage().trim();
+            String cmd = message.split(" ")[0].toLowerCase();
+            plugin.getLogger().info("[AuthDebug] Pending player " + event.getPlayer().getName() + " issued command: " + message + " (parsed cmd: " + cmd + ")");
             if (!cmd.equals("/login") && !cmd.equals("/register") && !cmd.equals("/reg")) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage("§cYou must authenticate first.");
