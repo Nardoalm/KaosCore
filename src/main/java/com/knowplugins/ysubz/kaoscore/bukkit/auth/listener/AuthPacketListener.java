@@ -198,50 +198,50 @@ public class AuthPacketListener {
             java.lang.reflect.Field channelField = networkManager.getClass().getDeclaredField("channel");
             channelField.setAccessible(true);
             io.netty.channel.Channel channel = (io.netty.channel.Channel) channelField.get(networkManager);
-            
-            java.lang.reflect.Field gField = networkManager.getClass().getDeclaredField("g");
-            gField.setAccessible(true);
-            gField.setBoolean(networkManager, true);
+
+            // Locate the encryption-enabled boolean field by type, not by name,
+            // since field names vary between Spigot forks (e.g. AetherSpigot uses 'g' for Logger).
+            java.lang.reflect.Field encryptionField = null;
+            for (java.lang.reflect.Field field : networkManager.getClass().getDeclaredFields()) {
+                if (field.getType() == boolean.class && !java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    field.setAccessible(true);
+                    encryptionField = field;
+                    // Take the last non-static boolean field — that's the encryption flag in all known forks.
+                }
+            }
+            if (encryptionField != null) {
+                encryptionField.setBoolean(networkManager, true);
+            }
 
             io.netty.channel.ChannelPipeline pipeline = channel.pipeline();
-            
+
             Class<?> minecraftEncryptionClass = Class.forName("net.minecraft.server.v1_8_R3.MinecraftEncryption");
             Method aMethod = minecraftEncryptionClass.getMethod("a", int.class, java.security.Key.class);
             Object cipherDecrypt = aMethod.invoke(null, 2, secretKey);
             Object cipherEncrypt = aMethod.invoke(null, 1, secretKey);
-            
+
             Class<?> packetDecrypterClass = Class.forName("net.minecraft.server.v1_8_R3.PacketDecrypter");
             Class<?> packetEncrypterClass = Class.forName("net.minecraft.server.v1_8_R3.PacketEncrypter");
-            
+
             Object decrypter = packetDecrypterClass.getConstructor(javax.crypto.Cipher.class).newInstance(cipherDecrypt);
             Object encrypter = packetEncrypterClass.getConstructor(javax.crypto.Cipher.class).newInstance(cipherEncrypt);
 
             List<String> names = pipeline.names();
-            
-            String splitterName = names.contains("splitter") ? "splitter" : null;
-            if (splitterName == null) {
-                for (String name : names) {
-                    if (name.toLowerCase().contains("splitter") || pipeline.get(name).getClass().getSimpleName().contains("Splitter")) {
-                        splitterName = name;
-                        break;
+
+            // Only add handlers if they are not already present (avoids Duplicate handler name)
+            if (!names.contains("decrypt")) {
+                String splitterName = names.contains("splitter") ? "splitter" : null;
+                if (splitterName == null) {
+                    for (String name : names) {
+                        if (name.toLowerCase().contains("splitter") || pipeline.get(name).getClass().getSimpleName().contains("Splitter")) {
+                            splitterName = name;
+                            break;
+                        }
                     }
                 }
-            }
-            
-            String prependerName = names.contains("prepender") ? "prepender" : null;
-            if (prependerName == null) {
-                for (String name : names) {
-                    if (name.toLowerCase().contains("prepender") || pipeline.get(name).getClass().getSimpleName().contains("Prepender")) {
-                        prependerName = name;
-                        break;
-                    }
-                }
-            }
-            
-            if (splitterName != null) {
-                pipeline.addBefore(splitterName, "decrypt", (io.netty.channel.ChannelHandler) decrypter);
-            } else {
-                if (names.contains("decoder")) {
+                if (splitterName != null) {
+                    pipeline.addBefore(splitterName, "decrypt", (io.netty.channel.ChannelHandler) decrypter);
+                } else if (names.contains("decoder")) {
                     pipeline.addBefore("decoder", "decrypt", (io.netty.channel.ChannelHandler) decrypter);
                 } else if (names.contains("packet_handler")) {
                     pipeline.addBefore("packet_handler", "decrypt", (io.netty.channel.ChannelHandler) decrypter);
@@ -249,11 +249,20 @@ public class AuthPacketListener {
                     pipeline.addFirst("decrypt", (io.netty.channel.ChannelHandler) decrypter);
                 }
             }
-            
-            if (prependerName != null) {
-                pipeline.addBefore(prependerName, "encrypt", (io.netty.channel.ChannelHandler) encrypter);
-            } else {
-                if (names.contains("encoder")) {
+
+            if (!names.contains("encrypt")) {
+                String prependerName = names.contains("prepender") ? "prepender" : null;
+                if (prependerName == null) {
+                    for (String name : names) {
+                        if (name.toLowerCase().contains("prepender") || pipeline.get(name).getClass().getSimpleName().contains("Prepender")) {
+                            prependerName = name;
+                            break;
+                        }
+                    }
+                }
+                if (prependerName != null) {
+                    pipeline.addBefore(prependerName, "encrypt", (io.netty.channel.ChannelHandler) encrypter);
+                } else if (names.contains("encoder")) {
                     pipeline.addBefore("encoder", "encrypt", (io.netty.channel.ChannelHandler) encrypter);
                 } else if (names.contains("packet_handler")) {
                     pipeline.addBefore("packet_handler", "encrypt", (io.netty.channel.ChannelHandler) encrypter);
@@ -261,16 +270,23 @@ public class AuthPacketListener {
                     pipeline.addFirst("encrypt", (io.netty.channel.ChannelHandler) encrypter);
                 }
             }
-            
+
             Logger.info("Netty encryption pipeline successfully enabled dynamically.");
         } catch (Exception exc) {
             Logger.severe("Failed to enable Netty encryption pipeline dynamically! Trying native fallback.");
             exc.printStackTrace();
             try {
-                Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
-                        .getMethodByParameters("a", SecretKey.class);
-                encryptMethod.setAccessible(true);
-                encryptMethod.invoke(networkManager, secretKey);
+                // Native fallback: let NetworkManager handle encryption itself.
+                // Check first whether decrypt/encrypt are already in the pipeline to avoid duplicates.
+                java.lang.reflect.Field channelField2 = networkManager.getClass().getDeclaredField("channel");
+                channelField2.setAccessible(true);
+                io.netty.channel.Channel ch = (io.netty.channel.Channel) channelField2.get(networkManager);
+                if (ch != null && ch.pipeline().get("decrypt") == null) {
+                    Method encryptMethod = FuzzyReflection.fromClass(networkManager.getClass())
+                            .getMethodByParameters("a", SecretKey.class);
+                    encryptMethod.setAccessible(true);
+                    encryptMethod.invoke(networkManager, secretKey);
+                }
             } catch (Exception e) {
                 Logger.severe("Native fallback method failed as well!");
                 e.printStackTrace();
