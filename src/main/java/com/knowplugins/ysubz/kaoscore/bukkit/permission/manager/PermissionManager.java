@@ -336,19 +336,11 @@ public final class PermissionManager {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 preloadUser(uuid, player.getName());
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (player.isOnline()) {
-                        try {
-                            player.recalculatePermissions();
-                        } catch (Exception ignored) {
-                        }
-                    }
+                    recalcIfOnline(uuid);
                 });
             });
         } else {
-            try {
-                player.recalculatePermissions();
-            } catch (Exception ignored) {
-            }
+            recalcIfOnline(uuid);
         }
     }
 
@@ -499,6 +491,11 @@ public final class PermissionManager {
         Player online = Bukkit.getPlayer(uuid);
         if (online != null && online.isOnline()) {
             try {
+                Boolean hasAll = getPermissionValue(uuid, "*");
+                boolean wantOp = hasAll != null && hasAll;
+                if (online.isOp() != wantOp) {
+                    online.setOp(wantOp);
+                }
                 online.recalculatePermissions();
             } catch (Exception ignored) {
             }

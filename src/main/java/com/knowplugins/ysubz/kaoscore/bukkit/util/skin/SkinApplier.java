@@ -68,16 +68,19 @@ public class SkinApplier {
         EntityPlayer entityPlayer = craftPlayer.getHandle();
         WorldServer worldServer = (WorldServer) entityPlayer.world;
 
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
+        // We do NOT send REMOVE_PLAYER to the player themselves, as it causes client-side crashes
+        // due to the player profile being missing during subsequent packet rendering.
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
-
+ 
+        // Send a single PacketPlayOutRespawn in the actual dimension.
+        // Changing dimensions causes the client to clear chunks and fall into the void.
         entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
                 worldServer.dimension,
                 worldServer.getDifficulty(),
                 worldServer.getWorldData().getType(),
                 entityPlayer.playerInteractManager.getGameMode()
         ));
-
+ 
         player.teleport(currentLocation);
     }
 
