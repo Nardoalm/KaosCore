@@ -51,6 +51,7 @@ public class AuthPreLoginListener implements Listener {
             if (profile != null) {
                 if (premiumUUID != null) {
                     profile.setPremium(true);
+                    plugin.getAuthManager().getRepository().saveProfile(profile);
                 } else if (!profile.isRegistered()) {
                     if (cachedMojangStatus != null && cachedMojangStatus) {
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,

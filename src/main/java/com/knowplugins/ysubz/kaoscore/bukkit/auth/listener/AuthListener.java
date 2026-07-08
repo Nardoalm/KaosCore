@@ -31,18 +31,13 @@ public class AuthListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (plugin.getAuthManager().isPending(event.getPlayer().getUniqueId())) {
-            org.bukkit.Location loc = plugin.getAuthManager().getAuthLocation();
-            if (loc != null && loc.getWorld() != null && event.getTo().getWorld() == loc.getWorld()) {
-                double diffX = Math.abs(event.getTo().getX() - loc.getX());
-                double diffZ = Math.abs(event.getTo().getZ() - loc.getZ());
-                double diffY = Math.abs(event.getTo().getY() - loc.getY());
-                if (diffX > 1.5 || diffZ > 1.5 || diffY > 1.5) {
-                    event.setTo(loc);
-                }
-            } else {
-                if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getY() != event.getTo().getY() || event.getFrom().getZ() != event.getTo().getZ()) {
-                    event.setTo(event.getFrom());
-                }
+            org.bukkit.Location from = event.getFrom();
+            org.bukkit.Location to = event.getTo();
+            if (from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ()) {
+                org.bukkit.Location newLoc = from.clone();
+                newLoc.setYaw(to.getYaw());
+                newLoc.setPitch(to.getPitch());
+                event.setTo(newLoc);
             }
         }
     }

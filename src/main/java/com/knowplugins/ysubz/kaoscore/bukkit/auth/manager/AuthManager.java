@@ -133,7 +133,7 @@ public class AuthManager {
 
         welcomedPlayers.add(uuid);
 
-        if (profile.isPremium() && uuid.version() == 4) {
+        if (profile.isPremium()) {
             player.sendMessage("§aPremium Authentication verified. Welcome!");
             JoinMessage.sendWelcomeMessage(player);
             return;
@@ -149,7 +149,10 @@ public class AuthManager {
             player.hidePlayer(online);
         }
 
-        if (authLocation != null) player.teleport(authLocation);
+        Location teleportLoc = (authLocation != null) ? authLocation : player.getWorld().getSpawnLocation();
+        if (teleportLoc != null) {
+            player.teleport(teleportLoc);
+        }
 
         if (profile.isRegistered()) {
             player.sendMessage("§ePlease authenticate using: §b/login <password>");
