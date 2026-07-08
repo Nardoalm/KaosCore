@@ -431,18 +431,49 @@ public class AuthPacketListener {
                         }
                     }
 
-                    // Set login state to READY (search by enum type, find READY constant)
+                    // Set login state to READY_TO_ACCEPT / READY (search by enum type, find appropriate constant)
+                    boolean stateSet = false;
                     for (java.lang.reflect.Field f : loginListener.getClass().getDeclaredFields()) {
                         if (!java.lang.reflect.Modifier.isStatic(f.getModifiers()) && f.getType().isEnum()) {
                             f.setAccessible(true);
+                            Object targetConstant = null;
+                            // 1. Try READY_TO_ACCEPT (NMS 1.8.8 standard name)
                             for (Object constant : f.getType().getEnumConstants()) {
-                                if ("READY".equalsIgnoreCase(constant.toString())) {
-                                    f.set(loginListener, constant);
+                                if ("READY_TO_ACCEPT".equalsIgnoreCase(constant.toString())) {
+                                    targetConstant = constant;
                                     break;
                                 }
                             }
+                            // 2. Try READY (fallback for other versions)
+                            if (targetConstant == null) {
+                                for (Object constant : f.getType().getEnumConstants()) {
+                                    if ("READY".equalsIgnoreCase(constant.toString())) {
+                                        targetConstant = constant;
+                                        break;
+                                    }
+                                }
+                            }
+                            // 3. Containment fallback
+                            if (targetConstant == null) {
+                                for (Object constant : f.getType().getEnumConstants()) {
+                                    String constStr = constant.toString();
+                                    if (constStr.contains("READY") || constStr.contains("ACCEPT")) {
+                                        targetConstant = constant;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (targetConstant != null) {
+                                f.set(loginListener, targetConstant);
+                                Logger.info("Premium login state field " + f.getName() + " set to " + targetConstant.toString() + " for " + username);
+                                stateSet = true;
+                            }
                             break;
                         }
+                    }
+
+                    if (!stateSet) {
+                        throw new IllegalStateException("Could not find or set a suitable READY / READY_TO_ACCEPT enum state in LoginListener");
                     }
 
                     Logger.info("Premium login state set to READY for " + username + " (" + uuidToUse + ")");
