@@ -173,15 +173,8 @@ public class DisguiseCommand extends Commands {
             }
 
             TagManager tagManager = KaosCore.getInstance().getTagManager();
-            Tag lowestTag = null;
+            Tag lowestTag = tagManager.getLowestValueTag(player);
             int maxPos = -1;
-
-            for (Tag minTag : tagManager.getAvailableTags(player)) {
-                if (minTag.getPosition() > maxPos) {
-                    maxPos = minTag.getPosition();
-                    lowestTag = minTag;
-                }
-            }
 
             if (lowestTag != null) {
                 tagManager.setTag(player, lowestTag.getId());

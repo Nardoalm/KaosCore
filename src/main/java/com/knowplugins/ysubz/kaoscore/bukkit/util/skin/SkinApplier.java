@@ -45,43 +45,46 @@ public class SkinApplier {
     }
 
     private void applyPacketsToSelf() {
+        if (!(player instanceof CraftPlayer) || !player.isOnline()) return;
         try {
-            sendSelfRefreshPackets();
-            player.updateInventory();
-            player.setExp(player.getExp());
-            player.setWalkSpeed(player.getWalkSpeed());
-            player.getInventory().setHeldItemSlot(player.getInventory().getHeldItemSlot());
-            try {
-                player.getClass().getDeclaredMethod("updateScaledHealth").invoke(player);
-            } catch (Exception ignored) {}
+            if (player.isInsideVehicle()) player.leaveVehicle();
+            Location currentLocation = player.getLocation().clone();
+
+            CraftPlayer craftPlayer = (CraftPlayer) player;
+            EntityPlayer entityPlayer = craftPlayer.getHandle();
+            WorldServer worldServer = (WorldServer) entityPlayer.world;
+
+            // Remove o jogador primeiro para forçar o client do 1.8 a aceitar o novo perfil de textura
+            entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) return;
+
+                    // Adiciona novamente com as texturas novas
+                    entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
+
+                    entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
+                            worldServer.dimension,
+                            worldServer.getDifficulty(),
+                            worldServer.getWorldData().getType(),
+                            entityPlayer.playerInteractManager.getGameMode()
+                    ));
+
+                    player.teleport(currentLocation);
+                    player.updateInventory();
+                    player.setExp(player.getExp());
+                    player.setWalkSpeed(player.getWalkSpeed());
+                    player.getInventory().setHeldItemSlot(player.getInventory().getHeldItemSlot());
+                    try {
+                        player.getClass().getDeclaredMethod("updateScaledHealth").invoke(player);
+                    } catch (Exception ignored) {}
+                }
+            }.runTaskLater(plugin, 1L);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void sendSelfRefreshPackets() {
-        if (!(player instanceof CraftPlayer) || !player.isOnline()) return;
-        if (player.isInsideVehicle()) player.leaveVehicle();
-        Location currentLocation = player.getLocation().clone();
-
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityPlayer entityPlayer = craftPlayer.getHandle();
-        WorldServer worldServer = (WorldServer) entityPlayer.world;
-
-        // We do NOT send REMOVE_PLAYER to the player themselves, as it causes client-side crashes
-        // due to the player profile being missing during subsequent packet rendering.
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
- 
-        // Send a single PacketPlayOutRespawn in the actual dimension.
-        // Changing dimensions causes the client to clear chunks and fall into the void.
-        entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
-                worldServer.dimension,
-                worldServer.getDifficulty(),
-                worldServer.getWorldData().getType(),
-                entityPlayer.playerInteractManager.getGameMode()
-        ));
- 
-        player.teleport(currentLocation);
     }
 
     private void applyPacketsToOthers() {

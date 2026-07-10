@@ -163,6 +163,7 @@ com\knowplugins\ysubz\kaoscore\bukkit\util\placeholder\LuckPermsBridgeExpansion.
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeePunishmentService.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\SpawnLimitsManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\MuteCommand.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinApplier$3.class
 com\knowplugins\ysubz\kaoscore\bungee\Texts.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\world\TimeListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\punishment\PunishmentType.class

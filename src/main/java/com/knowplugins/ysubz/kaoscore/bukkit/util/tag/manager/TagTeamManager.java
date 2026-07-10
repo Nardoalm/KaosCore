@@ -314,7 +314,6 @@ public class TagTeamManager {
             return null;
         }
 
-        // BLOQUEIO SUPREMO: Prioridade máxima para lutadores ativos dos eventos
         try {
             live.pvphard.practice.HardPractice alley = live.pvphard.practice.HardPractice.getInstance();
             if (alley != null) {
@@ -325,7 +324,7 @@ public class TagTeamManager {
                         live.pvphard.practice.feature.event.model.EventParticipant participant = activeEvent.getParticipant(player.getUniqueId());
                         if (participant != null) {
                             if (participant.getState() == live.pvphard.practice.feature.event.EventPlayerState.FIGHTING) {
-                                String color = "§a"; // Cor Genérica (FFA)
+                                String color = "§a";
                                 live.pvphard.practice.feature.event.EventType type = activeEvent.getDefinition().getType();
                                 if (type == live.pvphard.practice.feature.event.EventType.SUMO ||
                                         type == live.pvphard.practice.feature.event.EventType.BRACKETS ||
@@ -339,7 +338,6 @@ public class TagTeamManager {
                                 String teamKey = "event_" + color + ":" + styleSignature(color, "");
                                 return new NametagStyle(teamKey, color, "", 50);
                             }
-                            // O pulo do gato: Se estiver WAITING ou SPECTATING ele ignora essa trava e continua a leitura para setar a tag base.
                         }
                     }
                 }
@@ -351,7 +349,8 @@ public class TagTeamManager {
         }
 
         if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
-            String prefix = trimTeamPart(resolveText(player, practiceState.getPrefix()) + safe(practiceState.getNameColor()));
+            // CORREÇÃO: Força puramente a cor do time na prefix para evitar o vazamento da tag do lobby.
+            String prefix = trimTeamPart(safe(practiceState.getNameColor()));
             String suffix = trimTeamPart(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
             String teamKey = "practice_" + safe(practiceState.getTeamId()) + safe(practiceState.getNameColor()) + ":" + styleSignature(prefix, suffix);

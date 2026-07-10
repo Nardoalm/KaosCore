@@ -7,7 +7,6 @@ import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenu;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder.PlaceholderManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
@@ -171,6 +170,12 @@ public class SkinCommand extends Commands {
                                 return;
                             }
 
+                            KaosCore coreInstance = KaosCore.getInstance();
+                            if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
+                                coreInstance.getSkinPoolManager().removeCachedSkin(cleanTarget);
+                                coreInstance.getSkinPoolManager().removeCachedSkin(player.getName());
+                            }
+
                             GameProfile liveProfile = ((CraftPlayer) player).getProfile();
                             liveProfile.getProperties().removeAll("textures");
                             liveProfile.getProperties().put("textures", finalTextures);
@@ -181,11 +186,6 @@ public class SkinCommand extends Commands {
 
                                 SkinCacheRepository cache = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                                 cache.saveAsync(cleanTarget, finalTextures.getValue(), finalTextures.getSignature());
-                            }
-
-                            KaosCore coreInstance = KaosCore.getInstance();
-                            if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
-                                coreInstance.getSkinPoolManager().removeCachedSkin(cleanTarget);
                             }
 
                             SkinApplier applier = new SkinApplier(player);
@@ -232,6 +232,13 @@ public class SkinCommand extends Commands {
     public static void resetSkin(Player player, boolean sendMessage) {
         try {
             UUID id = player.getUniqueId();
+            String playerName = player.getName();
+
+            KaosCore coreInstance = KaosCore.getInstance();
+            if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
+                coreInstance.getSkinPoolManager().removeCachedSkin(playerName);
+            }
+
             Property originalProperty = OriginalSkinManager.get(id);
             if (originalProperty != null) {
                 GameProfile profile = ((CraftPlayer) player).getProfile();
@@ -251,20 +258,15 @@ public class SkinCommand extends Commands {
                     SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                     repo.deleteAsync(id);
                 }
-                KaosCore coreInstance = KaosCore.getInstance();
-                if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
-                    coreInstance.getSkinPoolManager().removeCachedSkin(player.getName());
-                }
                 return;
             }
 
             JavaPlugin plugin = JavaPlugin.getProvidingPlugin(SkinCommand.class);
-            String originalName = DisguiseApiService.getOriginalNick(player);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 try {
                     Property fetchedOriginal = null;
                     try {
-                        fetchedOriginal = MojangSkinFetcher.fetchPropertyByName(originalName);
+                        fetchedOriginal = MojangSkinFetcher.fetchPropertyByName(playerName);
                     } catch (Exception ignored) {
                     }
 
@@ -272,7 +274,7 @@ public class SkinCommand extends Commands {
                         if (MainManager.getDatabaseManager() != null) {
                             try {
                                 SkinCacheRepository cache = new SkinCacheRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
-                                SkinData cached = cache.loadSync(originalName);
+                                SkinData cached = cache.loadSync(playerName);
                                 if (cached != null && cached.value != null && !cached.value.trim().isEmpty()) {
                                     fetchedOriginal = new Property("textures", cached.value, cached.signature);
                                 }
@@ -289,9 +291,8 @@ public class SkinCommand extends Commands {
                             }
 
                             if (finalFetchedOriginal == null || finalFetchedOriginal.getValue() == null || finalFetchedOriginal.getValue().trim().isEmpty()) {
-                                KaosCore core = KaosCore.getInstance();
-                                if (core != null && core.getSkinPoolManager() != null) {
-                                    core.getSkinPoolManager().applyJoinSkin(player);
+                                if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
+                                    coreInstance.getSkinPoolManager().applyJoinSkin(player);
                                 } else {
                                     player.sendMessage("§cYour original skin was not found.");
                                     player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
@@ -316,10 +317,6 @@ public class SkinCommand extends Commands {
                             if (MainManager.getDatabaseManager() != null) {
                                 SkinRepository repo = new SkinRepository(JavaPlugin.getPlugin(KaosCore.class), MainManager.getDatabaseManager());
                                 repo.deleteAsync(id);
-                            }
-                            KaosCore coreInstance = KaosCore.getInstance();
-                            if (coreInstance != null && coreInstance.getSkinPoolManager() != null) {
-                                coreInstance.getSkinPoolManager().removeCachedSkin(originalName);
                             }
                         } catch (Exception ex) {
                             player.sendMessage("§cAn error occurred while resetting the skin.");

@@ -1,6 +1,11 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
+import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.core.profile.Profile;
+import live.pvphard.practice.core.profile.ProfileService;
+import live.pvphard.practice.core.profile.enums.ProfileState;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -21,10 +26,11 @@ public class DoubleJumpListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (!player.hasPermission(FLY_PERMISSION) &&
-                (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE)) {
-            player.setAllowFlight(!PracticeModeBlocker.isBlocked(player));
+        if (player.hasPermission(FLY_PERMISSION) || player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            return;
         }
+
+        player.setAllowFlight(!PracticeModeBlocker.isBlocked(player));
     }
 
     @EventHandler
@@ -35,10 +41,15 @@ public class DoubleJumpListener implements Listener {
             return;
         }
 
-        if (PracticeModeBlocker.check(player, false)) {
-            event.setCancelled(true);
-            player.setAllowFlight(false);
-            player.setFlying(false);
+        boolean isInMatch = false;
+        if (Bukkit.getPluginManager().isPluginEnabled("HardPractice")) {
+            Profile profile = HardPractice.getInstance().getService(ProfileService.class).getProfile(player.getUniqueId());
+            if (profile != null && profile.getState() != ProfileState.LOBBY) {
+                isInMatch = true;
+            }
+        }
+
+        if (isInMatch || PracticeModeBlocker.check(player, false)) {
             return;
         }
 

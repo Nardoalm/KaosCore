@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.cheatbreaker.api.CheatBreakerAPI;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.lunarclient.apollo.Apollo;
 import com.lunarclient.apollo.module.staffmod.StaffModModule;
@@ -76,55 +77,31 @@ public class VanishManager {
    }
 
    private static void toggleStaffModules(Player player, boolean active) {
-      StaffModModule staffModModule = Apollo.getModuleManager().getModule(StaffModModule.class);
-      if (staffModModule != null) {
-         com.lunarclient.apollo.player.ApolloPlayer apolloPlayer = Apollo.getPlayerManager()
-                 .getPlayer(player.getUniqueId())
-                 .orElse(null);
+      if(Bukkit.getPluginManager().isPluginEnabled("Apollo-Bukkit")) {
+         StaffModModule staffModModule = Apollo.getModuleManager().getModule(StaffModModule.class);
+         if (staffModModule != null) {
+            com.lunarclient.apollo.player.ApolloPlayer apolloPlayer = Apollo.getPlayerManager()
+                    .getPlayer(player.getUniqueId())
+                    .orElse(null);
 
-         if (apolloPlayer != null) {
-            Iterable<com.lunarclient.apollo.player.ApolloPlayer> recipientsIterable = Collections.singletonList(apolloPlayer);
-            if (active) {
-               staffModModule.enableStaffMods(Recipients.of(recipientsIterable), Collections.singletonList(StaffMod.XRAY));
-            } else {
-               staffModModule.disableStaffMods(Recipients.of(recipientsIterable), Collections.singletonList(StaffMod.XRAY));
+            if (apolloPlayer != null) {
+               Iterable<com.lunarclient.apollo.player.ApolloPlayer> recipientsIterable = Collections.singletonList(apolloPlayer);
+               if (active) {
+                  staffModModule.enableStaffMods(Recipients.of(recipientsIterable), Collections.singletonList(StaffMod.XRAY));
+               } else {
+                  staffModModule.disableStaffMods(Recipients.of(recipientsIterable), Collections.singletonList(StaffMod.XRAY));
+               }
             }
          }
       }
 
-      byte[] cbPacket = buildCBStaffModPacket("XRAY", active);
-      if (cbPacket != null) {
-         player.sendPluginMessage(JavaPlugin.getPlugin(KaosCore.class), "CB|Binary", cbPacket);
-      }
-   }
-
-   private static byte[] buildCBStaffModPacket(String modName, boolean state) {
-      try {
-         ByteBuf buffer = Unpooled.buffer();
-
-         int packetId = 5;
-         while ((packetId & 0xFFFFFF80) != 0x0) {
-            buffer.writeByte((packetId & 0x7F) | 0x80);
-            packetId >>>= 7;
+      if(Bukkit.getPluginManager().isPluginEnabled("CheatBreakerAPI")) {
+         if(active) {
+            CheatBreakerAPI.getInstance().giveAllStaffModules(player);
+         } else {
+            CheatBreakerAPI.getInstance().disableAllStaffModules(player);
          }
-         buffer.writeByte(packetId);
-
-         byte[] stringBytes = modName.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-         int stringLen = stringBytes.length;
-         while ((stringLen & 0xFFFFFF80) != 0x0) {
-            buffer.writeByte((stringLen & 0x7F) | 0x80);
-            stringLen >>>= 7;
-         }
-         buffer.writeByte(stringLen);
-         buffer.writeBytes(stringBytes);
-
-         buffer.writeBoolean(state);
-
-         byte[] packetData = new byte[buffer.readableBytes()];
-         buffer.readBytes(packetData);
-         return packetData;
-      } catch (Exception e) {
-         return null;
       }
+
    }
 }

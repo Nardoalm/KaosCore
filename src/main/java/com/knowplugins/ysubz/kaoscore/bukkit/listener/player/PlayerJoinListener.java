@@ -51,6 +51,7 @@ import java.util.concurrent.ConcurrentMap;
 public class PlayerJoinListener implements Listener {
 
    private static final ConcurrentMap<UUID, CachedDisguise> pendingDisguises = new ConcurrentHashMap<>();
+   private static final ConcurrentMap<UUID, SkinData> pendingSkins = new ConcurrentHashMap<>();
 
    private static class CachedDisguise {
       String nick;
@@ -61,38 +62,118 @@ public class PlayerJoinListener implements Listener {
       }
    }
 
+   @EventHandler(priority = EventPriority.HIGHEST)
+   public void onPreLogin(AsyncPlayerPreLoginEvent e) {
+      PlayerAddressRepository addressRepository = MainManager.getPlayerAddressRepository();
+      if (addressRepository != null && e.getUniqueId() != null && e.getAddress() != null) {
+         addressRepository.track(e.getUniqueId(), e.getName(), e.getAddress().getHostAddress());
+      }
+
+      KaosCore plugin = KaosCore.getInstance();
+
+      if (plugin != null && plugin.getAuthPreLoginListener() != null) {
+         plugin.getAuthPreLoginListener().processPreLogin(e);
+         if (e.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            return;
+         }
+      }
+
+      PunishmentManager punishmentManager = MainManager.getPunishmentManager();
+      if (punishmentManager != null) {
+         PunishmentEntry ban = punishmentManager.getActiveBan(e.getUniqueId(), e.getName());
+         if (ban != null) {
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, buildPunishmentMessage(ban));
+            return;
+         }
+      }
+
+      if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
+         BanEntry ban = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getName());
+         if (ban != null) {
+            String reason = ban.getReason() == null ? "No reason provided" : ban.getReason();
+            Date expires = ban.getExpiration();
+            String duration = expires == null ? "Permanent" : PunishmentTime.formatDate(expires.getTime());
+
+            PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
+            String banMessage = messages != null
+                    ? messages.buildBanScreen(expires == null, reason, duration)
+                    : ("§cYou have been banned.\n\n" +
+                       "  §cReason: §7" + reason + "\n" +
+                       "  §cExpires in: §7" + duration + "\n" +
+                       "  §eBuy your unban at: §bstore.alleypvp.us\n" +
+                       "  §cBanned unfairly? Contact us via\n" +
+                       "  §9§ndiscord.gg/freep");
+
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
+            return;
+         }
+      }
+
+      if (MainManager.getDatabaseManager() != null) {
+         DisguiseRepository disguiseRepo = new DisguiseRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
+         try {
+            String res = disguiseRepo.load(e.getUniqueId()).join();
+            if (res != null && !res.trim().isEmpty()) {
+               SkinCacheRepository skinCacheRepo = new SkinCacheRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
+               SkinData skin = skinCacheRepo.loadSync(res);
+               pendingDisguises.put(e.getUniqueId(), new CachedDisguise(res, skin));
+               return; // Se tem disguise, ignora busca de skin normal
+            }
+         } catch (Exception ex) {
+            Logger.warning("Erro ao carregar disguise em pre-login: " + ex.getMessage());
+         }
+
+         SkinRepository skinRepo = new SkinRepository(plugin, MainManager.getDatabaseManager());
+         try {
+            SkinData skinData = skinRepo.load(e.getUniqueId()).join();
+            if (hasStoredTextures(skinData)) {
+               pendingSkins.put(e.getUniqueId(), skinData);
+            }
+         } catch (Exception ex) {
+            Logger.warning("Erro ao carregar skin em pre-login: " + ex.getMessage());
+         }
+      }
+   }
+
    @EventHandler(priority = EventPriority.LOWEST)
    public void onPlayerLogin(PlayerLoginEvent event) {
       Player player = event.getPlayer();
-      CachedDisguise cache = pendingDisguises.get(player.getUniqueId());
+      GameProfile profile = ((CraftPlayer) player).getProfile();
+      OriginalSkinManager.cache(player, profile);
 
-      if (cache != null) {
+      CachedDisguise disguiseCache = pendingDisguises.get(player.getUniqueId());
+      if (disguiseCache != null) {
          try {
             DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
                String realName = player.getName();
-               if (realName.equalsIgnoreCase(cache.nick)) {
+               if (realName.equalsIgnoreCase(disguiseCache.nick)) {
                   OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
                   realName = op != null && op.getName() != null ? op.getName() : realName;
                }
                disguiseManager.setOriginalName(player, realName);
             }
 
-            GameProfile profile = ((CraftPlayer) player).getProfile();
-            OriginalSkinManager.cache(player, profile);
-            changeName(profile, cache.nick);
+            changeName(profile, disguiseCache.nick);
 
-            if (cache.skin != null && cache.skin.value != null) {
+            if (disguiseCache.skin != null && disguiseCache.skin.value != null) {
                profile.getProperties().removeAll("textures");
-               profile.getProperties().put("textures", new Property("textures", cache.skin.value, cache.skin.signature));
+               profile.getProperties().put("textures", new Property("textures", disguiseCache.skin.value, disguiseCache.skin.signature));
             }
 
             if (disguiseManager != null) {
-               disguiseManager.addInDisguise(player.getUniqueId(), cache.nick);
+               disguiseManager.addInDisguise(player.getUniqueId(), disguiseCache.nick);
             }
          } catch (Exception e) {
             e.printStackTrace();
          }
+         return;
+      }
+
+      SkinData skinCache = pendingSkins.remove(player.getUniqueId());
+      if (skinCache != null && hasStoredTextures(skinCache)) {
+         profile.getProperties().removeAll("textures");
+         profile.getProperties().put("textures", new Property("textures", skinCache.value, skinCache.signature));
       }
    }
 
@@ -208,10 +289,10 @@ public class PlayerJoinListener implements Listener {
          }, 20L);
       }
 
-      CachedDisguise cache = pendingDisguises.remove(uuid);
+      CachedDisguise disguiseCache = pendingDisguises.remove(uuid);
 
-      if (cache != null) {
-         player.setDisplayName(cache.nick);
+      if (disguiseCache != null) {
+         player.setDisplayName(disguiseCache.nick);
 
          Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) {
@@ -226,15 +307,12 @@ public class PlayerJoinListener implements Listener {
             }
          }, 2L);
 
-         if (isPendingSkinLookup(cache.skin)) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> SkinCommand.setSkinForOthers(player, cache.nick), 10L);
+         if (isPendingSkinLookup(disguiseCache.skin)) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> SkinCommand.setSkinForOthers(player, disguiseCache.nick), 10L);
          }
-
       } else {
          if (MainManager.getDatabaseManager() != null) {
             VanishRepository vanishRepo = new VanishRepository(plugin, MainManager.getDatabaseManager());
-            SkinRepository skinRepo = new SkinRepository(plugin, MainManager.getDatabaseManager());
-
             vanishRepo.load(uuid).thenAccept(isVanished -> {
                if (isVanished != null && isVanished) {
                   Bukkit.getScheduler().runTask(plugin, () -> {
@@ -244,33 +322,11 @@ public class PlayerJoinListener implements Listener {
                   });
                }
             });
+         }
 
-            skinRepo.load(uuid).thenAccept(skinData -> {
-               if (!player.isOnline()) return;
-
-               if (hasStoredTextures(skinData)) {
-                  Bukkit.getScheduler().runTask(plugin, () -> applyStoredSkin(player, skinData));
-                  return;
-               }
-
-               if (isPendingSkinLookup(skinData)) {
-                  Bukkit.getScheduler().runTask(plugin, () -> SkinCommand.setSkin(player, skinData.name));
-                  return;
-               }
-
-               if (isPremiumPlayer(player)) {
-                  Bukkit.getScheduler().runTask(plugin, () -> {
-                     OriginalSkinManager.cache(player, ((CraftPlayer) player).getProfile());
-                  });
-                  return;
-               }
-
-               scheduleJoinSkinRefresh(plugin, player);
-            });
-         } else {
-            if (isPremiumPlayer(player)) {
-               OriginalSkinManager.cache(player, ((CraftPlayer) player).getProfile());
-            } else {
+         GameProfile profile = ((CraftPlayer) player).getProfile();
+         if (!profile.getProperties().containsKey("textures")) {
+            if (!isPremiumPlayer(player)) {
                scheduleJoinSkinRefresh(plugin, player);
             }
          }
@@ -282,105 +338,18 @@ public class PlayerJoinListener implements Listener {
       event.setCancelled(true);
    }
 
-   @EventHandler(priority = EventPriority.HIGHEST)
-   public void onPreLogin(AsyncPlayerPreLoginEvent e) {
-      PlayerAddressRepository addressRepository = MainManager.getPlayerAddressRepository();
-      if (addressRepository != null && e.getUniqueId() != null && e.getAddress() != null) {
-         addressRepository.track(e.getUniqueId(), e.getName(), e.getAddress().getHostAddress());
-      }
-
-      KaosCore plugin = KaosCore.getInstance();
-
-      if (plugin != null && plugin.getAuthPreLoginListener() != null) {
-         plugin.getAuthPreLoginListener().processPreLogin(e);
-         if (e.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            return;
-         }
-      }
-
-      PunishmentManager punishmentManager = MainManager.getPunishmentManager();
-      if (punishmentManager != null) {
-         PunishmentEntry ban = punishmentManager.getActiveBan(e.getUniqueId(), e.getName());
-         if (ban != null) {
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, buildPunishmentMessage(ban));
-            return;
-         }
-      }
-
-      if (MainManager.getDatabaseManager() != null) {
-         DisguiseRepository disguiseRepo = new DisguiseRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
-         try {
-            String res = disguiseRepo.load(e.getUniqueId()).join();
-            if (res != null && !res.trim().isEmpty()) {
-               SkinCacheRepository skinCacheRepo = new SkinCacheRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
-               SkinData skin = skinCacheRepo.loadSync(res);
-               pendingDisguises.put(e.getUniqueId(), new CachedDisguise(res, skin));
-            }
-         } catch (Exception ex) {
-            Logger.warning("Erro ao carregar disguise em pre-login: " + ex.getMessage());
-         }
-      }
-
-      if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getName())) {
-         BanEntry ban = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getName());
-         if (ban != null) {
-            String reason = ban.getReason() == null ? "No reason provided" : ban.getReason();
-            Date expires = ban.getExpiration();
-            String duration = expires == null ? "Permanent" : PunishmentTime.formatDate(expires.getTime());
-
-            PunishmentMessageManager messages = plugin == null ? null : plugin.getPunishmentMessageManager();
-            String banMessage = messages != null
-                    ? messages.buildBanScreen(expires == null, reason, duration)
-                    : ("§cYou have been banned.\n\n" +
-                       "  §cReason: §7" + reason + "\n" +
-                       "  §cExpires in: §7" + duration + "\n" +
-                       "  §eBuy your unban at: §bstore.alleypvp.us\n" +
-                       "  §cBanned unfairly? Contact us via\n" +
-                       "  §9§ndiscord.gg/freep");
-
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
-         }
-      }
-   }
-
    @EventHandler(priority = EventPriority.MONITOR)
    public void onPlayerQuitCleanup(PlayerQuitEvent event) {
       pendingDisguises.remove(event.getPlayer().getUniqueId());
+      pendingSkins.remove(event.getPlayer().getUniqueId());
       OriginalSkinManager.remove(event.getPlayer().getUniqueId());
    }
 
    @EventHandler(priority = EventPriority.MONITOR)
    public void onPlayerKickCleanup(PlayerKickEvent event) {
       pendingDisguises.remove(event.getPlayer().getUniqueId());
+      pendingSkins.remove(event.getPlayer().getUniqueId());
       OriginalSkinManager.remove(event.getPlayer().getUniqueId());
-   }
-
-   private void applyStoredSkin(Player player, SkinData skinData) {
-      if (player == null || !player.isOnline() || skinData == null || skinData.value == null || skinData.value.trim().isEmpty()) {
-         return;
-      }
-
-      try {
-         GameProfile profile = ((CraftPlayer) player).getProfile();
-
-         profile.getProperties().removeAll("textures");
-         profile.getProperties().put("textures", new Property("textures", skinData.value, skinData.signature));
-
-         new SkinApplier(player).applySkinForSelf();
-
-         Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> {
-            if (player.isOnline()) {
-               KaosCore core = KaosCore.getInstance();
-               if (core != null && core.getTagManager() != null) {
-                  core.getTagManager().refreshTag(player);
-               }
-            }
-         }, 5L);
-
-      } catch (Exception e) {
-         e.printStackTrace();
-         Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(KaosCore.class), () -> applyJoinSkin(player), 2L);
-      }
    }
 
    private void changeName(GameProfile profile, String name) throws Exception {

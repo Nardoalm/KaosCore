@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.repository.PlayerTagRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
@@ -125,8 +126,23 @@ public class TagManager {
             }
         }
 
-        String selectedId = selectedTags.get(player.getUniqueId());
-        Tag selectedTag = resolveTag(selectedId);
+        HardPracticeBridge practiceBridge = new HardPracticeBridge();
+        boolean inMatch = practiceBridge.getState(player).isInMatch();
+
+        String tagIdToUse;
+        if (inMatch) {
+            tagIdToUse = cachedCurrentTags.get(player.getUniqueId());
+            if (tagIdToUse == null) {
+                tagIdToUse = selectedTags.get(player.getUniqueId());
+            }
+        } else {
+            tagIdToUse = selectedTags.get(player.getUniqueId());
+            if (tagIdToUse != null) {
+                cachedCurrentTags.put(player.getUniqueId(), tagIdToUse);
+            }
+        }
+
+        Tag selectedTag = resolveTag(tagIdToUse);
 
         if (selectedTag != null && (DisguiseManager.isDisguised(player) || canUse(player, selectedTag))) {
             return selectedTag;
@@ -143,6 +159,7 @@ public class TagManager {
                 disguiseTags.put(player.getUniqueId(), first.getId());
             } else {
                 selectedTags.put(player.getUniqueId(), first.getId());
+                cachedCurrentTags.put(player.getUniqueId(), first.getId());
                 saveSelectedTag(player.getUniqueId(), first.getId());
             }
         }
@@ -167,7 +184,10 @@ public class TagManager {
         }
 
         String currentCachedId = cachedCurrentTags.get(player.getUniqueId());
-        if (currentCachedId != null && currentCachedId.equals(tag.getId())) {
+        HardPracticeBridge practiceBridge = new HardPracticeBridge();
+        boolean inMatch = practiceBridge.getState(player).isInMatch();
+
+        if (!inMatch && currentCachedId != null && currentCachedId.equals(tag.getId())) {
             return true;
         }
 
@@ -176,9 +196,13 @@ public class TagManager {
         }
 
         selectedTags.put(player.getUniqueId(), tag.getId());
-        cachedCurrentTags.put(player.getUniqueId(), tag.getId());
         saveSelectedTag(player.getUniqueId(), tag.getId());
-        refreshTag(player);
+
+        if (!inMatch) {
+            cachedCurrentTags.put(player.getUniqueId(), tag.getId());
+            refreshTag(player);
+        }
+
         return true;
     }
 
@@ -193,12 +217,17 @@ public class TagManager {
         }
 
         selectedTags.put(uuid, tag.getId());
-        cachedCurrentTags.put(uuid, tag.getId());
         saveSelectedTag(uuid, tag.getId());
 
         Player online = Bukkit.getPlayer(uuid);
         if (online != null && online.isOnline()) {
-            refreshTag(online);
+            HardPracticeBridge practiceBridge = new HardPracticeBridge();
+            if (!practiceBridge.getState(online).isInMatch()) {
+                cachedCurrentTags.put(uuid, tag.getId());
+                refreshTag(online);
+            }
+        } else {
+            cachedCurrentTags.put(uuid, tag.getId());
         }
         return true;
     }
@@ -215,14 +244,19 @@ public class TagManager {
         }
 
         selectedTags.remove(uuid);
-        cachedCurrentTags.remove(uuid);
         if (playerTagRepository != null) {
             playerTagRepository.deleteAsync(uuid);
         }
 
         Player online = Bukkit.getPlayer(uuid);
         if (online != null && online.isOnline()) {
-            refreshTag(online);
+            HardPracticeBridge practiceBridge = new HardPracticeBridge();
+            if (!practiceBridge.getState(online).isInMatch()) {
+                cachedCurrentTags.remove(uuid);
+                refreshTag(online);
+            }
+        } else {
+            cachedCurrentTags.remove(uuid);
         }
         return true;
     }

@@ -25,7 +25,7 @@ public class DisguiseManager {
     private static final Map<UUID, String> ORIGINAL_NAMES = new HashMap<>();
 
     private final List<String> defaultNicks = Arrays.asList(
-            "iZack_x", "iClaudio1256_", "VaterSeinSohn", "G2U", "RoadMore", "69Drunk", "ZeusYT_",
+            "iZack_x", "iClaudio1256_", "VaterSeinSohn", "G2U", "RoadMore", "69Drunk",
             "MaskedBetrayel", "Sincriterio", "SUW0", "rilsy", "MIBECON", "wreeperbeastmode", "luvniss",
             "Dqnd", "licorne_soiyeuse", "blokovac", "3rst", "_Kaori_Chan_", "AfterChange", "DogeBigEyes_",
             "due1", "iGen", "ManoEdson", "qSamra", "ImNotCrying_", "scuzii", "Aama", "69Expanded",
