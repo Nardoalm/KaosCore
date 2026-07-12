@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.placeholder;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import org.bukkit.entity.Player;
 
 public class PlaceholderManager {

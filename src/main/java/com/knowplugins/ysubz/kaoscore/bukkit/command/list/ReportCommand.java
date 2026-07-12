@@ -5,7 +5,7 @@ import com.cheatbreaker.api.object.CBNotification;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import com.lunarclient.apollo.Apollo;
 import com.lunarclient.apollo.module.notification.Notification;
@@ -24,8 +24,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;

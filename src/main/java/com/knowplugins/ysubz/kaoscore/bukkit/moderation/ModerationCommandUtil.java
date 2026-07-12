@@ -2,10 +2,10 @@ package com.knowplugins.ysubz.kaoscore.bukkit.moderation;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.api.DisguiseApiService;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;

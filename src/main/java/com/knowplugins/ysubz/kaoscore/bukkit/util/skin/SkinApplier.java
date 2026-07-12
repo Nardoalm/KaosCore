@@ -54,49 +54,66 @@ public class SkinApplier {
             EntityPlayer entityPlayer = craftPlayer.getHandle();
             WorldServer worldServer = (WorldServer) entityPlayer.world;
 
-            // Remove o jogador primeiro para forçar o client do 1.8 a aceitar o novo perfil de textura
-            entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
+            PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer);
+            PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer);
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (!player.isOnline()) return;
+            PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(
+                    worldServer.dimension,
+                    worldServer.getDifficulty(),
+                    worldServer.getWorldData().getType(),
+                    entityPlayer.playerInteractManager.getGameMode()
+            );
 
-                    // Adiciona novamente com as texturas novas
-                    entityPlayer.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
+            entityPlayer.playerConnection.sendPacket(removeInfo);
+            entityPlayer.playerConnection.sendPacket(addInfo);
+            entityPlayer.playerConnection.sendPacket(respawn);
 
-                    entityPlayer.playerConnection.sendPacket(new PacketPlayOutRespawn(
-                            worldServer.dimension,
-                            worldServer.getDifficulty(),
-                            worldServer.getWorldData().getType(),
-                            entityPlayer.playerInteractManager.getGameMode()
-                    ));
+            player.teleport(currentLocation);
+            player.updateInventory();
+            player.setExp(player.getExp());
+            player.setWalkSpeed(player.getWalkSpeed());
+            player.getInventory().setHeldItemSlot(player.getInventory().getHeldItemSlot());
 
-                    player.teleport(currentLocation);
-                    player.updateInventory();
-                    player.setExp(player.getExp());
-                    player.setWalkSpeed(player.getWalkSpeed());
-                    player.getInventory().setHeldItemSlot(player.getInventory().getHeldItemSlot());
-                    try {
-                        player.getClass().getDeclaredMethod("updateScaledHealth").invoke(player);
-                    } catch (Exception ignored) {}
-                }
-            }.runTaskLater(plugin, 1L);
+            try {
+                player.getClass().getDeclaredMethod("updateScaledHealth").invoke(player);
+            } catch (Exception ignored) {}
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void applyPacketsToOthers() {
+        boolean hardPracticeEnabled = Bukkit.getPluginManager().isPluginEnabled("HardPractice");
+        live.pvphard.practice.core.profile.ProfileService hpProfileService = null;
+        live.pvphard.practice.core.profile.Profile ghostProfile = null;
+
+        if (hardPracticeEnabled) {
+            hpProfileService = live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.core.profile.ProfileService.class);
+            if (hpProfileService != null) {
+                ghostProfile = hpProfileService.getProfile(player.getUniqueId());
+            }
+        }
+
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (onlinePlayer.equals(player)) continue;
 
             onlinePlayer.hidePlayer(player);
-            onlinePlayer.showPlayer(player);
 
             if (VanishManager.isVanished(player) && !onlinePlayer.hasPermission("kaoscore.staff.vanish")) {
-                onlinePlayer.hidePlayer(player);
+                continue;
             }
+
+            if (hardPracticeEnabled && hpProfileService != null && ghostProfile != null) {
+                if (ghostProfile.getState() == live.pvphard.practice.core.profile.enums.ProfileState.SPECTATING) {
+                    live.pvphard.practice.core.profile.Profile viewerProfile = hpProfileService.getProfile(onlinePlayer.getUniqueId());
+                    if (viewerProfile != null && viewerProfile.getState() == live.pvphard.practice.core.profile.enums.ProfileState.PLAYING) {
+                        continue;
+                    }
+                }
+            }
+
+            onlinePlayer.showPlayer(player);
         }
     }
 }

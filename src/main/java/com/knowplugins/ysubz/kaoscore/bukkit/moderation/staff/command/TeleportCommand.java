@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 
 public class TeleportCommand extends Commands {
 

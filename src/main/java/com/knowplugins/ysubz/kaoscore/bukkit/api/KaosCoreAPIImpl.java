@@ -10,7 +10,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.api.DisguiseApiService;
 import org.bukkit.entity.Player;
 
 import java.util.List;

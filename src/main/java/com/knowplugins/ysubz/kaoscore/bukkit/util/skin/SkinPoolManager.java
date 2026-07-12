@@ -5,7 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.repository.SkinCacheRepository;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.SkinData;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.skin.SkinMatrix;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;

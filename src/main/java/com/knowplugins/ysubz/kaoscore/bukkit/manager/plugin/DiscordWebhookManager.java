@@ -2,8 +2,8 @@ package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentType;

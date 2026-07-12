@@ -13,13 +13,13 @@ com\knowplugins\ysubz\kaoscore\bukkit\listener\world\SoundListener$1.class
 com\knowplugins\ysubz\kaoscore\bungee\BanBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\SetNpcCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\repository\VanishRepository.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\repository\DisguiseRepository.class
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeeSkinService.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\entity\NPCInteractListener.class
 com\knowplugins\ysubz\kaoscore\bungee\SkinBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\repository\SkinCacheRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\friend\menu\FriendMenuListener$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\KaosCoreCommand.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\api\DisguiseApiService$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\vip\FlyCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\tag\manager\TagManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\proxy\ProxySyncListener.class
@@ -33,6 +33,7 @@ com\knowplugins\ysubz\kaoscore\bukkit\account\Account.class
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeeClanService.class
 com\knowplugins\ysubz\kaoscore\bungee\BungeePunishmentMessageManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\friend\command\FriendCommand$1.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\skin\SkinMatrix.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\medal\repository\PlayerMedalRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\BuildManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\chat\ChatManager$MentionResult.class
@@ -58,8 +59,6 @@ com\knowplugins\ysubz\kaoscore\bungee\BungeeDiscordWebhookManager$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\join\listener\JoinMessageMenuListener.class
 com\knowplugins\ysubz\kaoscore\bungee\commands\admin\KickBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\player\PlayerJoinListener.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\api\DisguiseApiService$RemoteSkinData.class
-com\knowplugins\ysubz\kaoscore\bukkit\sit\listener\SitListener.class
 com\knowplugins\ysubz\kaoscore\bungee\Tag.class
 com\knowplugins\ysubz\kaoscore\bukkit\permission\UserPermissionNode.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\session\AuthSession.class
@@ -69,6 +68,7 @@ com\knowplugins\ysubz\kaoscore\bukkit\listener\player\DoubleJumpListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinPoolManager$FetchResult.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\LicenseManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\command\SetAuthLocationCommand.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\sit\SitManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\http\HttpClient.class
 com\knowplugins\ysubz\kaoscore\bukkit\menu\MenuUtils.class
 com\knowplugins\ysubz\kaoscore\bungee\BungeePermissionRepository.class
@@ -89,10 +89,10 @@ com\knowplugins\ysubz\kaoscore\bungee\BungeeDiscordWebhookManager$Webhook.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\security\EncryptionUtil.class
 com\knowplugins\ysubz\kaoscore\bukkit\integration\proxy\ProxySyncChannel.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\AutoBroadcastManager.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\sit\listener\SitListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\WelcomeMessageCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeeFriendService$RequestResult.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\tag\manager\TagTeamManager$1.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\skin\SkinMatrix$SkinData.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\GamemodeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\clan\ClanInvite.class
 com\knowplugins\ysubz\kaoscore\bungee\DiscloseBungeeCommand.class
@@ -114,6 +114,7 @@ com\knowplugins\ysubz\kaoscore\bukkit\util\tag\manager\TagTeamManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\placeholder\PlaceholderManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinPoolManager$FetchType.class
 com\knowplugins\ysubz\kaoscore\bungee\commands\BungeeCommands.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\api\DisguiseApiService.class
 com\knowplugins\ysubz\kaoscore\bungee\BungeeDiscordWebhookManager.class
 com\knowplugins\ysubz\kaoscore\bungee\service\core\BungeePunishmentMessageManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\database\DatabaseManager$DatabaseType.class
@@ -149,7 +150,6 @@ com\knowplugins\ysubz\kaoscore\bukkit\friend\manager\FriendManager$RequestResult
 com\knowplugins\ysubz\kaoscore\bukkit\listener\world\WorldProtectionListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\menu\list\AnvilInputMenu$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\player\GameModeManager.class
-com\knowplugins\ysubz\kaoscore\bukkit\sit\SitManager$1.class
 com\knowplugins\ysubz\kaoscore\bungee\EffectivePermissions.class
 com\knowplugins\ysubz\kaoscore\bungee\CcBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\UngrantBungeeCommand.class
@@ -163,12 +163,10 @@ com\knowplugins\ysubz\kaoscore\bukkit\util\placeholder\LuckPermsBridgeExpansion.
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeePunishmentService.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\SpawnLimitsManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\MuteCommand.class
-com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinApplier$3.class
 com\knowplugins\ysubz\kaoscore\bungee\Texts.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\world\TimeListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\punishment\PunishmentType.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\TpallCommand.class
-com\knowplugins\ysubz\kaoscore\bukkit\sit\command\SitCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\chat\listener\ChatListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\permission\KaosPermissible.class
 com\knowplugins\ysubz\kaoscore\bukkit\clan\command\ClanChatCommand.class
@@ -177,7 +175,6 @@ com\knowplugins\ysubz\kaoscore\bukkit\util\tag\command\TagCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\manager\AuthManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\SetJumpPadCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\CheatBanCommand.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\DisguiseManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\player\JoinMessageManager.class
 com\knowplugins\ysubz\kaoscore\bungee\PermissionGroup.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\AltsCommand.class
@@ -191,11 +188,12 @@ com\knowplugins\ysubz\kaoscore\bukkit\command\list\vip\DiscloseCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\tag\Tag.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\vip\TrollCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\integration\practice\HardPracticeBridge.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\sit\SitManager$1.class
 com\knowplugins\ysubz\kaoscore\bungee\service\BungeeWhitelistService.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\command\UnDisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\VanishCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\repository\PlayerAddressRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinApplier.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\api\DisguiseApiService$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\Listeners.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\WhitelistCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\MojangSkinFetcher.class
@@ -208,7 +206,6 @@ com\knowplugins\ysubz\kaoscore\bungee\KaosCoreReloadCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\api\KaosCoreAPIImpl.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinApplier$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\OpCommand.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\skin\SkinMatrix.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\ModerationCommandUtil$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\entity\MenuClickListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\player\ScoreboardManager.class
@@ -230,6 +227,7 @@ com\knowplugins\ysubz\kaoscore\bungee\WarnBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\BaseBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\NPCManager$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\Logger.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\DisguiseManager.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\NPCManager$Skin.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\ReplyCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\PunishmentEntry.class
@@ -246,7 +244,6 @@ com\knowplugins\ysubz\kaoscore\bukkit\util\skin\menu\SkinMenuListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\MenuCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\repository\BungeePlayerAddressRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\auth\listener\AuthPacketListener$1.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\command\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\repository\PunishmentRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\ClearChatCommand.class
 com\knowplugins\ysubz\kaoscore\bungee\model\ClanRole.class
@@ -259,11 +256,11 @@ com\knowplugins\ysubz\kaoscore\bungee\service\BungeeFriendService.class
 com\knowplugins\ysubz\kaoscore\bungee\WhitelistBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\StaffChatCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinPoolManager.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\command\UnDisguiseCommand.class
-com\knowplugins\ysubz\kaoscore\bukkit\sit\SitManager.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\repository\DisguiseRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\listener\player\ProtectionListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\account\AccountController.class
 com\knowplugins\ysubz\kaoscore\bukkit\menu\list\AnvilInputMenu.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\api\DisguiseApiService$RemoteSkinData.class
 com\knowplugins\ysubz\kaoscore\bukkit\permission\data\PermissionRepository.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\menu\SkinMenu.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\BanCommand.class
@@ -271,13 +268,15 @@ com\knowplugins\ysubz\kaoscore\bukkit\auth\listener\AuthPacketListener.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\SetSpawnCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinPoolManager$1.class
 com\knowplugins\ysubz\kaoscore\bukkit\clan\command\ClanCommand$TagColorOption.class
-com\knowplugins\ysubz\kaoscore\bukkit\disguise\api\DisguiseApiService.class
 com\knowplugins\ysubz\kaoscore\bungee\UnbanBungeeCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\player\ScoreboardManager$BoardState.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\command\DisguiseCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\medal\Medal.class
 com\knowplugins\ysubz\kaoscore\bukkit\clan\ClanRole.class
 com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\GoCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\manager\world\NPCManager.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\sit\command\SitCommand.class
+com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\skin\SkinMatrix$SkinData.class
 com\knowplugins\ysubz\kaoscore\bukkit\command\list\ReportCommand.class
 com\knowplugins\ysubz\kaoscore\bukkit\util\join\JoinMessage.class
 com\knowplugins\ysubz\kaoscore\bukkit\clan\command\ClanCommand$1.class

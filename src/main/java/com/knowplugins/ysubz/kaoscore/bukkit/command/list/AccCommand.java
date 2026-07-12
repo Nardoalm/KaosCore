@@ -234,8 +234,8 @@ public class AccCommand extends Commands {
             if (isOnline) {
                 Player onlinePlayer = Bukkit.getPlayer(targetUuid);
                 if (onlinePlayer != null) {
-                    com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager disguiseManager = MainManager.getDisguiseManager();
-                    if (disguiseManager != null && com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager.isDisguised(onlinePlayer)) {
+                    com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager disguiseManager = MainManager.getDisguiseManager();
+                    if (disguiseManager != null && com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager.isDisguised(onlinePlayer)) {
                         isFake = true;
                         originalName = disguiseManager.getOriginalName(onlinePlayer);
                     }

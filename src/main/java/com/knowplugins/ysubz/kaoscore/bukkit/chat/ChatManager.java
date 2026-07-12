@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.chat;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;

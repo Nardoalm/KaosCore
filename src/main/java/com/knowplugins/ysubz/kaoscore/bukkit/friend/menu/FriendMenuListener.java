@@ -3,7 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.friend.menu;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.FriendRequest;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.manager.FriendManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.menu.list.AnvilInputMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

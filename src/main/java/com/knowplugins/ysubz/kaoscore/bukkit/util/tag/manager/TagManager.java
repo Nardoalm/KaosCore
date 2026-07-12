@@ -1,7 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.repository.PlayerTagRepository;
@@ -235,6 +235,12 @@ public class TagManager {
     public void clearDisguiseTag(UUID uuid) {
         if (uuid != null) {
             disguiseTags.remove(uuid);
+            String selected = selectedTags.get(uuid);
+            if (selected != null) {
+                cachedCurrentTags.put(uuid, selected);
+            } else {
+                cachedCurrentTags.remove(uuid);
+            }
         }
     }
 

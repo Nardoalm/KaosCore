@@ -37,6 +37,12 @@ public class SkinCommand extends Commands {
         }
 
         Player player = (Player) sender;
+        String targetSkin = args[0];
+
+        if (targetSkin.equalsIgnoreCase("reset")) {
+            resetSkin(player);
+            return;
+        }
 
         if (!player.hasPermission("kaoscore.member.skin")) {
             player.sendMessage("§cYou do not have permission to execute this command.");
@@ -69,21 +75,21 @@ public class SkinCommand extends Commands {
                     return;
                 }
                 String targetName = args[0];
-                String targetSkin = args[1];
+                String targetSetSkin = args[1];
                 Player target = Bukkit.getPlayer(targetName);
                 if (target == null) {
                     player.sendMessage("§cPlayer not online.");
                     player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
                     return;
                 }
-                setSkin(target, targetSkin);
-                player.sendMessage("§aYou have set §6" + target.getName() + "§a's skin to §6" + targetSkin + "§a.");
+                setSkin(target, targetSetSkin);
+                player.sendMessage("§aYou have set §6" + target.getName() + "§a's skin to §6" + targetSetSkin + "§a.");
                 player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);
                 return;
             }
         }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("gui")) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("menu")) {
             SkinMenu.open(player);
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
@@ -98,17 +104,11 @@ public class SkinCommand extends Commands {
             } else {
                 player.sendMessage(" §e* §6/skin reset");
             }
-            player.sendMessage(" §e* §6/skin gui");
+            player.sendMessage(" §e* §6/skin menu");
             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
             return;
         }
 
-        String targetSkin = args[0];
-
-        if (targetSkin.equalsIgnoreCase("reset")) {
-            resetSkin(player);
-            return;
-        }
 
         setSkin(player, targetSkin);
     }

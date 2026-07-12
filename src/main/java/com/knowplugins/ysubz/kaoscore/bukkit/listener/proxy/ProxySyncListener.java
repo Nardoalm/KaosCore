@@ -4,7 +4,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.command.SkinCommand;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.api.DisguiseApiService;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.api.DisguiseApiService;
 import com.knowplugins.ysubz.kaoscore.bukkit.friend.menu.FriendMenu;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenu;
 import org.bukkit.Bukkit;

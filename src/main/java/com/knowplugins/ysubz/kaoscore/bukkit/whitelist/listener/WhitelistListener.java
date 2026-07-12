@@ -1,6 +1,6 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.whitelist.listener;
 
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.WhitelistManager;
 import org.bukkit.Bukkit;

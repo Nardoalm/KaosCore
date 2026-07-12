@@ -2,6 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.PracticeModeBlocker;
 import live.pvphard.practice.HardPractice;
+import live.pvphard.practice.common.PlayerUtil;
 import live.pvphard.practice.core.profile.Profile;
 import live.pvphard.practice.core.profile.ProfileService;
 import live.pvphard.practice.core.profile.enums.ProfileState;
@@ -41,16 +42,8 @@ public class DoubleJumpListener implements Listener {
             return;
         }
 
-        boolean isInMatch = false;
         if (Bukkit.getPluginManager().isPluginEnabled("HardPractice")) {
-            Profile profile = HardPractice.getInstance().getService(ProfileService.class).getProfile(player.getUniqueId());
-            if (profile != null && profile.getState() != ProfileState.LOBBY) {
-                isInMatch = true;
-            }
-        }
-
-        if (isInMatch || PracticeModeBlocker.check(player, false)) {
-            return;
+            if(!PlayerUtil.inLobby(player)) return;
         }
 
         event.setCancelled(true);

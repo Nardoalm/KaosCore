@@ -5,7 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bungee.Texts;
 import com.knowplugins.ysubz.kaoscore.bungee.BungeeSyncMessenger;
 import com.knowplugins.ysubz.kaoscore.bungee.bootstrap.BungeeKaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.integration.proxy.ProxySyncChannel;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.skin.SkinMatrix;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.skin.SkinMatrix;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

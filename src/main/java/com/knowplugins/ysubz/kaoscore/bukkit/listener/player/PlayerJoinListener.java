@@ -5,7 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.PunishmentManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.TabListManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.PlayerAddressRepository;
@@ -19,14 +19,14 @@ import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentTime;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.title.TitleAPI;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository.VanishRepository;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.repository.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.repository.DisguiseRepository;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.MojangSkinFetcher;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.OriginalSkinManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.SkinApplier;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.PunishmentMessageManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
-import com.knowplugins.ysubz.kaoscore.bukkit.util.join.JoinMessage;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -39,7 +39,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -117,7 +116,7 @@ public class PlayerJoinListener implements Listener {
                SkinCacheRepository skinCacheRepo = new SkinCacheRepository(KaosCore.getInstance(), MainManager.getDatabaseManager());
                SkinData skin = skinCacheRepo.loadSync(res);
                pendingDisguises.put(e.getUniqueId(), new CachedDisguise(res, skin));
-               return; // Se tem disguise, ignora busca de skin normal
+               return;
             }
          } catch (Exception ex) {
             Logger.warning("Erro ao carregar disguise em pre-login: " + ex.getMessage());
@@ -126,7 +125,16 @@ public class PlayerJoinListener implements Listener {
          SkinRepository skinRepo = new SkinRepository(plugin, MainManager.getDatabaseManager());
          try {
             SkinData skinData = skinRepo.load(e.getUniqueId()).join();
-            if (hasStoredTextures(skinData)) {
+
+            if (skinData == null || !hasStoredTextures(skinData)) {
+               MojangSkinFetcher.SkinTextures textures = MojangSkinFetcher.fetchTexturesByName(e.getName());
+               if (textures != null && textures.value != null && !textures.value.trim().isEmpty()) {
+                  skinData = new SkinData(textures.name, textures.value, textures.signature);
+                  skinRepo.saveAsync(e.getUniqueId(), textures.name, textures.value, textures.signature);
+               }
+            }
+
+            if (skinData != null && hasStoredTextures(skinData)) {
                pendingSkins.put(e.getUniqueId(), skinData);
             }
          } catch (Exception ex) {
@@ -331,6 +339,21 @@ public class PlayerJoinListener implements Listener {
             }
          }
       }
+
+      if (Bukkit.getPluginManager().isPluginEnabled("HardPractice")) {
+         live.pvphard.practice.core.profile.ProfileService hpProfileService = live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.core.profile.ProfileService.class);
+         if (hpProfileService != null) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+               if (online.equals(player)) continue;
+
+               live.pvphard.practice.core.profile.Profile targetProfile = hpProfileService.getProfile(online.getUniqueId());
+               if (targetProfile != null && targetProfile.getState() == live.pvphard.practice.core.profile.enums.ProfileState.PLAYING) {
+                  online.hidePlayer(player);
+                  player.hidePlayer(online);
+               }
+            }
+         }
+      }
    }
 
    @EventHandler
@@ -406,7 +429,7 @@ public class PlayerJoinListener implements Listener {
          if (player.isOnline() && !DisguiseManager.isDisguised(player)) {
             applyJoinSkin(player);
          }
-      }, 2L);
+      }, 25L);
    }
 
    private boolean hasStoredTextures(SkinData skinData) {

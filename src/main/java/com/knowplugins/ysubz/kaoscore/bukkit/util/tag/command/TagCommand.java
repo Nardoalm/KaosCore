@@ -2,9 +2,8 @@ package com.knowplugins.ysubz.kaoscore.bukkit.util.tag.command;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.command.Commands;
-import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -74,7 +73,7 @@ public class TagCommand extends Commands {
     private void sendAvailableTags(Player player) {
         List<Tag> availableTags = plugin.getTagManager().getAvailableTags(player);
         if (availableTags.isEmpty()) {
-            Tag fallback = plugin.getTagManager().getTagByNameOrId("membro");
+            Tag fallback = plugin.getTagManager().getTagByNameOrId("member");
             if (fallback != null) {
                 availableTags = new ArrayList<>(Collections.singletonList(fallback));
             }

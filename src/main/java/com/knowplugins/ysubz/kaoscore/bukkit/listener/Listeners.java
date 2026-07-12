@@ -9,7 +9,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.listener.player.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.listener.world.*;
 import com.knowplugins.ysubz.kaoscore.bukkit.menu.listener.AnvilInputListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.permission.listener.PermissionListener;
-import com.knowplugins.ysubz.kaoscore.bukkit.sit.listener.SitListener;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.sit.listener.SitListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.join.listener.JoinMessageMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.skin.menu.SkinMenuListener;
 import com.knowplugins.ysubz.kaoscore.bukkit.whitelist.listener.WhitelistListener;

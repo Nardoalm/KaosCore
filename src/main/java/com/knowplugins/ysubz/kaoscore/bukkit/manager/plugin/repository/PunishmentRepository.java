@@ -2,7 +2,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.manager.plugin.repository;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
-import com.knowplugins.ysubz.kaoscore.bukkit.disguise.DisguiseManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.database.DatabaseManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.punishment.PunishmentEntry;
