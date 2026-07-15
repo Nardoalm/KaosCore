@@ -65,8 +65,10 @@ public class AuthListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (plugin.getAuthManager().isPending(event.getEntity().getUniqueId())) {
-            event.setCancelled(true);
+        if (event.getEntity() instanceof Player) {
+            if (plugin.getAuthManager().isPending(event.getEntity().getUniqueId())) {
+                event.setCancelled(true);
+            }
         }
     }
 

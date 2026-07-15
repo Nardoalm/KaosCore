@@ -85,14 +85,32 @@ public class SkinApplier {
 
     private void applyPacketsToOthers() {
         boolean hardPracticeEnabled = Bukkit.getPluginManager().isPluginEnabled("HardPractice");
+
+        if (hardPracticeEnabled) {
+            try {
+                live.pvphard.practice.feature.visibility.VisibilityService visibilityService =
+                        live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.feature.visibility.VisibilityService.class);
+                if (visibilityService != null) {
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        if (onlinePlayer.equals(player)) continue;
+                        onlinePlayer.hidePlayer(player);
+                    }
+                    visibilityService.updateVisibility(player);
+                    return;
+                }
+            } catch (Exception ignored) {}
+        }
+
         live.pvphard.practice.core.profile.ProfileService hpProfileService = null;
         live.pvphard.practice.core.profile.Profile ghostProfile = null;
 
         if (hardPracticeEnabled) {
-            hpProfileService = live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.core.profile.ProfileService.class);
-            if (hpProfileService != null) {
-                ghostProfile = hpProfileService.getProfile(player.getUniqueId());
-            }
+            try {
+                hpProfileService = live.pvphard.practice.HardPractice.getInstance().getService(live.pvphard.practice.core.profile.ProfileService.class);
+                if (hpProfileService != null) {
+                    ghostProfile = hpProfileService.getProfile(player.getUniqueId());
+                }
+            } catch (Exception ignored) {}
         }
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

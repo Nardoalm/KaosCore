@@ -144,7 +144,7 @@ public class TagManager {
 
         Tag selectedTag = resolveTag(tagIdToUse);
 
-        if (selectedTag != null && (DisguiseManager.isDisguised(player) || canUse(player, selectedTag))) {
+        if (selectedTag != null && !DisguiseManager.isDisguised(player) && canUse(player, selectedTag)) {
             return selectedTag;
         }
 
@@ -153,17 +153,17 @@ public class TagManager {
             return null;
         }
 
-        Tag first = available.get(0);
-        if (first != null) {
+        Tag defaultTag = DisguiseManager.isDisguised(player) ? available.get(available.size() - 1) : available.get(0);
+        if (defaultTag != null) {
             if (DisguiseManager.isDisguised(player)) {
-                disguiseTags.put(player.getUniqueId(), first.getId());
+                disguiseTags.put(player.getUniqueId(), defaultTag.getId());
             } else {
-                selectedTags.put(player.getUniqueId(), first.getId());
-                cachedCurrentTags.put(player.getUniqueId(), first.getId());
-                saveSelectedTag(player.getUniqueId(), first.getId());
+                selectedTags.put(player.getUniqueId(), defaultTag.getId());
+                cachedCurrentTags.put(player.getUniqueId(), defaultTag.getId());
+                saveSelectedTag(player.getUniqueId(), defaultTag.getId());
             }
         }
-        return first;
+        return defaultTag;
     }
 
     public boolean setTag(Player player, String tagNameOrId) {
@@ -280,10 +280,9 @@ public class TagManager {
         }
 
         List<Tag> list = new ArrayList<>();
-        boolean isDisguised = DisguiseManager.isDisguised(player);
 
         for (Tag tag : tagsById.values()) {
-            if (tag != null && (isDisguised || canUse(player, tag))) {
+            if (tag != null && canUse(player, tag)) {
                 list.add(tag);
             }
         }

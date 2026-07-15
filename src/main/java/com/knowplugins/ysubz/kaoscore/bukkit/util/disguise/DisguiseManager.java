@@ -231,6 +231,7 @@ public class DisguiseManager {
 
     public void addInDisguise(Player player, String nick) {
         if (player == null) return;
+        String oldName = player.getName();
         DISGUISED.add(player.getUniqueId());
         if (nick != null) {
             DISGUISE_NICKS.put(player.getUniqueId(), nick);
@@ -238,13 +239,11 @@ public class DisguiseManager {
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
-            if (core.getTagTeamManager() != null) {
-                for (Player online : Bukkit.getOnlinePlayers()) {
-                    core.getTagTeamManager().refreshPlayer(online);
-                }
-            }
             if (core.getTagManager() != null) {
                 core.getTagManager().refreshTag(player);
+            }
+            if (core.getTagTeamManager() != null) {
+                core.getTagTeamManager().refreshPlayer(player, oldName);
             }
         }
         refreshGlobalNametags(player, false);
@@ -266,6 +265,8 @@ public class DisguiseManager {
     public void removeDisguise(Player player) {
         if (player == null) return;
 
+        String oldNick = DISGUISE_NICKS.get(player.getUniqueId());
+
         DISGUISED.remove(player.getUniqueId());
         DISGUISE_NICKS.remove(player.getUniqueId());
         ORIGINAL_NAMES.remove(player.getUniqueId());
@@ -274,13 +275,16 @@ public class DisguiseManager {
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
-            if (core.getTagTeamManager() != null) {
-                for (Player online : Bukkit.getOnlinePlayers()) {
-                    core.getTagTeamManager().refreshPlayer(online);
-                }
-            }
             if (core.getTagManager() != null) {
+                core.getTagManager().clearDisguiseTag(player.getUniqueId());
                 core.getTagManager().refreshTag(player);
+            }
+            if (core.getTagTeamManager() != null) {
+                if (oldNick != null) {
+                    core.getTagTeamManager().refreshPlayer(player, oldNick);
+                } else {
+                    core.getTagTeamManager().refreshPlayer(player);
+                }
             }
         }
     }

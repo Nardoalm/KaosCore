@@ -445,6 +445,7 @@ public class ClanManager {
 
         clan.getMembers().put(playerId, newRole);
         saveClan(clan);
+        refreshPlayerTag(playerId);
     }
 
     public void demote(Clan clan, UUID playerId) {
@@ -464,6 +465,7 @@ public class ClanManager {
 
         clan.getMembers().put(playerId, newRole);
         saveClan(clan);
+        refreshPlayerTag(playerId);
     }
 
     public void transfer(Clan clan, UUID newLeader) {
@@ -475,6 +477,8 @@ public class ClanManager {
         clan.getMembers().put(oldLeader, ClanRole.ADMIN);
         clan.setLeader(newLeader);
         saveClan(clan);
+        refreshPlayerTag(oldLeader);
+        refreshPlayerTag(newLeader);
     }
 
     public void sendInvite(Clan clan, UUID inviter, UUID target) {

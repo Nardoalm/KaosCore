@@ -3,6 +3,7 @@ package com.knowplugins.ysubz.kaoscore.bukkit.listener.player;
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
 import com.knowplugins.ysubz.kaoscore.bukkit.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.ScoreboardManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,10 @@ public class PlayerQuitListener implements Listener {
         AccountController accounts = plugin == null ? null : plugin.getAccountController();
         if (accounts != null) {
             accounts.markOffline(player);
+        }
+
+        if (VanishManager.isVanished(player)) {
+            VanishManager.removeVanish(player);
         }
 
         if (plugin != null && plugin.getTagManager() != null) {

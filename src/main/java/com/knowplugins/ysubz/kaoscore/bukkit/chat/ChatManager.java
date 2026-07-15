@@ -194,11 +194,13 @@ public class ChatManager {
 
     private String resolveLevel(Player player) {
         if (Bukkit.getPluginManager().isPluginEnabled("HardPractice")) {
-            Profile profile = new Profile(player.getUniqueId(), player.getName());
-            profile.load();
             ProfileService profileService = HardPractice.getInstance().getService(ProfileService.class);
-            profileService.getProfile(player.getUniqueId());
-            return LevelBadgeUtil.getDisplayBadge(player, profile.getProfileData().getExperience());
+            if (profileService != null) {
+                Profile profile = profileService.getProfile(player.getUniqueId());
+                if (profile != null && profile.getProfileData() != null) {
+                    return LevelBadgeUtil.getDisplayBadge(player, profile.getProfileData().getExperience());
+                }
+            }
         }
         return "&7[0✺]";
     }
