@@ -99,9 +99,9 @@ public class PlayerJoinListener implements Listener {
                     : ("§cYou have been banned.\n\n" +
                        "  §cReason: §7" + reason + "\n" +
                        "  §cExpires in: §7" + duration + "\n" +
-                       "  §eBuy your unban at: §bstore.alleypvp.us\n" +
+                       "  §eBuy your unban at: §bstore.pvphard.live\n" +
                        "  §cBanned unfairly? Contact us via\n" +
-                       "  §9§ndiscord.gg/freep");
+                       "  §9§ndiscord.gg/pvphard");
 
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, banMessage);
             return;

@@ -248,4 +248,8 @@ public class HardPracticeBridge {
             return matchId;
         }
     }
+
+    public static boolean isAvaliable(){
+        return Bukkit.getPluginManager().isPluginEnabled("HardPractice");
+    }
 }
