@@ -124,6 +124,16 @@ public class TagManager {
                     return t;
                 }
             }
+
+            String selectedId = cachedCurrentTags.get(player.getUniqueId());
+            if (selectedId == null) {
+                selectedId = selectedTags.get(player.getUniqueId());
+            }
+
+            Tag disguisedSelectedTag = resolveTag(selectedId);
+            if (disguisedSelectedTag != null && canUse(player, disguisedSelectedTag)) {
+                return disguisedSelectedTag;
+            }
         }
 
         HardPracticeBridge practiceBridge = new HardPracticeBridge();
@@ -164,6 +174,15 @@ public class TagManager {
             }
         }
         return defaultTag;
+    }
+
+    public void clearSession(UUID uuid) {
+        if (uuid == null) {
+            return;
+        }
+
+        disguiseTags.remove(uuid);
+        cachedCurrentTags.remove(uuid);
     }
 
     public boolean setTag(Player player, String tagNameOrId) {

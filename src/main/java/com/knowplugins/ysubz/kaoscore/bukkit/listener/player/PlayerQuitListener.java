@@ -5,6 +5,7 @@ import com.knowplugins.ysubz.kaoscore.bukkit.account.AccountController;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.ScoreboardManager;
+import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.manager.TagManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,8 +31,13 @@ public class PlayerQuitListener implements Listener {
             VanishManager.removeVanish(player);
         }
 
-        if (plugin != null && plugin.getTagManager() != null) {
-            plugin.getTagManager().removeTagEntries(player);
+        TagManager tagManager = plugin == null ? null : plugin.getTagManager();
+        if (tagManager != null) {
+            tagManager.removeTagEntries(player);
+        }
+
+        if (MainManager.getDisguiseManager() != null) {
+            MainManager.getDisguiseManager().clearSession(player);
         }
 
         ScoreboardManager.remove(player);

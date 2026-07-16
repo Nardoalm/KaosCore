@@ -51,6 +51,12 @@ public class WhitelistCommand extends Commands {
                 whitelist.load();
                 sender.sendMessage("§aConfiguration reloaded.");
                 return;
+            case "list":
+                sender.sendMessage("§aPlayers whitelisted:");
+                for (String name : whitelist.getAllowedNames()){
+                    sender.sendMessage(" - " + name);
+                }
+                return;
             case "add":
                 if (args.length < 2) {
                     sender.sendMessage("§cUsage: /whitelist add <name>");
@@ -74,7 +80,7 @@ public class WhitelistCommand extends Commands {
                         : "§eNot in whitelist: §f" + args[1]);
                 return;
             default:
-                sender.sendMessage("§eUsage: /whitelist on|off|add <name>|remove <name>|reload");
+                sender.sendMessage("§eUsage: /whitelist on|off|add <name>|remove <name>|reload|list");
         }
     }
 }

@@ -181,7 +181,6 @@ public final class DisguiseApiService {
             GameProfile profile = ((CraftPlayer) player).getProfile();
             changeName(profile, originalName);
             player.setDisplayName(originalName);
-            player.setPlayerListName(originalName);
 
             if (disguiseManager != null) {
                 disguiseManager.removeDisguise(player);
@@ -254,7 +253,6 @@ public final class DisguiseApiService {
             cacheOriginalSkin(player, profile);
             changeName(profile, nick);
             player.setDisplayName(nick);
-            player.setPlayerListName(nick);
             disguiseManager.addInDisguise(player, nick);
             saveDisguise(player, true, nick);
             return true;

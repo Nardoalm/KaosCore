@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.auth.listener;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

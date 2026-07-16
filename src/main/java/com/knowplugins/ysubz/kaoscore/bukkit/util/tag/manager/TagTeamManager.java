@@ -10,10 +10,17 @@ import com.knowplugins.ysubz.kaoscore.bukkit.util.medal.manager.MedalManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.manager.player.VanishManager;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.tag.Tag;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.util.CraftChatMessage;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -213,18 +220,13 @@ public class TagTeamManager {
         }
 
         NametagStyle style = resolveStyle(player, practiceState);
+        NametagStyle tabStyle = resolveTabStyle(player);
+        String currentEntry = getCurrentEntry(player);
+        String tabDisplayName = buildTabDisplayName(currentEntry, tabStyle);
         if (style == null) {
             removeEntries(scoreboard, staleEntries);
+            updateTabListName(player, tabDisplayName);
             return;
-        }
-
-        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
-        String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
-                ? safe(disguiseManager.getDisguiseNick(player))
-                : safe(player.getName());
-
-        if (currentEntry.isEmpty()) {
-            currentEntry = safe(player.getName());
         }
 
         String expectedTeamName = buildTeamName(style);
@@ -232,12 +234,15 @@ public class TagTeamManager {
 
         if (currentTeam != null && currentTeam.getName().equals(expectedTeamName)) {
             if (currentTeam.getPrefix().equals(style.getPrefix()) && currentTeam.getSuffix().equals(style.getSuffix())) {
+                syncTeamEntries(scoreboard, currentEntry, staleEntries, currentTeam, expectedTeamName);
+                updateTabListName(player, tabDisplayName);
                 return;
             }
         }
 
         Team targetTeam = getOrCreateTeam(scoreboard, style);
         if (targetTeam == null) {
+            updateTabListName(player, tabDisplayName);
             return;
         }
 
@@ -252,35 +257,9 @@ public class TagTeamManager {
                 targetTeam.setSuffix(newSuffix);
             }
 
-            for (Team otherTeam : scoreboard.getTeams()) {
-                if (otherTeam != null && !otherTeam.getName().equals(expectedTeamName) && otherTeam.getName().startsWith(TEAM_PREFIX)) {
-                    if (otherTeam.hasEntry(currentEntry)) {
-                        otherTeam.removeEntry(currentEntry);
-                    }
-                    for (String stale : staleEntries) {
-                        if (!stale.equals(currentEntry) && otherTeam.hasEntry(stale)) {
-                            otherTeam.removeEntry(stale);
-                        }
-                    }
-                }
-            }
+            syncTeamEntries(scoreboard, currentEntry, staleEntries, targetTeam, expectedTeamName);
 
-            for (String stale : staleEntries) {
-                if (!stale.equals(currentEntry) && targetTeam.hasEntry(stale)) {
-                    targetTeam.removeEntry(stale);
-                }
-            }
-
-            if (!targetTeam.hasEntry(currentEntry)) {
-                targetTeam.addEntry(currentEntry);
-            }
-
-            try {
-                if (!player.getPlayerListName().equals(currentEntry)) {
-                    player.setPlayerListName(currentEntry);
-                }
-            } catch (Exception ignored) {
-            }
+            updateTabListName(player, tabDisplayName);
 
         } catch (IllegalStateException ignored) {
         } catch (Exception e) {
@@ -349,7 +328,6 @@ public class TagTeamManager {
         }
 
         if (practiceState != null && practiceState.isOverrideDefaultNametag()) {
-            // CORREÇÃO: Força puramente a cor do time na prefix para evitar o vazamento da tag do lobby.
             String prefix = trimTeamPart(safe(practiceState.getNameColor()));
             String suffix = trimTeamPart(resolveText(player, practiceState.getSuffix()));
             int priority = practiceState.getPriority() > 0 ? practiceState.getPriority() : 100;
@@ -416,6 +394,70 @@ public class TagTeamManager {
         return new NametagStyle(key, prefix, suffix, tag.getPosition());
     }
 
+    private NametagStyle resolveTabStyle(Player player) {
+        if (player == null) {
+            return null;
+        }
+
+        Tag tag = null;
+        if (tagManager != null) {
+            tag = tagManager.getTag(player);
+        }
+
+        if (tag == null) {
+            return null;
+        }
+
+        Clan clan = null;
+        ClanManager clanManager = MainManager.getClanManager();
+        if (clanManager != null && !DisguiseManager.isDisguised(player)) {
+            clan = clanManager.getClan(player);
+        }
+
+        String clanKey = clan == null ? "" : safe(clan.getName());
+        String clanTagValue = "";
+        String clanSuffix = "";
+        if (clan != null) {
+            clanTagValue = safe(clan.getTag());
+            if (!clanTagValue.isEmpty()) {
+                clanSuffix = " " + clan.getNametagFormattedTag();
+            }
+        }
+
+        String tagPrefix = resolveText(player, tag.getPrefix());
+        String tagColor = resolveText(player, tag.getColor());
+        String tagSuffix = resolveText(player, tag.getSuffix());
+
+        if (!clanTagValue.isEmpty() && !clanSuffix.isEmpty()) {
+            String strippedSuffix = ChatColor.stripColor(safe(tagSuffix));
+            String token = "[" + clanTagValue + "]";
+            if (strippedSuffix != null && strippedSuffix.contains(token)) {
+                clanSuffix = "";
+            }
+        }
+
+        String tailColor = lastResettingColor(tagColor);
+        if (tailColor.isEmpty()) {
+            tailColor = lastResettingColor(tagPrefix);
+        }
+
+        String prefix;
+        if (!tailColor.isEmpty()) {
+            int available = 16 - tailColor.length();
+            String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
+            prefix = trimTeamPart(trimmedBody + tailColor);
+        } else {
+            prefix = trimTeamPart(tagPrefix);
+        }
+
+        String suffix = trimTeamPart(tagSuffix + clanSuffix);
+        String key = "tab:" + tag.getId()
+                + ":" + (clanKey.isEmpty() ? "none" : clanKey.toLowerCase(Locale.ROOT))
+                + ":" + styleSignature(prefix, suffix);
+
+        return new NametagStyle(key, prefix, suffix, tag.getPosition());
+    }
+
     private void removeEntries(Scoreboard scoreboard, Set<String> entries) {
         if (scoreboard == null || entries == null || entries.isEmpty()) {
             return;
@@ -446,7 +488,7 @@ public class TagTeamManager {
     private Set<String> collectEntries(Player player, String... extraEntries) {
         LinkedHashSet<String> entries = new LinkedHashSet<>();
         if (player != null) {
-            entries.add(safe(player.getName()));
+            entries.add(getCurrentEntry(player));
 
             DisguiseManager disguiseManager = MainManager.getDisguiseManager();
             if (disguiseManager != null) {
@@ -677,6 +719,98 @@ public class TagTeamManager {
         return Integer.toHexString((safe(prefix) + "|" + safe(suffix)).hashCode());
     }
 
+    private String getCurrentEntry(Player player) {
+        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
+        if (disguiseManager != null && DisguiseManager.isDisguised(player)) {
+            String nick = safe(disguiseManager.getDisguiseNick(player));
+            if (!nick.isEmpty()) {
+                return nick;
+            }
+        }
+        return safe(player == null ? null : player.getName());
+    }
+
+    private String buildTabDisplayName(String currentEntry, NametagStyle tabStyle) {
+        String entry = safe(currentEntry);
+        if (entry.isEmpty()) {
+            return "";
+        }
+
+        if (tabStyle == null) {
+            return entry;
+        }
+
+        return safe(tabStyle.getPrefix()) + entry + safe(tabStyle.getSuffix());
+    }
+
+    private void updateTabListName(Player player, String displayName) {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+
+        String value = safe(displayName);
+        if (value.isEmpty()) {
+            value = safe(player.getName());
+        }
+
+        try {
+            player.setPlayerListName(value);
+        } catch (Exception ignored) {
+        }
+
+        try {
+            CraftPlayer craftPlayer = (CraftPlayer) player;
+            EntityPlayer entityPlayer = craftPlayer.getHandle();
+            IChatBaseComponent original = entityPlayer.listName;
+            entityPlayer.listName = CraftChatMessage.fromString(value)[0];
+
+            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, entityPlayer);
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                if (!viewer.isOnline() || !(viewer instanceof CraftPlayer)) {
+                    continue;
+                }
+                ((CraftPlayer) viewer).getHandle().playerConnection.sendPacket(packet);
+            }
+
+            entityPlayer.listName = original;
+        } catch (Exception e) {
+            Logger.warning("Error updating tab name for " + player.getName() + ": " + e.getMessage());
+        }
+    }
+
+    private void syncTeamEntries(Scoreboard scoreboard, String currentEntry, Set<String> staleEntries, Team targetTeam, String expectedTeamName) {
+        if (scoreboard == null || targetTeam == null) {
+            return;
+        }
+
+        for (Team otherTeam : scoreboard.getTeams()) {
+            if (otherTeam == null || otherTeam.getName() == null || !otherTeam.getName().startsWith(TEAM_PREFIX)) {
+                continue;
+            }
+
+            if (!otherTeam.getName().equals(expectedTeamName)) {
+                if (otherTeam.hasEntry(currentEntry)) {
+                    otherTeam.removeEntry(currentEntry);
+                }
+                for (String stale : staleEntries) {
+                    if (!safe(stale).equals(currentEntry) && otherTeam.hasEntry(stale)) {
+                        otherTeam.removeEntry(stale);
+                    }
+                }
+            }
+        }
+
+        for (String stale : staleEntries) {
+            if (!safe(stale).equals(currentEntry) && targetTeam.hasEntry(stale)) {
+                targetTeam.removeEntry(stale);
+            }
+        }
+
+        if (!targetTeam.hasEntry(currentEntry)) {
+            targetTeam.addEntry(currentEntry);
+        }
+    }
+
     private String lastResettingColor(String text) {
         String value = safe(text);
         if (value.length() < 2) {
@@ -751,15 +885,16 @@ public class TagTeamManager {
         NametagStyle lowestStyle = new NametagStyle("lowest_disguise_" + lowestTag.getId(), prefix, suffix, lowestTag.getPosition());
 
         Set<String> entries = collectEntries(player);
-        DisguiseManager disguiseManager = MainManager.getDisguiseManager();
-        String currentEntry = (disguiseManager != null && DisguiseManager.isDisguised(player))
-                ? safe(disguiseManager.getDisguiseNick(player))
-                : player.getName();
+        String currentEntry = getCurrentEntry(player);
 
         Team targetTeam = getOrCreateTeam(player.getScoreboard(), lowestStyle);
-        if (targetTeam == null) return;
+        if (targetTeam == null) {
+            updateTabListName(player, buildTabDisplayName(currentEntry, resolveTabStyle(player)));
+            return;
+        }
 
         player.setDisplayName(prefix + currentEntry + suffix);
+        updateTabListName(player, buildTabDisplayName(currentEntry, resolveTabStyle(player)));
 
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             Scoreboard scoreboard = resolveScoreboard(viewer);

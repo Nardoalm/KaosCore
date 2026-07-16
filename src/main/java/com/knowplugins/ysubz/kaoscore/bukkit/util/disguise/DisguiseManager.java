@@ -1,6 +1,7 @@
 package com.knowplugins.ysubz.kaoscore.bukkit.util.disguise;
 
 import com.knowplugins.ysubz.kaoscore.bukkit.KaosCore;
+import com.knowplugins.ysubz.kaoscore.bukkit.integration.practice.HardPracticeBridge;
 import com.knowplugins.ysubz.kaoscore.bukkit.util.Logger;
 import com.lunarclient.apollo.Apollo;
 import com.lunarclient.apollo.module.nametag.*;
@@ -9,9 +10,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -120,6 +126,12 @@ public class DisguiseManager {
 
     private String getFormattedName(Player player) {
         String baseName = DISGUISE_NICKS.getOrDefault(player.getUniqueId(), player.getName());
+        HardPracticeBridge.PracticeState practiceState = new HardPracticeBridge().getState(player);
+        String matchColor = resolveMatchColor(player, practiceState);
+        if (!matchColor.isEmpty()) {
+            return matchColor + baseName;
+        }
+
         KaosCore core = KaosCore.getInstance();
         if (core == null || core.getTagManager() == null) return baseName;
 
@@ -156,6 +168,56 @@ public class DisguiseManager {
         return prefix + tailColor + baseName + suffix;
     }
 
+    private String resolveMatchColor(Player player, HardPracticeBridge.PracticeState practiceState) {
+        if (player == null) {
+            return "";
+        }
+
+        try {
+            live.pvphard.practice.HardPractice alley = live.pvphard.practice.HardPractice.getInstance();
+            if (alley != null) {
+                live.pvphard.practice.feature.event.EventService eventService = alley.getService(live.pvphard.practice.feature.event.EventService.class);
+                if (eventService != null) {
+                    live.pvphard.practice.feature.event.model.ActiveEvent activeEvent = eventService.getActiveEvent();
+                    if (activeEvent != null && activeEvent.isParticipant(player.getUniqueId())) {
+                        live.pvphard.practice.feature.event.model.EventParticipant participant = activeEvent.getParticipant(player.getUniqueId());
+                        if (participant != null && participant.getState() == live.pvphard.practice.feature.event.EventPlayerState.FIGHTING) {
+                            String color = "§a";
+                            live.pvphard.practice.feature.event.EventType type = activeEvent.getDefinition().getType();
+                            if (type == live.pvphard.practice.feature.event.EventType.SUMO ||
+                                    type == live.pvphard.practice.feature.event.EventType.BRACKETS ||
+                                    type == live.pvphard.practice.feature.event.EventType.GULAG) {
+                                if (player.getUniqueId().equals(activeEvent.getCurrentFighterA())) {
+                                    color = "§c";
+                                } else if (player.getUniqueId().equals(activeEvent.getCurrentFighterB())) {
+                                    color = "§9";
+                                }
+                            }
+                            return color;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
+
+        if (practiceState == null) {
+            return "";
+        }
+
+        if (practiceState.isSpectating()) {
+            return "§8";
+        }
+
+        if (practiceState.isOverrideDefaultNametag()) {
+            String color = practiceState.getNameColor();
+            if (color != null && !color.trim().isEmpty()) {
+                return color.trim();
+            }
+        }
+
+        return "";
+    }
+
     public void refreshGlobalNametags(Player target, boolean reset) {
         if (target == null) return;
 
@@ -167,6 +229,8 @@ public class DisguiseManager {
                     .build()
             );
         }
+
+        refreshVanillaEntity(target);
     }
 
     private byte[] buildCBUpdateNametagsPacket(Map<UUID, List<String>> playersMap) {
@@ -249,6 +313,23 @@ public class DisguiseManager {
         refreshGlobalNametags(player, false);
     }
 
+    public void clearSession(Player player) {
+        if (player == null) return;
+        clearSession(player.getUniqueId());
+    }
+
+    public void clearSession(UUID uuid) {
+        if (uuid == null) return;
+        DISGUISED.remove(uuid);
+        DISGUISE_NICKS.remove(uuid);
+        ORIGINAL_NAMES.remove(uuid);
+
+        KaosCore core = KaosCore.getInstance();
+        if (core != null && core.getTagManager() != null) {
+            core.getTagManager().clearSession(uuid);
+        }
+    }
+
     public void addInDisguise(UUID uuid) {
         if (uuid == null) return;
         DISGUISED.add(uuid);
@@ -266,18 +347,12 @@ public class DisguiseManager {
         if (player == null) return;
 
         String oldNick = DISGUISE_NICKS.get(player.getUniqueId());
-
-        DISGUISED.remove(player.getUniqueId());
-        DISGUISE_NICKS.remove(player.getUniqueId());
-        ORIGINAL_NAMES.remove(player.getUniqueId());
-
-        refreshGlobalNametags(player, true);
+        clearSession(player);
 
         if (Bukkit.getPluginManager().getPlugin("KaosCore") != null) {
             KaosCore core = KaosCore.getInstance();
             if (core.getTagManager() != null) {
-                core.getTagManager().clearDisguiseTag(player.getUniqueId());
-                core.getTagManager().refreshTag(player);
+                core.getTagManager().refreshTag(player, oldNick);
             }
             if (core.getTagTeamManager() != null) {
                 if (oldNick != null) {
@@ -286,6 +361,41 @@ public class DisguiseManager {
                     core.getTagTeamManager().refreshPlayer(player);
                 }
             }
+        }
+
+        refreshGlobalNametags(player, true);
+    }
+
+    private void refreshVanillaEntity(Player target) {
+        if (target == null || !target.isOnline() || !(target instanceof CraftPlayer)) {
+            return;
+        }
+
+        try {
+            CraftPlayer craftPlayer = (CraftPlayer) target;
+            EntityPlayer entityPlayer = craftPlayer.getHandle();
+            PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer);
+            PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer);
+            PacketPlayOutEntityDestroy destroyEntity = new PacketPlayOutEntityDestroy(entityPlayer.getId());
+            PacketPlayOutNamedEntitySpawn spawnEntity = new PacketPlayOutNamedEntitySpawn(entityPlayer);
+
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                if (viewer == null || !viewer.isOnline() || viewer.equals(target) || !(viewer instanceof CraftPlayer)) {
+                    continue;
+                }
+
+                if (!viewer.canSee(target)) {
+                    continue;
+                }
+
+                EntityPlayer observer = ((CraftPlayer) viewer).getHandle();
+                observer.playerConnection.sendPacket(removeInfo);
+                observer.playerConnection.sendPacket(destroyEntity);
+                observer.playerConnection.sendPacket(addInfo);
+                observer.playerConnection.sendPacket(spawnEntity);
+            }
+        } catch (Exception e) {
+            Logger.warning("Erro ao atualizar entidade do disguise de " + target.getName() + ": " + e.getMessage());
         }
     }
 

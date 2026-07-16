@@ -138,6 +138,18 @@ public class WhitelistManager {
         return uuid != null && allowedUuids.contains(uuid);
     }
 
+    public boolean isAllowed(String playerName){
+        if(playerName == null || !allowedNames.contains(normalize(playerName))){
+            return false;
+        }
+
+        return true;
+    }
+
+    public Set<String> getAllowedNames() {
+        return allowedNames;
+    }
+
     public boolean add(Player player) {
         if (player == null) {
             return false;
