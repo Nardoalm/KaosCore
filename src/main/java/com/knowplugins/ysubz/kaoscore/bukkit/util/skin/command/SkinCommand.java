@@ -37,6 +37,21 @@ public class SkinCommand extends Commands {
         }
 
         Player player = (Player) sender;
+
+        if (args.length == 0) {
+            player.sendMessage("§eUsage of §6/skin§e:");
+            player.sendMessage(" §e* §6/skin <nick>");
+            if (player.hasPermission("kaoscore.staff.skin")) {
+                player.sendMessage(" §e* §6/skin reset [player]");
+                player.sendMessage(" §e* §6/skin <player> <skin>");
+            } else {
+                player.sendMessage(" §e* §6/skin reset");
+            }
+            player.sendMessage(" §e* §6/skin menu");
+            player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+            return;
+        }
+
         String targetSkin = args[0];
 
         if (targetSkin.equalsIgnoreCase("reset")) {
@@ -159,6 +174,11 @@ public class SkinCommand extends Commands {
                         Bukkit.getScheduler().runTask(plugin, () -> {
                             player.sendMessage("§cSkin not found (non-original nickname) or API error.");
                             player.playSound(player.getLocation(), Sound.CLICK, 1.0f, 1.0f);
+
+                            com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager dm = com.knowplugins.ysubz.kaoscore.bukkit.manager.MainManager.getDisguiseManager();
+                            if (dm != null && com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager.isDisguised(player)) {
+                                com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.command.DisguiseCommand.executeReset(player, dm);
+                            }
                         });
                         return;
                     }
@@ -195,9 +215,14 @@ public class SkinCommand extends Commands {
                                 applier.applySkinForOthers();
                             }
 
-                            String message = applyForSelf
-                                    ? "§aYour skin has been changed to §6" + cleanTarget + "§a."
-                                    : "§aDisguise skin applied for other players §6" + cleanTarget + "§a.";
+                            String message;
+                            if (com.knowplugins.ysubz.kaoscore.bukkit.util.disguise.DisguiseManager.isDisguised(player)) {
+                                message = "§aYou are now disguised as §7" + cleanTarget + "§a.";
+                            } else {
+                                message = applyForSelf
+                                        ? "§aYour skin has been changed to §6" + cleanTarget + "§a."
+                                        : "§aDisguise skin applied for other players §6" + cleanTarget + "§a.";
+                            }
                             message = PlaceholderManager.replacePlaceholders(message, player);
                             player.sendMessage(message);
                             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1.0f, 1.0f);

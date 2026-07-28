@@ -379,7 +379,7 @@ public class TagTeamManager {
 
         String prefix;
         if (!tailColor.isEmpty()) {
-            int available = 16 - tailColor.length();
+            int available = 64 - tailColor.length();
             String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
             prefix = trimTeamPart(trimmedBody + tailColor);
         } else {
@@ -443,7 +443,7 @@ public class TagTeamManager {
 
         String prefix;
         if (!tailColor.isEmpty()) {
-            int available = 16 - tailColor.length();
+            int available = 64 - tailColor.length();
             String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
             prefix = trimTeamPart(trimmedBody + tailColor);
         } else {
@@ -657,7 +657,7 @@ public class TagTeamManager {
     }
 
     private String trimTeamPart(String value) {
-        return trimTeamPart(value, 16);
+        return trimTeamPart(value, 64);
     }
 
     private String trimTeamPart(String value, int maxLen) {
@@ -874,7 +874,7 @@ public class TagTeamManager {
 
         String prefix;
         if (!tailColor.isEmpty()) {
-            int available = 16 - tailColor.length();
+            int available = 64 - tailColor.length();
             String trimmedBody = available <= 0 ? "" : trimTeamPart(tagPrefix, available);
             prefix = trimTeamPart(trimmedBody + tailColor);
         } else {

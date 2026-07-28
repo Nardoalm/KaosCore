@@ -10,6 +10,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+import org.bukkit.Location;
+import org.bukkit.Bukkit;
+
 
 public class AuthListener implements Listener {
 
@@ -112,6 +116,51 @@ public class AuthListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (plugin.getAuthManager().isPending(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerSpawnLocation(PlayerSpawnLocationEvent event) {
+        Player player = event.getPlayer();
+        Location loc = null;
+
+        com.knowplugins.ysubz.kaoscore.bukkit.auth.profile.AuthProfile profile = plugin.getAuthManager().getCachedProfile(player.getUniqueId());
+        if (profile != null && profile.isPremium()) {
+            if (Bukkit.getServer().getPluginManager().getPlugin("HardPractice") != null) {
+                try {
+                    loc = live.pvphard.practice.HardPractice.getInstance()
+                            .getService(live.pvphard.practice.feature.spawn.SpawnService.class)
+                            .getLocation();
+                } catch (Throwable ignored) {}
+            }
+        }
+
+        if (loc == null) {
+            loc = plugin.getAuthManager().getAuthLocation();
+        }
+
+        if (loc == null) {
+            try {
+                String raw = plugin.getConfig().getString("spawn.location");
+                if (raw != null && !raw.trim().isEmpty() && raw.contains(";")) {
+                    String[] parts = raw.split(";");
+                    if (parts.length >= 6) {
+                        org.bukkit.World world = Bukkit.getWorld(parts[0]);
+                        if (world != null) {
+                            double x = Double.parseDouble(parts[1]);
+                            double y = Double.parseDouble(parts[2]);
+                            double z = Double.parseDouble(parts[3]);
+                            float yaw = Float.parseFloat(parts[4]);
+                            float pitch = Float.parseFloat(parts[5]);
+                            loc = new Location(world, x, y, z, yaw, pitch);
+                        }
+                    }
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        if (loc != null) {
+            event.setSpawnLocation(loc);
         }
     }
 }

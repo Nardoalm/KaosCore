@@ -193,7 +193,7 @@ public class DisguiseCommand extends Commands {
         }
     }
 
-    private void executeReset(Player player, DisguiseManager disguiseManager) {
+    public static void executeReset(Player player, DisguiseManager disguiseManager) {
         try {
             String fakeNick = disguiseManager.getDisguiseNick(player);
             if (fakeNick == null) fakeNick = player.getName();
@@ -241,7 +241,7 @@ public class DisguiseCommand extends Commands {
         }
     }
 
-    private void changeName(GameProfile profile, String name) throws Exception {
+    public static void changeName(GameProfile profile, String name) throws Exception {
         Field nameField = profile.getClass().getDeclaredField("name");
         nameField.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");

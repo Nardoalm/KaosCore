@@ -13,7 +13,6 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\player\TabListManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\VanishCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\auth\listener\AuthPreLoginListener.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\sit\SitManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\entity\NPCInteractListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\AdminChatCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\auth\profile\AuthProfile.java
@@ -32,6 +31,7 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\AccCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\BanBungeeCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\UnbanCommand.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\skin\SkinMatrix.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\auth\command\RegisterCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\skin\SkinApplier.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\GrantBungeeCommand.java
@@ -55,11 +55,9 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\ClanInvite.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\Constant.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\world\JumpPadListener.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\repository\DisguiseRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\auth\command\LoginCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\clan\command\ClanCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\RemoveNpcCommand.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\command\UnDisguiseCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\GroupBungeeCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\chat\ChatManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\clan\manager\ClanManager.java
@@ -78,7 +76,6 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\UserPermissionNode.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\WarnCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\KaosCore.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\api\DisguiseApiService.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\friend\command\FriendCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\account\AccountController.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\util\BungeeCommandUtil.java
@@ -89,7 +86,6 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\punishment\PunishmentType.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\permission\EffectivePermissions.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\message\ActionBarUtil.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\entity\EntityListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\vip\TrollCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\world\NPCManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\UnmuteCommand.java
@@ -103,17 +99,16 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\auth\session\AuthSession.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\world\WeatherListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\SetSpawnCommand.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\DisguiseManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\WhitelistBungeeCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\Listeners.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\tag\Tag.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\permission\UserPermissionNode.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\staff\BuildCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\BungeeDatabase.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\service\BungeeDisguiseService.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\repository\PlayerWelcomeMessageRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\punishment\PunishmentEntry.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\placeholder\LuckPermsBridgeExpansion.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\sit\command\SitCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\service\BungeeDiscordWebhookManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\menu\MenuUtils.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\PunishmentTime.java
@@ -123,10 +118,8 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\account\Account.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\proxy\ProxySyncListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\service\core\BungeeDiscordWebhookManager.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\skin\SkinMatrix.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\player\ScoreboardManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\player\VanishManager.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\sit\listener\SitListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\skin\repository\SkinCacheRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\placeholder\PlaceholderManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\friend\manager\FriendManager.java
@@ -156,6 +149,7 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\Logger.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\tag\repository\PlayerTagRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\GamemodeCommand.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\api\DisguiseApiService.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\database\DatabaseManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\repository\BungeePlayerAddressRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\tag\command\TagCommand.java
@@ -168,7 +162,6 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\TargetResult.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\BungeeCommands.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\player\DiscloseBungeeCommand.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\DisguiseManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\whitelist\WhitelistManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\vip\FlyCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\player\DoubleJumpListener.java
@@ -180,8 +173,10 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\PermissionGroup.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\GroupCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\AutoBroadcastManager.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\command\DisguiseCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\PingCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\repository\PlayerAddressRepository.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\sit\SitManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\world\SoundListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\plugin\SkinData.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\integration\proxy\ProxySyncChannel.java
@@ -190,6 +185,7 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\TellCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\staff\command\AltsCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\bootstrap\BungeeKaosCore.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\sit\command\SitCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\tag\manager\TagTeamManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\Texts.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\skin\menu\SkinMenu.java
@@ -204,9 +200,9 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\service\BungeePermissionService.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\punishment\PunishmentTime.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\MainManager.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\command\UnDisguiseCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\medal\manager\MedalManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\clan\ClanRole.java
-C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\disguise\command\DisguiseCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\commands\admin\UnbanBungeeCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\integration\practice\PracticeModeBlocker.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\medal\repository\PlayerMedalRepository.java
@@ -220,12 +216,14 @@ C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaos
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\model\Medal.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\moderation\admin\command\GrantCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\skin\command\SkinCommand.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\sit\listener\SitListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\manager\player\GameModeManager.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\whitelist\listener\WhitelistListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\command\list\PvpCommand.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\listener\player\InteractListener.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\service\BungeeFriendService.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\api\KaosCoreAPIImpl.java
+C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\disguise\repository\DisguiseRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bungee\repository\BungeePermissionRepository.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\util\title\TitleAPI.java
 C:\Users\Gu\Documents\Projetos\KaosCore\src\main\java\com\knowplugins\ysubz\kaoscore\bukkit\friend\menu\FriendMenuListener.java
